@@ -337,6 +337,7 @@
                             </div>
                         </div>
 
+                        <!-- ДЛЯ ВЛАСНОГО ПРОФІЛЮ -->
                         <div id="profile-action-btns" style="display: none; gap: 4px; margin-top: 6px;">
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
@@ -345,6 +346,13 @@
                         <!-- КНОПКА ЗАВДАНЬ ДЛЯ ДРУЗІВ -->
                         <div id="profile-task-btn-wrap" style="margin-top: 6px; display: none;">
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
+                        </div>
+
+                        <!-- ДЛЯ ЧУЖОГО ПРОФІЛЮ (КНОПКИ ЯК У ВКОНТАКТІ ПІД ФОТО) -->
+                        <div id="friend-profile-action-btns" style="display: none; flex-direction: column; gap: 4px; margin-top: 6px;">
+                            <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-send-msg-btn">✉️ Написати повідомлення</button>
+                            <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" onclick="openModal('modal-gift')">🎁 Надіслати подарунок</button>
+                            <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
                         </div>
 
                         <!-- БЛОК ДНІВ НАРОДЖЕННЯ -->
@@ -1039,6 +1047,24 @@
             taskBtnWrap.style.display = 'none';
         }
 
+        // Керування кнопками під фото для друзів / чужих профілів
+        const friendActionBtns = document.getElementById('friend-profile-action-btns');
+        if (!isMe) {
+            friendActionBtns.style.display = 'flex';
+            document.getElementById('profile-send-msg-btn').onclick = () => openDirectMessage(userId, uName);
+            
+            const friendBtn = document.getElementById('profile-friend-action-btn');
+            if (userFriendsMap.has(userId)) {
+                friendBtn.innerText = '✕ Видалити з друзів';
+                friendBtn.onclick = () => removeFriend(userId);
+            } else {
+                friendBtn.innerText = '+ Додати в друзі';
+                friendBtn.onclick = () => addFriend(userId, uName, u.photo_url);
+            }
+        } else {
+            friendActionBtns.style.display = 'none';
+        }
+
         document.getElementById('wall-header-title').innerText = isMe ? 'Стіна' : `Стіна користувача ${uName}`;
     }
 
@@ -1243,6 +1269,9 @@
             });
             await batch.commit();
             vkAlert("Друзі", `${targetName} тепер у списку ваших друзів!`);
+            if (viewingProfileId === targetId) {
+                openUserProfile(targetId);
+            }
         } catch (err) {
             console.error(err);
         }
@@ -1255,6 +1284,9 @@
             batch.delete(db.collection('users').doc(targetId).collection('friends').doc(activeUser.id));
             await batch.commit();
             vkAlert("Друзі", "Користувача видалено з друзів.");
+            if (viewingProfileId === targetId) {
+                openUserProfile(targetId);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -1367,7 +1399,6 @@
         });
     }
 
-    // Розширений пошук (ім'я + фільтр за містом)
     function filterUsersList() {
         const nameQuery = document.getElementById('friend-search-input').value.toLowerCase().trim();
         const cityQuery = document.getElementById('city-filter-input').value.toLowerCase().trim();
@@ -1395,7 +1426,6 @@
         }
     }
 
-    // Віджет Днів Народження
     async function checkBirthdaysWidget() {
         const widgetEl = document.getElementById('birthdays-widget-content');
         if (!widgetEl) return;
@@ -1417,7 +1447,6 @@
         }
     }
 
-    // Стрічка новин
     function loadGlobalNewsFeed() {
         const feedContainer = document.getElementById('global-news-feed-list');
         if (!feedContainer) return;
@@ -1479,7 +1508,6 @@
         });
     }
 
-    // Спільноти / Групи
     async function commitCreateGroup() {
         const name = document.getElementById('group-name-input').value.trim();
         const desc = document.getElementById('group-desc-input').value.trim();
@@ -1550,7 +1578,6 @@
         switchTab('profile');
     }
 
-    // ЧАТ ТА НЕПРОЧИТАНІ ПОВІДОМЛЕННЯ
     let currentChatMode = null; 
     let activeChatTargetId = null;
     let chatUnsubscribe = null;
@@ -1958,6 +1985,7 @@
     db.collection('users').doc(activeUser.id).collection('photos').orderBy('timestamp', 'desc').onSnapshot(snap => {
         const sidebarStrip = document.getElementById('sidebar-photos-strip');
         const fullGrid = document.getElementById('photos-grid-full');
+        if (!sidebarStrip) return;
         document.getElementById('sidebar-photos-count').innerText = snap.size;
         sidebarStrip.innerHTML = '';
         if (fullGrid) fullGrid.innerHTML = '';
@@ -2396,7 +2424,7 @@
         });
     });
 
-    // Подарунки та рейтинг
+    // Подарунки та рейтинг (Виправлено ціль для відправки: якщо переглядаємо чужу сторінку — відправляємо туди)
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
@@ -2408,7 +2436,8 @@
 
     async function commitGiftSend() {
         const comment = document.getElementById('gift-message-text').value.trim();
-        await db.collection('users').doc(activeUser.id).collection('gifts').add({
+        const targetUserId = viewingProfileId || activeUser.id; // Відправляємо на поточну відкриту сторінку
+        await db.collection('users').doc(targetUserId).collection('gifts').add({
             emoji: pickedGiftIcon,
             title: pickedGiftTitle,
             sender: userFullName,
@@ -2419,20 +2448,23 @@
         vkAlert('Подарунок', 'Подарунок надіслано!');
     }
 
-    db.collection('users').doc(activeUser.id).collection('gifts').onSnapshot(snap => {
-        const cont = document.getElementById('gifts-grid');
-        if (!cont) return;
-        document.getElementById('gifts-counter').innerText = snap.size;
-        if (snap.empty) {
-            cont.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
-            return;
-        }
-        cont.innerHTML = '';
-        snap.forEach(d => {
-            const g = d.data();
-            cont.innerHTML += `<div title="${escapeText(g.comment || '')}" style="text-align: center;"><span style="font-size: 20px;">${g.emoji}</span></div>`;
+    // Слухаємо подарунки поточного переглядуваного профілю
+    function listenToGifts(userId) {
+        db.collection('users').doc(userId).collection('gifts').onSnapshot(snap => {
+            const cont = document.getElementById('gifts-grid');
+            if (!cont) return;
+            document.getElementById('gifts-counter').innerText = snap.size;
+            if (snap.empty) {
+                cont.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
+                return;
+            }
+            cont.innerHTML = '';
+            snap.forEach(d => {
+                const g = d.data();
+                cont.innerHTML += `<div title="${escapeText(g.comment || '')} (від: ${escapeText(g.sender)})" style="text-align: center;"><span style="font-size: 20px;">${g.emoji}</span></div>`;
+            });
         });
-    });
+    }
 
     async function commitRatingBoost() {
         if (checkIsAdmin(activeUser.id)) return vkAlert('Адмін', 'У вас вже максимальний адмін-рейтинг (999%)!');
