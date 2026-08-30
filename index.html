@@ -1151,7 +1151,7 @@
         relationshipType: "",
         partnerId: "",
         partnerName: "",
-        partnerStatus: "", // 'pending' або 'accepted'
+        partnerStatus: "",
         birthDate: "",
         phone: "+380 (XX) XXX-XX-XX",
         icq: "345-982-110",
@@ -1281,7 +1281,6 @@
         });
     }
 
-    // Обчислення віку за датою народження
     function calculateAge(dateString) {
         if (!dateString) return null;
         const today = new Date();
@@ -1332,7 +1331,6 @@
         fillEl.style.color = textCol;
         containerEl.style.borderColor = borderCol;
 
-        // Дата народження та вік
         const bDayDisplay = document.getElementById('profile-birthday-display');
         if (u.birthDate) {
             const age = calculateAge(u.birthDate);
@@ -1343,13 +1341,16 @@
 
         document.getElementById('profile-city').innerText = u.city || 'не вказано';
 
-        // Сімейний стан з партнером
+        // СІМЕЙНИЙ СТАН З КЛІКАБЕЛЬНИМ ІМЕНЕМ ПАРТНЕРА (ВІДКРИВАЄ ПРОФІЛЬ)
         let relText = u.relationshipType || 'не вказано';
         if (u.relationshipType && u.partnerId) {
+            const partnerLink = `<a href="javascript:void(0)" onclick="openUserProfile('${u.partnerId}')" style="color:var(--vk-link); font-weight:bold; text-decoration:underline;">${escapeText(u.partnerName || 'партнер')}</a>`;
             if (u.partnerStatus === 'accepted') {
-                relText = `${u.relationshipType} <a href="javascript:void(0)" onclick="openUserProfile('${u.partnerId}')" style="color:var(--vk-link); font-weight:bold;">${escapeText(u.partnerName || 'партнер')}</a>`;
+                relText = `${u.relationshipType} ${partnerLink}`;
             } else if (u.partnerStatus === 'pending') {
-                relText = `${u.relationshipType} ${escapeText(u.partnerName || '')} (очікує підтвердження)`;
+                relText = `${u.relationshipType} ${partnerLink} (очікує підтвердження)`;
+            } else {
+                relText = `${u.relationshipType} ${partnerLink}`;
             }
         }
         document.getElementById('profile-relationship').innerHTML = relText;
@@ -1476,7 +1477,6 @@
         document.getElementById('edit-quotes').value = activeUser.quotes || '';
         document.getElementById('edit-about').value = activeUser.about || '';
 
-        // Заповнюємо випадаючий список партнера списком друзів
         const partnerSelect = document.getElementById('edit-partner-select');
         partnerSelect.innerHTML = '<option value="">-- Не вибрано --</option>';
         userFriendsMap.forEach((friend, fId) => {
@@ -1503,10 +1503,8 @@
             if (userFriendsMap.has(newPartnerId)) {
                 partnerName = userFriendsMap.get(newPartnerId).name;
             }
-            // Якщо змінили партнера або тип стосунків, надсилаємо пропозицію
             if (newPartnerId !== activeUser.partnerId || newRelType !== activeUser.relationshipType) {
                 partnerStatus = 'pending';
-                // Надсилаємо пропозицію у колекцію партнера
                 await db.collection('users').doc(newPartnerId).collection('relationship_proposals').doc(activeUser.id).set({
                     fromUserId: activeUser.id,
                     fromUserName: userFullName,
@@ -1567,7 +1565,6 @@
         vkAlert('Успіх', 'Дані профілю успішно збережено!');
     }
 
-    // Слухач пропозицій сімейного стану
     let pendingRelationshipProposal = null;
     function initRelationshipProposalListener() {
         db.collection('users').doc(activeUser.id).collection('relationship_proposals').onSnapshot(async snap => {
@@ -1578,7 +1575,6 @@
                 pendingRelationshipProposal = null;
                 return;
             }
-            // Беремо першу пропозицію
             const doc = snap.docs[0];
             pendingRelationshipProposal = { id: doc.id, ...doc.data() };
             textEl.innerText = `${pendingRelationshipProposal.fromUserName} пропонує встановити статус: «${pendingRelationshipProposal.relationshipType} з вами»`;
@@ -1590,7 +1586,6 @@
         if (!pendingRelationshipProposal) return;
         const prop = pendingRelationshipProposal;
 
-        // Оновлюємо себе
         activeUser.relationshipType = prop.relationshipType;
         activeUser.partnerId = prop.fromUserId;
         activeUser.partnerName = prop.fromUserName;
@@ -1602,14 +1597,12 @@
             partnerStatus: 'accepted'
         });
 
-        // Також оновлюємо того, хто надіслав пропозицію, щоб у нього теж стало accepted
         await db.collection('users').doc(prop.fromUserId).update({
             partnerStatus: 'accepted',
             partnerId: activeUser.id,
             partnerName: userFullName
         });
 
-        // Видаляємо пропозицію
         await db.collection('users').doc(activeUser.id).collection('relationship_proposals').doc(prop.id).delete();
         document.getElementById('relationship-proposal-banner').style.display = 'none';
         renderProfileInfo(activeUser, userFullName, true, activeUser.id);
