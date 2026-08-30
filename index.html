@@ -83,23 +83,27 @@
             border-radius: 50%; display: inline-block; margin-right: 4px;
             box-shadow: 0 0 4px #4CAF50;
         }
-        .offline-tag { color: gray; font-size: 11px; }
 
+        /* --- ЗОЛОТА ТА СИНЯ ШКАЛА РЕЙТИНГУ VK --- */
         .rating-container { margin: 8px 0; width: 100%; }
         .rating-bar-bg { 
-            background: #d0d7de; height: 14px; border-radius: 2px; 
+            background: #d0d7de; height: 15px; border-radius: 3px; 
             overflow: hidden; position: relative; border: 1px solid #b3beca;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
         }
         .rating-bar-fill { 
-            background: linear-gradient(to bottom, #fcae39 0%, #ee8700 100%); 
-            height: 100%; width: 0%; transition: width 0.4s ease;
+            background: linear-gradient(to bottom, #7ca1c9 0%, #45688e 100%); 
+            height: 100%; width: 0%; transition: width 0.5s ease;
+        }
+        .rating-bar-fill.gold { 
+            background: linear-gradient(to bottom, #ffd700 0%, #ff8c00 100%) !important; 
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
         }
         .rating-text {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             display: flex; align-items: center; justify-content: center;
             font-size: 10px; font-weight: bold; color: #ffffff;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
         .friends-grid {
@@ -164,14 +168,10 @@
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* АУДІОПЛЕЄР */
-        .audio-player-card {
-            background: #f4f7fa; border: 1px solid #c3cedc; border-radius: 6px;
-            padding: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
-        }
-        .audio-controls { display: flex; gap: 6px; }
+        /* SoundCloud плеєр */
+        .sc-container { margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
 
-        /* ЧАТ / МЕСЕНДЖЕР */
+        /* ЧАТ */
         .chat-box {
             height: 250px; overflow-y: auto; border: 1px solid var(--border-color);
             padding: 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.01);
@@ -179,6 +179,13 @@
         .chat-msg { margin-bottom: 6px; font-size: 12px; }
         .chat-msg.my { text-align: right; color: #2b587a; }
         .chat-msg .author { font-weight: bold; }
+
+        .vk-section-header {
+            background: #dbe0ea; color: #36577c; font-weight: bold;
+            padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px;
+            display: flex; justify-content: space-between;
+        }
+        .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
 
         /* ПК РЕЖИМ */
         body.mode-pc {
@@ -198,14 +205,9 @@
         body.mode-pc .card { border-radius: 0; border: none; box-shadow: none; padding: 0; background: transparent; }
         body.mode-pc .avatar { border-radius: 0; width: 160px; height: 160px; border: 1px solid #ccc; }
         body.mode-pc .nav-tabs { display: none !important; }
-        body.mode-pc .vk-section-header {
-            background: #dbe0ea; color: #36577c; font-weight: bold; padding: 3px 5px;
-            border-bottom: 1px solid #b9c4da; margin-bottom: 8px; display: flex; justify-content: space-between;
-        }
         body.mode-pc .vk-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         body.mode-pc .vk-table td { padding: 2px 0; vertical-align: top; }
         body.mode-pc .vk-table td.label { color: #666; width: 120px; }
-        body.mode-pc .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
     </style>
 </head>
 <body class="mode-auto">
@@ -224,7 +226,7 @@
 
     <!-- Мобільна Шапка -->
     <div class="header mobile-header">
-        <h3 style="margin:0;">На Зв'язку 🇺АК</h3>
+        <h3 style="margin:0;">На Зв'язку 🇺🇦</h3>
         <div>
             <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
             <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
@@ -264,6 +266,7 @@
                                 <div id="user-avatar-placeholder" class="avatar">V</div>
                             </div>
                             
+                            <!-- Шкала рейтингу -->
                             <div class="rating-container">
                                 <div class="rating-bar-bg">
                                     <div id="rating-bar-fill" class="rating-bar-fill"></div>
@@ -274,7 +277,7 @@
                             <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
                             <a style="font-size:11px; color:#3b6998; cursor:pointer; display:block; margin-bottom: 8px;" onclick="document.getElementById('avatar-input').click()">Змінити фото</a>
 
-                            <div class="vk-section-header" style="font-size: 10px; margin-top: 6px;">
+                            <div class="vk-section-header" style="font-size: 10px;">
                                 Подарунки <a class="vk-link" onclick="sendGift()" style="font-size: 9px;">[+ надіслати]</a>
                             </div>
                             <div id="gifts-list" class="gifts-container">
@@ -292,9 +295,12 @@
                         </div>
 
                         <div style="flex-grow: 1; min-width: 0;">
-                            <h3 id="user-name" style="margin:0 0 2px 0; font-size: 15px; color: #3b6998; word-break: break-word;">Користувач</h3>
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <h3 id="user-name" style="margin:0; font-size: 15px; color: #3b6998; word-break: break-word;">Користувач</h3>
+                                <span id="director-badge" class="hidden" style="background: #ffd700; color: #000; font-size: 9px; font-weight: bold; padding: 2px 4px; border-radius: 3px;">👑 ДИРЕКТОР</span>
+                            </div>
                             
-                            <div style="font-size: 11px; margin-bottom: 6px;">
+                            <div style="font-size: 11px; margin: 4px 0;">
                                 <span id="user-status" style="font-style: italic; color: #444;">[встановити статус]</span>
                                 <a class="vk-link" style="font-size: 10px; margin-left: 4px;" onclick="toggleStatusInput()">[зм.]</a>
                                 <div id="status-input-box" class="hidden" style="margin-top: 4px;">
@@ -308,6 +314,10 @@
                             </p>
 
                             <table class="vk-table" style="font-size: 11px; width: 100%;">
+                                <tr>
+                                    <td class="label">Посада:</td>
+                                    <td><b id="user-role-text">Учасник</b></td>
+                                </tr>
                                 <tr>
                                     <td class="label">Місто:</td>
                                     <td><span id="city-val">Україна</span></td>
@@ -387,25 +397,21 @@
                 </div>
             </div>
 
-            <!-- ВКЛАДКА МУЗИКА -->
+            <!-- ВКЛАДКА ЛЕГАЛЬНА МУЗИКА -->
             <div id="tab-audio" class="card hidden">
-                <div class="vk-section-header">Мої Аудіозаписи</div>
+                <div class="vk-section-header">Легальна Музична Платформа (SoundCloud)</div>
+                <p style="font-size:11px; color:gray; margin:2px 0 8px 0;">Слухайте будь-які треки легально без порушення авторських прав.</p>
                 
-                <div style="margin-bottom:12px; padding:8px; background:rgba(0,0,0,0.02); border-radius:6px;">
-                    <b style="font-size:11px;">Додати трек:</b>
-                    <input type="text" id="audio-title-input" placeholder="Назва треку (напр. Океан Ельзи - Без бою)">
-                    <input type="text" id="audio-url-input" placeholder="Пряме посилання на MP3 файл">
-                    <button class="btn btn-sm" onclick="addAudioTrack()">Додати аудіозапис</button>
+                <div class="sc-container">
+                    <iframe id="sc-iframe" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+                      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%233b6998&auto_play=false">
+                    </iframe>
                 </div>
 
-                <audio id="global-audio-player" style="display:none;"></audio>
-
-                <div id="audio-list">
-                    <!-- Зауваження: використовується безкоштовний відкритий MP3 для тесту -->
-                    <div class="audio-player-card">
-                        <button class="btn btn-sm" onclick="playTrack('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 'Класичний трек 1')">▶</button>
-                        <div style="font-size:12px; flex-grow:1;"><b>SoundHelix</b> — Song 1</div>
-                    </div>
+                <div style="margin-top:12px; padding:8px; background:rgba(0,0,0,0.02); border-radius:6px;">
+                    <b style="font-size:11px;">Увімкнути будь-який трек із SoundCloud:</b>
+                    <input type="text" id="sc-link-input" placeholder="Вставте посилання на трек чи плейлист SoundCloud...">
+                    <button class="btn btn-sm" onclick="loadCustomSoundCloud()">Завантажити трек</button>
                 </div>
             </div>
 
@@ -449,6 +455,7 @@
         let currentUserAvatar = "";
         let activeChatUserId = null;
         let chatUnsubscribe = null;
+        let isDirector = false;
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -462,21 +469,62 @@
                 if (user.photo_url) setAvatar(user.photo_url);
             }
 
+            // Перевірка та реєстрація Директора в БД
             try {
-                await db.collection("users").doc(currentUserId).set({
+                const userRef = db.collection("users").doc(currentUserId);
+                const doc = await userRef.get();
+
+                if (doc.exists && doc.data().isDirector === true) {
+                    isDirector = true;
+                } else if (currentUserName.includes("Директор") || currentUserId === "ВАШ_TELEGRAM_ID") {
+                    isDirector = true;
+                    await userRef.set({ isDirector: true }, { merge: true });
+                }
+
+                await userRef.set({
                     name: currentUserName,
                     avatarUrl: currentUserAvatar,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
-            } catch (e) { console.error("Помилка реєстрації:", e); }
 
+            } catch (e) { console.error("Помилка БД:", e); }
+
+            calculateVkRating();
             listenToRealFriends();
-            listenToAudioTracks();
             listenToGuests();
-            updateRating();
         });
 
-        // 1. ПЕРСОНАЛЬНИЙ ЧАТ
+        // 1. СИСТЕМА ЗОЛОТОГО ТА ЗВИЧАЙНОГО РЕЙТИНГУ
+        function calculateVkRating() {
+            const barFill = document.getElementById('rating-bar-fill');
+            const ratingText = document.getElementById('rating-text');
+            const directorBadge = document.getElementById('director-badge');
+
+            if (isDirector) {
+                // Золотий рейтинг Директора (+500%)
+                barFill.style.width = '100%';
+                barFill.classList.add('gold');
+                ratingText.innerText = '+500%';
+                directorBadge.classList.remove('hidden');
+                document.getElementById('user-role-text').innerText = "Генеральний Директор 👑";
+            } else {
+                // Динамічний рейтинг для звичайних людей (0-100%)
+                let rating = 30;
+                if (currentUserAvatar) rating += 35;
+                if (document.getElementById('user-status').innerText !== '[встановити статус]') rating += 20;
+                if (document.getElementById('status-val').innerText !== 'Не вказано') rating += 15;
+
+                if (rating > 100) {
+                    rating = 100;
+                    barFill.classList.add('gold');
+                }
+                barFill.style.width = rating + '%';
+                ratingText.innerText = '+' + rating + '%';
+                document.getElementById('user-role-text').innerText = "Учасник";
+            }
+        }
+
+        // 2. ПЕРСОНАЛЬНИЙ ЧАТ
         function openChatWith(friendId, friendName) {
             activeChatUserId = friendId;
             document.getElementById('chat-partner-name').innerText = friendName;
@@ -502,7 +550,7 @@
                     box.scrollTop = box.scrollHeight;
                 });
 
-            // Запис у «Гості» для того, до кого зашли
+            // Відмітка у Гостях
             db.collection("users").doc(friendId).collection("guests").doc(currentUserId).set({
                 name: currentUserName,
                 visitedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -524,44 +572,15 @@
             input.value = '';
         }
 
-        // 2. АУДІОПЛЕЄР
-        function playTrack(url, title) {
-            const player = document.getElementById('global-audio-player');
-            player.src = url;
-            player.play();
-            alert(`Грає: ${title}`);
+        // 3. SOUNDCLOUD МУЗИКА
+        function loadCustomSoundCloud() {
+            const link = document.getElementById('sc-link-input').value.trim();
+            if (!link) return alert("Введіть посилання на SoundCloud!");
+            const encodedUrl = encodeURIComponent(link);
+            document.getElementById('sc-iframe').src = `https://w.soundcloud.com/player/?url=${encodedUrl}&color=%233b6998&auto_play=true`;
         }
 
-        async function addAudioTrack() {
-            const title = document.getElementById('audio-title-input').value.trim();
-            const url = document.getElementById('audio-url-input').value.trim();
-            if (!title || !url) return alert("Заповніть назву та посилання!");
-
-            await db.collection("audio").add({
-                title: title, url: url, addedBy: currentUserName,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            document.getElementById('audio-title-input').value = '';
-            document.getElementById('audio-url-input').value = '';
-        }
-
-        function listenToAudioTracks() {
-            db.collection("audio").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                const list = document.getElementById('audio-list');
-                list.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    list.innerHTML += `
-                        <div class="audio-player-card">
-                            <button class="btn btn-sm" onclick="playTrack('${data.url}', '${data.title}')">▶</button>
-                            <div style="font-size:12px; flex-grow:1;"><b>${data.title}</b></div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // 3. ГОСТІ
+        // 4. ГОСТІ
         function listenToGuests() {
             db.collection("users").doc(currentUserId).collection("guests").onSnapshot((snapshot) => {
                 const box = document.getElementById('guests-list');
@@ -581,7 +600,7 @@
             });
         }
 
-        // 4. СТІНА ТА ПОСТИ З КАРТИНКАМИ
+        // 5. СТІНА ТА ПОСТИ
         async function createPost() {
             const text = document.getElementById('post-input').value.trim();
             const imageUrl = document.getElementById('post-image-input').value.trim();
@@ -618,7 +637,7 @@
 
         function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
 
-        // 5. ДРУЗІ
+        // 6. ДРУЗІ В МЕРЕЖІ
         function listenToRealFriends() {
             db.collection("users").onSnapshot((snapshot) => {
                 const grid = document.getElementById('profile-friends-grid');
@@ -659,7 +678,7 @@
             });
         }
 
-        // НАВІГАЦІЯ ТА ІНШІ ФУНКЦІЇ
+        // НАВІГАЦІЯ ТА ДОПОМІЖНІ ФУНКЦІЇ
         function switchTab(tab) {
             ['feed', 'friends', 'chat', 'audio', 'guests', 'settings'].forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
@@ -673,20 +692,16 @@
             if (activeBtn) activeBtn.classList.add('active');
         }
 
-        function updateRating() {
-            document.getElementById('rating-bar-fill').style.width = '70%';
-            document.getElementById('rating-text').innerText = '+70%';
-        }
-
         function toggleStatusInput() { document.getElementById('status-input-box').classList.toggle('hidden'); }
         function saveStatusText() {
             const val = document.getElementById('status-text-input').value;
             document.getElementById('user-status').innerText = val;
             toggleStatusInput();
+            calculateVkRating();
         }
         function toggleMoreInfo() { document.getElementById('more-info-box').classList.toggle('hidden'); }
         function toggleStatusEdit() { document.getElementById('status-edit-box').classList.toggle('hidden'); }
-        function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); }
+        function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); calculateVkRating(); }
         function sendGift() { alert("Подарунок відправлено!"); }
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
         function changeViewMode(m) { document.body.className = `mode-${m}`; }
