@@ -3,1022 +3,957 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>На Зв'язку</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>На зв'язку — Соціальна мережа</title>
     
-    <!-- Firebase SDK (v8 / v9 compat) -->
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Firebase SDKs (v9 Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
-            --bg-color: #e9efe7;
-            --card-bg: #ffffff;
-            --text-color: #222222;
-            --primary-color: #3b6998;
-            --border-color: #d1d8e0;
+            --vk-bg: #edeef1;
+            --vk-header: #4a76a8;
+            --vk-header-dark: #365c85;
+            --vk-card: #ffffff;
+            --vk-border: #d3d9de;
+            --vk-text: #000000;
+            --vk-subtext: #666666;
+            --vk-link: #2b587a;
+            --vk-btn: #5181b8;
+            --vk-btn-hover: #4a76a8;
+            --vk-light-blue: #e5edf5;
         }
 
-        body.dark-mode {
-            --bg-color: #18222d;
-            --card-bg: #212d3b;
-            --text-color: #f5f5f5;
-            --primary-color: #5288c1;
-            --border-color: #2b394a;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        * { box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 8px; overflow-x: hidden;
+            background-color: var(--vk-bg);
+            color: var(--vk-text);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
 
-        .desktop-header, .desktop-nav { display: none; }
-        .main-wrapper { width: 100%; max-width: 100%; margin: 0 auto; }
-
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--primary-color); color: white; padding: 10px 14px;
-            border-radius: 10px; margin-bottom: 12px;
+        .app-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--vk-card);
+            min-height: 100vh;
+            border-left: 1px solid var(--vk-border);
+            border-right: 1px solid var(--vk-border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
 
-        .card {
-            background: var(--card-bg); border-radius: 10px; padding: 12px;
-            margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); width: 100%;
+        header {
+            background-color: var(--vk-header);
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
 
-        .profile-container { display: flex; gap: 12px; align-items: flex-start; }
-
-        .avatar {
-            width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
-            background: #3b6998; color: white; display: flex; align-items: center;
-            justify-content: center; font-size: 26px; font-weight: bold; flex-shrink: 0;
-        }
-
-        .online-dot {
-            width: 9px; height: 9px; background-color: #4CAF50; border-radius: 50%;
-            display: inline-block; margin-right: 4px; box-shadow: 0 0 4px #4CAF50;
-        }
-
-        /* --- ЗОЛОТА ТА СИНЯ ШКАЛА РЕЙТИНГУ VK --- */
-        .rating-container { margin: 8px 0; width: 100%; }
-        .rating-bar-bg { 
-            background: #d0d7de; height: 16px; border-radius: 3px; 
-            overflow: hidden; position: relative; border: 1px solid #b3beca;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .rating-bar-fill { 
-            background: linear-gradient(to bottom, #7ca1c9 0%, #45688e 100%); 
-            height: 100%; width: 0%; transition: width 0.5s ease;
-        }
-        .rating-bar-fill.gold { 
-            background: linear-gradient(to bottom, #ffe57f 0%, #ffb300 50%, #ff8f00 100%) !important; 
-            box-shadow: 0 0 10px rgba(255, 193, 7, 0.9);
-        }
-        .rating-text {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: bold; color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.9);
-        }
-
-        .friends-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; text-align: center; }
-        .friend-item { font-size: 10px; color: #3b6998; cursor: pointer; position: relative; }
-        .friend-avatar-wrapper { position: relative; width: 38px; height: 38px; margin: 0 auto 2px auto; }
-        .friend-avatar {
-            width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
-            background: #45688e; color: white; display: flex; align-items: center;
-            justify-content: center; font-weight: bold; font-size: 14px;
-        }
-        .friend-online-badge {
-            position: absolute; bottom: 0; right: 0; width: 10px; height: 10px;
-            background: #4CAF50; border: 2px solid var(--card-bg); border-radius: 50%;
-        }
-
-        .friends-list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
-        .gifts-container { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; padding-bottom: 4px; }
-        .gift-badge { background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px; padding: 4px 6px; font-size: 14px; text-align: center; min-width: 32px; display: flex; align-items: center; gap: 4px; }
-
-        .btn { background: var(--primary-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-sm { padding: 4px 8px; font-size: 12px; }
-
-        .nav-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; }
-        .tab-btn { flex: 1; padding: 8px 4px; text-align: center; white-space: nowrap; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-
-        textarea, select, input[type="text"] { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); margin-bottom: 8px; font-size: 13px; }
-        .post-actions { display: flex; gap: 12px; margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 6px; }
-        .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; font-size: 11px; }
-        .hidden { display: none !important; }
-
-        .chat-box { height: 250px; overflow-y: auto; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.01); }
-        .chat-msg { margin-bottom: 6px; font-size: 12px; }
-        .chat-msg.my { text-align: right; color: #2b587a; }
-        .chat-msg .author { font-weight: bold; }
-
-        .comments-box { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border-color); }
-        .comment-item { font-size: 11px; margin-bottom: 4px; background: rgba(0,0,0,0.02); padding: 4px 6px; border-radius: 4px; }
-
-        .vk-section-header { background: #dbe0ea; color: #36577c; font-weight: bold; padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
-        .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
-
-        /* СТИЛІ АУДІОПЛЕЄРА */
-        .vk-player {
-            background: #222;
-            color: #fff;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-        .player-controls {
+        header .logo {
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
-        .player-btn {
-            background: #4a76a8;
+
+        header .user-info {
+            font-size: 13px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f0f2f5;
+            border-bottom: 1px solid var(--vk-border);
+            position: sticky;
+            top: 41px;
+            z-index: 90;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 11px 5px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--vk-link);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: #e4e7eb;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: var(--vk-header);
+            font-weight: bold;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+            flex: 1;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ПРОФІЛЬ */
+        .profile-card {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            background: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .avatar-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid var(--vk-border);
+            background: #f5f5f5;
+        }
+
+        .rating-badge {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-details h2 {
+            font-size: 18px;
+            color: var(--vk-link);
+            margin-bottom: 4px;
+        }
+
+        .profile-status {
+            font-size: 12px;
+            color: var(--vk-subtext);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-info-row {
+            font-size: 13px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .profile-info-label {
+            color: var(--vk-subtext);
+        }
+
+        /* ПОДАРУНКИ */
+        .gifts-section {
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #ffffff;
+        }
+
+        .section-header {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--vk-link);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gifts-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .gift-item {
+            min-width: 70px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            padding: 6px;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .gift-item img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .gift-item p {
+            font-size: 10px;
+            color: var(--vk-subtext);
+            margin-top: 2px;
+        }
+
+        /* СТІНА ТА ПОСТИ */
+        .wall-create-post {
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            padding: 12px;
+            background: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .wall-input {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px;
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 8px;
+        }
+
+        .wall-input:focus {
+            border-color: var(--vk-btn);
+        }
+
+        .post-card {
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: #ffffff;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .post-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .post-author {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--vk-link);
+        }
+
+        .post-date {
+            font-size: 11px;
+            color: var(--vk-subtext);
+        }
+
+        .post-content {
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 8px;
+            font-size: 12px;
+            color: var(--vk-link);
+        }
+
+        .post-action-btn {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--vk-link);
+            font-size: 12px;
+        }
+
+        .post-action-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* КОМЕНТАРІ */
+        .comments-list {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+            background: #fafbfc;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .comment-item {
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: var(--vk-link);
+            margin-right: 4px;
+        }
+
+        .comment-input-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* ЧАТ */
+        .chat-box {
+            height: 380px;
+            overflow-y: auto;
+            border: 1px solid var(--vk-border);
+            padding: 12px;
+            background: #f9fbfd;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .msg {
+            max-width: 82%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            position: relative;
+            word-break: break-word;
+        }
+
+        .msg.my {
+            align-self: flex-end;
+            background: var(--vk-light-blue);
+            border: 1px solid #c4d7e6;
+        }
+
+        .msg.other {
+            align-self: flex-start;
+            background: #ffffff;
+            border: 1px solid var(--vk-border);
+        }
+
+        .msg-sender {
+            font-weight: bold;
+            font-size: 11px;
+            color: var(--vk-link);
+            margin-bottom: 3px;
+        }
+
+        .msg-time {
+            font-size: 9px;
+            color: var(--vk-subtext);
+            float: right;
+            margin-top: 4px;
+            margin-left: 8px;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 6px;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid var(--vk-border);
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* КНОПКИ ТА ІНПУТИ */
+        .btn-vk {
+            background: var(--vk-btn);
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 6px 10px;
+            padding: 7px 14px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
         }
-        .player-btn:hover { background: #3a6391; }
-        .player-info { flex-grow: 1; overflow: hidden; }
-        .player-title { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-        .progress-bar-container { width: 100%; height: 6px; background: #555; border-radius: 3px; cursor: pointer; position: relative; }
-        .progress-bar-fill { width: 0%; height: 100%; background: #4a76a8; border-radius: 3px; }
-        .player-time { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 3px; }
-        .track-item { padding: 6px 8px; border-bottom: 1px solid var(--border-color); font-size: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .track-item:hover { background: rgba(0,0,0,0.02); }
-        .active-track { background: #e8f0fe !important; font-weight: bold; }
 
-        /* ПК РЕЖИМ */
-        body.mode-pc { background-color: #ffffff !important; font-family: tahoma, arial, verdana, sans-serif !important; font-size: 11px !important; padding: 0 !important; }
-        body.mode-pc .mobile-header { display: none !important; }
-        body.mode-pc .desktop-header { display: flex !important; background: #45688e; height: 30px; color: white; align-items: center; justify-content: space-between; padding: 0 15px; font-size: 11px; }
-        body.mode-pc .desktop-header a, body.mode-pc .desktop-header button { color: #d2e2f2; text-decoration: none; margin-left: 10px; background: none; border: none; cursor: pointer; font-size: 11px; }
-        body.mode-pc .main-wrapper { display: flex; width: 790px; margin: 10px auto; gap: 15px; }
-        body.mode-pc .desktop-nav { display: block !important; width: 140px; flex-shrink: 0; }
-        body.mode-pc .desktop-nav ul { list-style: none; padding: 0; margin: 0; }
-        body.mode-pc .desktop-nav li a { display: block; padding: 2px 4px; color: #2b587a; text-decoration: none; }
-        body.mode-pc .card { border-radius: 0; border: none; box-shadow: none; padding: 0; background: transparent; }
-        body.mode-pc .avatar { border-radius: 0; width: 160px; height: 160px; border: 1px solid #ccc; }
-        body.mode-pc .nav-tabs { display: none !important; }
-        body.mode-pc .vk-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        body.mode-pc .vk-table td { padding: 2px 0; vertical-align: top; }
-        body.mode-pc .vk-table td.label { color: #666; width: 120px; }
+        .btn-vk:hover {
+            background: var(--vk-btn-hover);
+        }
+
+        .btn-vk-secondary {
+            background: #e5ebf1;
+            color: var(--vk-link);
+            border: none;
+            padding: 7px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .btn-vk-secondary:hover {
+            background: #dce4ec;
+        }
+
+        .input-vk {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1px solid var(--vk-border);
+            border-radius: 3px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .input-vk:focus {
+            border-color: var(--vk-btn);
+        }
+
+        .btn-voice {
+            background: #f0f2f5;
+            border: 1px solid var(--vk-border);
+            border-radius: 3px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-voice.recording {
+            background: #ff4d4d;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* МУЗИКА ТА ПЛЕЄР */
+        .music-search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            background: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .track-info {
+            flex: 1;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+
+        .track-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--vk-link);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-artist {
+            font-size: 11px;
+            color: var(--vk-subtext);
+        }
+
+        audio {
+            height: 30px;
+            max-width: 180px;
+        }
+
+        /* МОДАЛЬНІ ВІКНА */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-window {
+            background: #ffffff;
+            border-radius: 4px;
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--vk-link);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            color: var(--vk-subtext);
+        }
     </style>
 </head>
-<body class="mode-auto">
+<body><div class="app-container">
+    <!-- ВЕРХНЯ ШАПКА VK 2006 -->
+    <header>
+        <div class="logo">
+            <span>ВКонтакті</span>
+            <span style="font-size: 10px; opacity: 0.7; font-weight: normal;">(2006)</span>
+        </div>
+        <div class="user-info">
+            <span id="header-user-name">Завантаження...</span>
+        </div>
+    </header>
 
-    <!-- Прихований елемент HTML5 Audio -->
-    <audio id="global-audio-element"></audio>
+    <!-- НАВІГАЦІЙНІ ВКЛАДКИ -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="btn-tab-profile" onclick="switchTab('profile', event)">Моя Сторінка</button>
+        <button class="tab-btn" id="btn-tab-chat" onclick="switchTab('chat', event)">Чат</button>
+        <button class="tab-btn" id="btn-tab-music" onclick="switchTab('music', event)">Аудіозаписи</button>
+    </div>
 
-    <!-- ПК Шапка -->
-    <div class="desktop-header">
-        <div style="font-weight: bold;">На Зв'язку</div>
-        <div>
-            <a onclick="switchTab('feed')">моя сторінка</a>
-            <a onclick="switchTab('friends')">друзі</a>
-            <a onclick="switchTab('groups')">групи</a>
-            <a onclick="switchTab('audio')">музика</a>
-            <a onclick="switchTab('notifs')">сповіщення 🔔</a>
-            <a onclick="switchTab('settings')">налаштування</a>
-            <button onclick="changeViewMode('auto')" style="color:#ffd700; font-weight:bold;">📱 Мобільний вид</button>
+    <!-- ВКЛАДКА 1: ПРОФІЛЬ -->
+    <div id="tab-profile" class="tab-content active">
+        <!-- КАРТКА ПРОФІЛЮ -->
+        <div class="profile-card">
+            <div class="avatar-box">
+                <img id="user-avatar" class="avatar" src="https://via.placeholder.com/100" alt="Аватар">
+                <div class="rating-badge" id="vk-rating">Рейтинг: 100%</div>
+                <button class="btn-vk-secondary" style="width: 100%; font-size: 10px; padding: 4px; margin-top: 4px;" onclick="openRatingModal()">+ Підвищити</button>
+            </div>
+            <div class="profile-details">
+                <h2 id="profile-name">Завантаження...</h2>
+                <div class="profile-status" id="profile-status">online</div>
+
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Місто:</span>
+                    <span id="profile-city">Київ</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Сімейний стан:</span>
+                    <span id="profile-relationship">все складно</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">Голоси / Монети:</span>
+                    <span style="font-weight: bold; color: #d97706;"><span id="user-coins">0</span> 🪙</span>
+                </div>
+                <div class="profile-info-row">
+                    <span class="profile-info-label">ID користувача:</span>
+                    <span id="profile-id" style="font-family: monospace; font-size: 11px;">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕКЦІЯ ПОДАРУНКІВ -->
+        <div class="gifts-section">
+            <div class="section-header">
+                <span>Подарунки (<span id="gifts-count">0</span>)</span>
+                <button class="btn-vk-secondary" style="font-size: 11px; padding: 3px 8px;" onclick="openSendGiftModal()">Подарувати</button>
+            </div>
+            <div class="gifts-grid" id="gifts-container">
+                <div class="gift-item">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3209/3209995.png" alt="Подарунок">
+                    <p>Від Адміна</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- СТІНА ТА СТВОРЕННЯ ПОСТУ -->
+        <div class="wall-create-post">
+            <div style="font-weight: bold; font-size: 13px; color: var(--vk-link); margin-bottom: 8px;">Написати на стіні</div>
+            <textarea id="post-input" class="wall-input" placeholder="Що у Вас нового?"></textarea>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="btn-vk" onclick="addPost()">Опублікувати</button>
+            </div>
+        </div>
+
+        <!-- СТІНА З ПОСТАМИ -->
+        <div class="section-header" style="padding: 0 4px; margin-bottom: 10px;">
+            <span>Записи на стіні</span>
+            <span id="wall-posts-count" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
+        </div>
+        <div id="posts-container">
+            <!-- Пости завантажуються тут динамічно -->
         </div>
     </div>
 
-    <!-- Мобільна Шапка -->
-    <div class="header mobile-header">
-        <h3 style="margin:0;">На Зв'язку 🇺🇦</h3>
-        <div style="display:flex; gap:6px; align-items:center;">
-            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 6px; border-radius:12px;">🪙 <b id="user-coins-count">100</b></span>
-            <button class="btn btn-sm" onclick="switchTab('notifs')">🔔</button>
-            <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
-            <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
+    <!-- ВКЛАДКА 2: ЧАТ -->
+    <div id="tab-chat" class="tab-content">
+        <div class="section-header" style="margin-bottom: 8px;">
+            <span>Загальний чат спільноти</span>
+            <span style="font-size: 11px; color: var(--vk-subtext); font-weight: normal;">online</span>
+        </div>
+        
+        <!-- БОКС ПОВІДОМЛЕНЬ -->
+        <div class="chat-box" id="chat-messages">
+            <!-- Повідомлення чату будуть тут -->
+        </div>
+
+        <!-- ПАНЕЛЬ ВВОДУ ПОВІДОМЛЕННЯ -->
+        <div class="chat-controls">
+            <button id="voice-rec-btn" class="btn-voice" onclick="toggleVoiceRecording()" title="Утримуйте або натисніть для запису голосового">🎤</button>
+            <input type="text" id="chat-input" class="input-vk" placeholder="Напишіть повідомлення..." onkeypress="handleChatKeyPress(event)">
+            <button class="btn-vk" onclick="sendTextMessage()">Надіслати</button>
         </div>
     </div>
 
-    <div class="main-wrapper">
-        <!-- Ліве меню ПК -->
-        <div class="desktop-nav">
-            <input type="text" placeholder="🔍 Пошук" style="width:100%; margin-bottom: 5px; font-size:11px;">
-            <ul>
-                <li><a onclick="switchTab('feed')">Моя сторінка</a></li>
-                <li><a onclick="switchTab('friends')">Мої друзі</a></li>
-                <li><a onclick="switchTab('groups')">Спільноти</a></li>
-                <li><a onclick="switchTab('audio')">Моя музика</a></li>
-                <li><a onclick="switchTab('guests')">Мої гості</a></li>
-                <li><a onclick="switchTab('notifs')">Сповіщення 🔔</a></li>
-                <li><a onclick="switchTab('settings')">Налаштування</a></li>
-            </ul>
+    <!-- ВКЛАДКА 3: МУЗИКА -->
+    <div id="tab-music" class="tab-content">
+        <div class="section-header" style="margin-bottom: 12px;">
+            <span>Пошук аудіозаписів (Jamendo Free API)</span>
         </div>
-
-        <div class="content-area" style="width: 100%;">
-            <!-- Вкладки для мобільних -->
-            <div class="nav-tabs">
-                <div class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed')">📰 Стіна</div>
-                <div class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends')">👥 Друзі</div>
-                <div class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups')">👨‍👩‍👦 Групи</div>
-                <div class="tab-btn" id="tab-btn-audio" onclick="switchTab('audio')">🎵 Музика</div>
-                <div class="tab-btn" id="tab-btn-guests" onclick="switchTab('guests')">👁️ Гості</div>
-                <div class="tab-btn" id="tab-btn-shop" onclick="switchTab('shop')">🎁 Лавка</div>
-                <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Налаштування</div>
-            </div>
-
-            <!-- ВКЛАДКА ПРОФІЛЬ ТА СТІНА -->
-            <div id="tab-feed">
-                <div class="card">
-                    <div class="profile-container">
-                        <div>
-                            <div class="avatar-container">
-                                <img id="user-avatar-img" class="avatar hidden" src="" alt="Avatar">
-                                <div id="user-avatar-placeholder" class="avatar">V</div>
-                            </div>
-                            
-                            <!-- Шкала рейтингу -->
-                            <div class="rating-container">
-                                <div class="rating-bar-bg">
-                                    <div id="rating-bar-fill" class="rating-bar-fill"></div>
-                                    <div id="rating-text" class="rating-text">+0%</div>
-                                </div>
-                            </div>
-
-                            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
-                            <a style="font-size:11px; color:#3b6998; cursor:pointer; display:block; margin-bottom: 8px;" onclick="document.getElementById('avatar-input').click()">Змінити фото</a>
-
-                            <div class="vk-section-header" style="font-size: 10px;">
-                                Подарунки <a class="vk-link" onclick="switchTab('shop')" style="font-size: 9px;">[+ Магазин]</a>
-                            </div>
-                            <div id="gifts-list" class="gifts-container">
-                                <div class="gift-badge">🎁</div>
-                            </div>
-
-                            <div class="vk-section-header" style="font-size: 10px; margin-top: 10px;">
-                                Друзі (<span id="profile-friends-count">0</span>)
-                            </div>
-                            <div id="profile-friends-grid" class="friends-grid">
-                                <p style="font-size: 10px; color: gray; grid-column: span 3;">Завантаження...</p>
-                            </div>
-                        </div>
-
-                        <div style="flex-grow: 1; min-width: 0;">
-                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                                <h3 id="user-name" style="margin:0; font-size: 15px; color: #3b6998; word-break: break-word;">Користувач</h3>
-                                <span id="director-badge" class="hidden" style="background: #ffd700; color: #000; font-size: 9px; font-weight: bold; padding: 2px 4px; border-radius: 3px; border: 1px solid #b38f00;">👑 ДИРЕКТОР</span>
-                            </div>
-                            
-                            <div style="font-size: 11px; margin: 4px 0;">
-                                <span id="user-status" style="font-style: italic; color: #444;">[встановити статус]</span>
-                                <a class="vk-link" style="font-size: 10px; margin-left: 4px;" onclick="toggleStatusInput()">[зм.]</a>
-                                <div id="status-input-box" class="hidden" style="margin-top: 4px;">
-                                    <input type="text" id="status-text-input" placeholder="Ваш статус..." style="font-size: 11px; padding: 2px; margin-bottom: 2px;">
-                                    <button class="btn btn-sm" onclick="saveStatusText()">Зберегти</button>
-                                </div>
-                            </div>
-
-                            <p style="margin:0 0 8px 0; font-size: 11px;">
-                                <span class="online-dot"></span><b style="color: #4CAF50;">Online</b>
-                            </p>
-
-                            <table class="vk-table" style="font-size: 11px; width: 100%;">
-                                <tr>
-                                    <td class="label">Посада:</td>
-                                    <td><b id="user-role-text">Учасник</b></td>
-                                </tr>
-                                <tr>
-                                    <td class="label">Баланс:</td>
-                                    <td><b id="profile-coins-text">100 балів</b> <a class="vk-link" onclick="claimDailyBonus()" style="font-size:9px;">[+50 Бонус]</a></td>
-                                </tr>
-                                <tr>
-                                    <td class="label">Місто:</td>
-                                    <td><span id="city-val">Україна</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="label">Сімейний стан:</td>
-                                    <td>
-                                        <span id="status-val">Одружений</span> 
-                                        <a class="vk-link" style="font-size: 10px; margin-left: 5px;" onclick="toggleStatusEdit()">[ред.]</a>
-                                        <div id="status-edit-box" class="hidden" style="margin-top: 4px;">
-                                            <select id="status-select" onchange="saveRelationshipStatus(this.value)" style="font-size: 11px; padding: 2px;">
-                                                <option value="Не вказано">Не вказано</option>
-                                                <option value="Неодружений / Незаміжня">Неодружений / Незаміжня</option>
-                                                <option value="Закоханий / Закохана">Закоханий / Закохана</option>
-                                                <option value="Одружений / Заміжня">Одружений / Заміжня</option>
-                                                <option value="У активному пошуку">У активному пошуку</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div class="vk-section-header" style="cursor: pointer;" onclick="toggleMoreInfo()">
-                                <span>Особиста інформація</span>
-                                <span id="more-info-toggle-btn" class="vk-link">[показати]</span>
-                            </div>
-                            
-                            <div id="more-info-box" class="hidden">
-                                <table class="vk-table" style="font-size: 11px; width: 100%;">
-                                    <tr>
-                                        <td class="label">Інтереси:</td>
-                                        <td><span id="interests-val">Музика, Технології</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="label">Про себе:</td>
-                                        <td><span id="about-val">Розробник «На Зв'язку» 🚀</span></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Блок створення допису -->
-                <div class="card">
-                    <div class="vk-section-header">Стіна</div>
-                    <textarea id="post-input" rows="2" placeholder="Що у вас нового?"></textarea>
-                    <input type="text" id="post-image-input" placeholder="Посилання на картинку (URL)..." style="font-size:11px;">
-                    <button class="btn" style="width: 100%;" onclick="createPost()">Опублікувати</button>
-                </div>
-
-                <div id="posts-container">
-                    <p style="text-align: center; color: gray; font-size: 12px;">Завантаження дописів...</p>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА ДРУЗІ -->
-            <div id="tab-friends" class="card hidden">
-                <div class="vk-section-header">Усі Користувачі та Друзі</div>
-                <div id="full-friends-list">
-                    <p style="font-size:12px; color:gray;">Завантаження списку...</p>
-                </div>
-                <br>
-                <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити друзів у Telegram</button>
-            </div>
-
-            <!-- ВКЛАДКА ГРУПИ / СПІЛЬНОТИ -->
-            <div id="tab-groups" class="card hidden">
-                <div class="vk-section-header">Спільноти та Групи</div>
-                <div style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
-                    <b style="font-size:12px;">Створити нову спільноту:</b>
-                    <input type="text" id="group-name-input" placeholder="Назва спільноти..." style="margin-top:4px;">
-                    <textarea id="group-desc-input" rows="2" placeholder="Опис спільноти..."></textarea>
-                    <button class="btn btn-sm" style="width:100%;" onclick="createGroup()">➕ Створити Групу</button>
-                </div>
-                <div id="groups-list-container">
-                    <p style="font-size:12px; color:gray;">Завантаження списку груп...</p>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА МАГАЗИН ПОДАРУНКІВ -->
-            <div id="tab-shop" class="card hidden">
-                <div class="vk-section-header">Крамниця Подарунків 🎁</div>
-                <p style="font-size:11px; color:gray;">Обирайте подарунок та надісилайте його друзям за бали!</p>
-                
-                <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;" id="shop-items-grid">
-                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
-                        <span style="font-size:30px;">⭐</span>
-                        <div style="font-size:12px; font-weight:bold;">Зірочка</div>
-                        <div style="font-size:11px; color:orange;">20 балів</div>
-                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('⭐', 20)">Надіслати</button>
-                    </div>
-                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
-                        <span style="font-size:30px;">🏆</span>
-                        <div style="font-size:12px; font-weight:bold;">Кубок</div>
-                        <div style="font-size:11px; color:orange;">50 балів</div>
-                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('🏆', 50)">Надіслати</button>
-                    </div>
-                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
-                        <span style="font-size:30px;">👑</span>
-                        <div style="font-size:12px; font-weight:bold;">Корона</div>
-                        <div style="font-size:11px; color:orange;">100 балів</div>
-                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('👑', 100)">Надіслати</button>
-                    </div>
-                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
-                        <span style="font-size:30px;">🚀</span>
-                        <div style="font-size:12px; font-weight:bold;">Ракета</div>
-                        <div style="font-size:11px; color:orange;">150 балів</div>
-                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('🚀', 150)">Надіслати</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА ОСОБИСТИЙ ЧАТ -->
-            <div id="tab-chat" class="card hidden">
-                <div class="vk-section-header" style="display:flex; justify-content:space-between;">
-                    <span>Чат з <b id="chat-partner-name">Другом</b></span>
-                    <a class="vk-link" onclick="switchTab('friends')">[Назад]</a>
-                </div>
-                <div id="chat-messages-box" class="chat-box"></div>
-                <div style="display:flex; gap:6px;">
-                    <input type="text" id="chat-input" placeholder="Напишіть повідомлення..." style="margin:0;">
-                    <button class="btn btn-sm" id="voice-rec-btn" onclick="toggleVoiceRecording()">🎤</button>
-                    <button class="btn btn-sm" onclick="sendChatMessage()">Надіслати</button>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА СПОВІЩЕННЯ -->
-            <div id="tab-notifs" class="card hidden">
-                <div class="vk-section-header">Центр Сповіщень 🔔</div>
-                <div id="notifs-list">
-                    <p style="font-size:12px; color:gray;">Немає нових сповіщень.</p>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА МУЗИКА З ПЛЕЄРОМ ТА БІБЛІОТЕКОЮ FIREBASE -->
-            <div id="tab-audio" class="card hidden">
-                <div class="vk-section-header">🎵 Моя Музика та Плеєр</div>
-
-                <!-- ВЛАСНИЙ ПЛЕЄР -->
-                <div class="vk-player">
-                    <div class="player-controls">
-                        <button class="player-btn" id="audio-prev-btn" onclick="prevTrack()">⏮</button>
-                        <button class="player-btn" id="audio-play-btn" onclick="togglePlayPause()">▶</button>
-                        <button class="player-btn" id="audio-next-btn" onclick="nextTrack()">⏭</button>
-                        <div class="player-info">
-                            <div class="player-title" id="player-title-text">Оберіть трек...</div>
-                            <div class="progress-bar-container" id="progress-bar-bg" onclick="seekAudio(event)">
-                                <div class="progress-bar-fill" id="progress-bar-fill"></div>
-                            </div>
-                            <div class="player-time">
-                                <span id="time-current">0:00</span>
-                                <span id="time-duration">0:00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ПЕРЕМИКАННЯ ВКАДОК МУЗИКИ -->
-                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                    <button class="btn btn-sm" id="btn-tab-library" style="flex: 1;" onclick="switchAudioSubTab('my-library')">📂 Моя Бібліотека</button>
-                    <button class="btn btn-sm" id="btn-tab-search" style="flex: 1; background: #6c757d;" onclick="switchAudioSubTab('search')">🔍 Пошук у каталозі</button>
-                </div>
-
-                <!-- РОЗДІЛ 1: МОЯ БІБЛІОТЕКА -->
-                <div id="subtab-my-library">
-                    <div style="margin-bottom: 10px; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 6px;">
-                        <b style="font-size: 11px;">➕ Додати MP3 за посиланням:</b>
-                        <input type="text" id="custom-track-title" placeholder="Виконавець - Назва" style="font-size: 11px; margin-top: 4px;">
-                        <input type="text" id="custom-track-url" placeholder="https://domain.com/song.mp3" style="font-size: 11px;">
-                        <button class="btn btn-sm" style="width: 100%;" onclick="addCustomAudio()">Зберегти в бібліотеку</button>
-                    </div>
-
-                    <div id="my-playlist-container">
-                        <p style="font-size: 12px; color: gray;">Завантаження бібліотеки...</p>
-                    </div>
-                </div>
-
-                <!-- РОЗДІЛ 2: ПОШУК (Jamendo API) -->
-                <div id="subtab-search" class="hidden">
-                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
-                        <input type="text" id="music-search-input" placeholder="Назва пісні або жанр (rock, pop, jazz)..." style="font-size: 11px; margin: 0;">
-                        <button class="btn btn-sm" onclick="searchJamendoTracks()">Пошук</button>
-                    </div>
-
-                    <div id="search-results-container">
-                        <p style="font-size: 11px; color: gray;">Введіть запит для пошуку безкоштовної музики...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА ГОСТІ -->
-            <div id="tab-guests" class="card hidden">
-                <div class="vk-section-header">Гості Моєї Сторінки</div>
-                <div id="guests-list">
-                    <p style="font-size:12px; color:gray;">Тут відображаються ті, хто відкривав вашу сторінку.</p>
-                </div>
-            </div>
-
-            <!-- ВКЛАДКА НАЛАШТУВАННЯ -->
-            <div id="tab-settings" class="card hidden">
-                <div class="vk-section-header">Мої Налаштування</div>
-                <label style="font-weight: bold; display: block; margin: 10px 0 5px 0; font-size: 12px;">Версія дизайну:</label>
-                <select id="view-mode-select" onchange="changeViewMode(this.value)">
-                    <option value="auto">📱 Мобільна версія</option>
-                    <option value="pc">💻 ПК версія (ВКонтакті 2006)</option>
-                </select>
-            </div>
+        <div class="music-search-box">
+            <input type="text" id="music-search" class="input-vk" placeholder="Введіть назву треку або виконавця..." onkeypress="handleMusicKeyPress(event)">
+            <button class="btn-vk" onclick="searchMusic()">Шукати</button>
+        </div>
+        <div id="music-list">
+            <!-- Результати пошуку музики -->
         </div>
     </div>
+</div>
 
-    <script>
-        // Конфігурація Firebase
+<!-- МОДАЛЬНЕ ВІКНО: ПОДАРУВАТИ ПОДАРУНОК -->
+<div class="modal-overlay" id="modal-gift">
+    <div class="modal-window">
+        <div class="modal-header">
+            <span>Відправити подарунок</span>
+            <span class="modal-close" onclick="closeModal('modal-gift')">✕</span>
+        </div>
+        <div style="font-size: 12px; margin-bottom: 10px; color: var(--vk-subtext);">Оберіть подарунок для користувача:</div>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+            <div style="text-align: center; border: 1px solid var(--vk-border); padding: 8px; border-radius: 4px; cursor: pointer;" onclick="selectGift('🌹', 'Троянда')">
+                <div style="font-size: 28px;">🌹</div>
+                <div style="font-size: 10px; margin-top: 4px;">Троянда</div>
+            </div>
+            <div style="text-align: center; border: 1px solid var(--vk-border); padding: 8px; border-radius: 4px; cursor: pointer;" onclick="selectGift('🎁', 'Подарунок')">
+                <div style="font-size: 28px;">🎁</div>
+                <div style="font-size: 10px; margin-top: 4px;">Коробка</div>
+            </div>
+            <div style="text-align: center; border: 1px solid var(--vk-border); padding: 8px; border-radius: 4px; cursor: pointer;" onclick="selectGift('👑', 'Корона')">
+                <div style="font-size: 28px;">👑</div>
+                <div style="font-size: 10px; margin-top: 4px;">Корона</div>
+            </div>
+        </div>
+        <input type="text" id="gift-comment-input" class="input-vk" placeholder="Ваше повідомлення..." style="width: 100%; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="btn-vk-secondary" onclick="closeModal('modal-gift')">Скасувати</button>
+            <button class="btn-vk" onclick="sendGift()">Надіслати</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО: ПІДВИЩЕННЯ РЕЙТИНГУ -->
+<div class="modal-overlay" id="modal-rating">
+    <div class="modal-window">
+        <div class="modal-header">
+            <span>Підвищити рейтинг</span>
+            <span class="modal-close" onclick="closeModal('modal-rating')">✕</span>
+        </div>
+        <p style="font-size: 12px; margin-bottom: 12px; line-height: 1.4;">
+            Підвищення рейтингу робить вашу сторінку більш помітною в пошуку спільноти.
+        </p>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+            <span style="font-size: 13px;">Додати:</span>
+            <input type="number" id="rating-add-input" class="input-vk" value="10" min="1" style="max-width: 80px;">
+            <span style="font-size: 13px;">%</span>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="btn-vk-secondary" onclick="closeModal('modal-rating')">Скасувати</button>
+            <button class="btn-vk" onclick="increaseRating()">Підтвердити</button>
+        </div>
+    </div>
+</div>    <script>
+        // ==========================================
+        // 1. КОНФІГУРАЦІЯ FIREBASE
+        // ==========================================
+        // Замініть ці дані на конфігурацію вашого Firebase-проєкту
         const firebaseConfig = {
-            apiKey: "AIzaSyCVvoI9NW-BSXVbjiTyGeKutAqJjaarsr0",
-            authDomain: "nazviazku-38b50.firebaseapp.com",
-            projectId: "nazviazku-38b50",
-            storageBucket: "nazviazku-38b50.firebasestorage.app",
-            messagingSenderId: "1027185291009",
-            appId: "1:1027185291009:web:db922f3d5a7325588c7500"
+            apiKey: "AIzaSyYOUR_API_KEY_HERE",
+            authDomain: "your-app.firebaseapp.com",
+            projectId: "your-app-id",
+            storageBucket: "your-app-id.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
         };
 
+        // Ініціалізація Firebase (з перевіркою повторного виклику)
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        const storage = firebase.storage();
 
-        const ADMIN_TELEGRAM_ID = "325300795"; 
+        // ==========================================
+        // 2. ІНІЦІАЛІЗАЦІЯ TELEGRAM WEBAPP ТА ЮЗЕРА
+        // ==========================================
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
 
-        let currentUserId = "guest_" + Math.random().toString(36).substr(2, 9);
-        let currentUserName = "Vladyslav Svershok";
-        let currentUserAvatar = "";
-        let activeChatUserId = null;
-        let chatUnsubscribe = null;
-        let isDirector = false;
-        let userCoins = 100;
+        // Дані поточного користувача
+        let currentUser = {
+            id: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "guest_" + Math.floor(Math.random() * 100000),
+            first_name: tg?.initDataUnsafe?.user?.first_name || "Гість",
+            last_name: tg?.initDataUnsafe?.user?.last_name || "",
+            photo_url: tg?.initDataUnsafe?.user?.photo_url || "https://vk.com/images/camera_200.png",
+            coins: 100,
+            rating: 100
+        };
 
-        // Голосові записи
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
+        const fullName = `${currentUser.first_name} ${currentUser.last_name}`.trim();
 
-        // Змінні плеєра
-        let myLibrary = [];
-        let currentPlaylist = [];
-        let currentTrackIndex = -1;
-        const audioElement = document.getElementById('global-audio-element');
+        // Оновлення UI профілю
+        document.getElementById('header-user-name').innerText = fullName;
+        document.getElementById('profile-name').innerText = fullName;
+        document.getElementById('profile-id').innerText = currentUser.id;
+        document.getElementById('user-avatar').src = currentUser.photo_url;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-                currentUserId = user.id.toString();
-                currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
-                currentUserAvatar = user.photo_url || "";
-            }
+        // Завантаження / Створення даних користувача у Firestore
+        async function initUserProfile() {
+            const userRef = db.collection('users').doc(currentUser.id);
+            const doc = await userRef.get();
 
-            document.getElementById('user-name').innerText = currentUserName;
-            document.getElementById('user-avatar-placeholder').innerText = currentUserName[0] || 'V';
-            if (currentUserAvatar) setAvatar(currentUserAvatar);
-
-            if (currentUserId === ADMIN_TELEGRAM_ID) {
-                isDirector = true;
-            }
-
-            try {
-                const userRef = db.collection("users").doc(currentUserId);
-                const doc = await userRef.get();
-
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (data.isDirector === true) isDirector = true;
-                    if (data.coins !== undefined) userCoins = data.coins;
-                } else if (isDirector) {
-                    await userRef.set({ isDirector: true, coins: 5000 }, { merge: true });
-                    userCoins = 5000;
-                }
-
+            if (!doc.exists) {
                 await userRef.set({
-                    name: currentUserName,
-                    avatarUrl: currentUserAvatar,
-                    coins: userCoins,
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-
-            } catch (e) { console.error("Помилка БД:", e); }
-
-            updateCoinsDisplay();
-            calculateVkRating();
-            listenToRealFriends();
-            listenToGuests();
-            listenToGifts();
-            listenToNotifications();
-            listenToGroups();
-            loadUserLibrary();
-        });
-
-        // ----------------- ПЛЕЄР ТА МУЗИКА -----------------
-        audioElement.addEventListener('timeupdate', () => {
-            if (audioElement.duration) {
-                const progressPercent = (audioElement.currentTime / audioElement.duration) * 100;
-                document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
-                document.getElementById('time-current').innerText = formatTime(audioElement.currentTime);
-                document.getElementById('time-duration').innerText = formatTime(audioElement.duration);
-            }
-        });
-
-        audioElement.addEventListener('ended', () => { nextTrack(); });
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        function togglePlayPause() {
-            if (currentTrackIndex === -1 && currentPlaylist.length > 0) {
-                playFromPlaylist('myLibrary', 0);
-                return;
-            }
-            if (audioElement.paused) {
-                audioElement.play();
-                document.getElementById('audio-play-btn').innerText = '⏸';
-            } else {
-                audioElement.pause();
-                document.getElementById('audio-play-btn').innerText = '▶';
-            }
-            renderMyLibrary();
-        }
-
-        function prevTrack() {
-            if (currentTrackIndex > 0) {
-                playFromPlaylist('current', currentTrackIndex - 1);
-            }
-        }
-
-        function nextTrack() {
-            if (currentTrackIndex < currentPlaylist.length - 1) {
-                playFromPlaylist('current', currentTrackIndex + 1);
-            }
-        }
-
-        function seekAudio(event) {
-            const container = document.getElementById('progress-bar-bg');
-            const rect = container.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const width = rect.width;
-            if (audioElement.duration) {
-                audioElement.currentTime = (clickX / width) * audioElement.duration;
-            }
-        }
-
-        async function loadUserLibrary() {
-            try {
-                const snapshot = await db.collection("users").doc(currentUserId).collection("library").get();
-                myLibrary = [];
-                snapshot.forEach(doc => {
-                    myLibrary.push({ id: doc.id, ...doc.data() });
+                    name: fullName,
+                    avatar: currentUser.photo_url,
+                    coins: currentUser.coins,
+                    rating: currentUser.rating,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
-                if (myLibrary.length === 0) {
-                    myLibrary = [
-                        { id: 'demo1', title: "SoundHelix Song 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-                        { id: 'demo2', title: "SoundHelix Song 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
-                    ];
-                }
-                currentPlaylist = myLibrary;
-                renderMyLibrary();
-            } catch (e) {
-                console.error("Помилка Firestore:", e);
-                myLibrary = [
-                    { id: 'demo1', title: "SoundHelix Song 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
-                ];
-                currentPlaylist = myLibrary;
-                renderMyLibrary();
+            } else {
+                const data = doc.data();
+                currentUser.coins = data.coins || 0;
+                currentUser.rating = data.rating || 100;
+            }
+
+            document.getElementById('user-coins').innerText = currentUser.coins;
+            document.getElementById('vk-rating').innerText = `Рейтинг: ${currentUser.rating}%`;
+        }
+
+        initUserProfile();
+
+        // ==========================================
+        // 3. НАВІГАЦІЯ ТА ВКЛАДКИ
+        // ==========================================
+        function switchTab(tabName, event) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
             }
         }
 
-        function renderMyLibrary() {
-            const container = document.getElementById('my-playlist-container');
-            container.innerHTML = '';
+        // ==========================================
+        // 4. СТІНА ТА ПОСТИ (FIRESTORE)
+        // ==========================================
+        async function addPost() {
+            const textInput = document.getElementById('post-input');
+            const text = textInput.value.trim();
 
-            if (myLibrary.length === 0) {
-                container.innerHTML = '<p style="font-size:12px; color:gray;">Ваша бібліотека порожня.</p>';
+            if (!text) {
+                alert('Введіть текст повідомлення!');
                 return;
             }
 
-            myLibrary.forEach((track, index) => {
-                const isActive = (currentPlaylist === myLibrary && index === currentTrackIndex);
-                const isPlaying = isActive && !audioElement.paused;
-                
-                container.innerHTML += `
-                    <div class="track-item ${isActive ? 'active-track' : ''}">
-                        <span onclick="playFromPlaylist('myLibrary', ${index})" style="flex-grow:1; cursor:pointer;">
-                            🎵 ${track.title}
-                        </span>
-                        <div>
-                            <button class="btn btn-sm" onclick="playFromPlaylist('myLibrary', ${index})">${isPlaying ? '⏸' : '▶'}</button>
-                            <button class="btn btn-sm" style="background:#dc3545;" onclick="removeTrackFromLibrary('${track.id}', ${index})">🗑</button>
+            try {
+                await db.collection('posts').add({
+                    authorId: currentUser.id,
+                    authorName: fullName,
+                    authorAvatar: currentUser.photo_url,
+                    content: text,
+                    likes: [],
+                    commentsCount: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                textInput.value = '';
+            } catch (err) {
+                console.error("Помилка додавання посту:", err);
+                alert("Не вдалося опублікувати пост.");
+            }
+        }
+
+        // Підписка на оновлення стіни в реальному часі
+        db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+            document.getElementById('wall-posts-count').innerText = `${snapshot.size} записів`;
+
+            snapshot.forEach(doc => {
+                const post = doc.data();
+                const postId = doc.id;
+                const isLiked = post.likes && post.likes.includes(currentUser.id);
+                const likesCount = post.likes ? post.likes.length : 0;
+
+                const dateStr = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleString('uk-UA') : 'щойно';
+
+                const postHtml = `
+                    <div class="post-card" id="post-${postId}">
+                        <div class="post-header">
+                            <img class="post-avatar" src="${post.authorAvatar}" alt="Аватар">
+                            <div>
+                                <div class="post-author">${post.authorName}</div>
+                                <div class="post-date">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">${escapeHtml(post.content)}</div>
+                        <div class="post-actions">
+                            <button class="post-action-btn" onclick="toggleLike('${postId}')">
+                                ${isLiked ? '❤️ Сподобалося' : '🤍 Подобається'} (${likesCount})
+                            </button>
+                            <button class="post-action-btn" onclick="toggleComments('${postId}')">
+                                💬 Коментарі
+                            </button>
+                        </div>
+                        <div id="comments-sec-${postId}" class="comments-list" style="display: none;">
+                            <div id="comments-list-${postId}">Завантаження...</div>
+                            <div class="comment-input-row">
+                                <input type="text" id="comment-input-${postId}" class="input-vk" placeholder="Ваш коментар...">
+                                <button class="btn-vk" onclick="addComment('${postId}')">ОК</button>
+                            </div>
                         </div>
                     </div>
                 `;
+                container.insertAdjacentHTML('beforeend', postHtml);
             });
-        }
+        });
 
-        function playFromPlaylist(type, index) {
-            if (type === 'myLibrary') {
-                currentPlaylist = myLibrary;
-            }
-            if (index < 0 || index >= currentPlaylist.length) return;
+        async function toggleLike(postId) {
+            const postRef = db.collection('posts').doc(postId);
+            const doc = await postRef.get();
+            if (!doc.exists) return;
 
-            if (currentTrackIndex === index && currentPlaylist === (type === 'myLibrary' ? myLibrary : currentPlaylist)) {
-                togglePlayPause();
-                return;
-            }
+            const post = doc.data();
+            let likes = post.likes || [];
 
-            currentTrackIndex = index;
-            const track = currentPlaylist[currentTrackIndex];
-            audioElement.src = track.url;
-            document.getElementById('player-title-text').innerText = track.title;
-            
-            audioElement.play();
-            document.getElementById('audio-play-btn').innerText = '⏸';
-            renderMyLibrary();
-        }
-
-        async function addCustomAudio() {
-            const title = document.getElementById('custom-track-title').value.trim();
-            const url = document.getElementById('custom-track-url').value.trim();
-            if (!title || !url) return alert("Заповніть назву та посилання!");
-
-            const newTrack = { title: title, url: url };
-            try {
-                const docRef = await db.collection("users").doc(currentUserId).collection("library").add(newTrack);
-                newTrack.id = docRef.id;
-            } catch (e) {
-                newTrack.id = 'temp_' + Date.now();
+            if (likes.includes(currentUser.id)) {
+                likes = likes.filter(id => id !== currentUser.id);
+            } else {
+                likes.push(currentUser.id);
             }
 
-            myLibrary.push(newTrack);
-            document.getElementById('custom-track-title').value = '';
-            document.getElementById('custom-track-url').value = '';
-            renderMyLibrary();
+            await postRef.update({ likes: likes });
         }
 
-        async function removeTrackFromLibrary(docId, index) {
-            try {
-                if (docId && !docId.startsWith('demo') && !docId.startsWith('temp')) {
-                    await db.collection("users").doc(currentUserId).collection("library").doc(docId).delete();
-                }
-            } catch (e) { console.error("Помилка видалення:", e); }
-
-            myLibrary.splice(index, 1);
-            if (currentTrackIndex === index) {
-                audioElement.pause();
-                currentTrackIndex = -1;
-                document.getElementById('player-title-text').innerText = 'Оберіть трек...';
-                document.getElementById('audio-play-btn').innerText = '▶';
+        function toggleComments(postId) {
+            const sec = document.getElementById(`comments-sec-${postId}`);
+            if (sec.style.display === 'none') {
+                sec.style.display = 'block';
+                loadComments(postId);
+            } else {
+                sec.style.display = 'none';
             }
-            renderMyLibrary();
         }
 
-        async function searchJamendoTracks() {
-            const query = document.getElementById('music-search-input').value.trim();
-            const container = document.getElementById('search-results-container');
-            if (!query) return alert("Введіть пошуковий запит!");
+        function loadComments(postId) {
+            db.collection('posts').doc(postId).collection('comments').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
+                const list = document.getElementById(`comments-list-${postId}`);
+                if (!list) return;
+                list.innerHTML = '';
 
-            container.innerHTML = '<p style="font-size:11px; color:gray;">Шукаємо треки...</p>';
-
-            try {
-                const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56b41244&format=json&limit=10&search=${encodeURIComponent(query)}`);
-                const data = await response.json();
-
-                if (!data.results || data.results.length === 0) {
-                    container.innerHTML = '<p style="font-size:11px; color:gray;">Нічого не знайдено.</p>';
+                if (snapshot.empty) {
+                    list.innerHTML = '<div style="color: var(--vk-subtext); font-size: 11px;">Коментарів поки немає.</div>';
                     return;
                 }
 
-                container.innerHTML = '';
-                data.results.forEach(track => {
-                    const title = `${track.artist_name} - ${track.name}`;
-                    const url = track.audio;
-                    
-                    const div = document.createElement('div');
-                    div.className = 'track-item';
-                    div.innerHTML = `
-                        <span style="font-size:11px; flex-grow:1;">🎧 <b>${track.artist_name}</b> - ${track.name}</span>
-                        <button class="btn btn-sm">➕ У бібліотеку</button>
-                    `;
-                    div.querySelector('button').onclick = () => saveToLibrary(title, url);
-                    container.appendChild(div);
-                });
-            } catch (e) {
-                container.innerHTML = '<p style="font-size:11px; color:red;">Помилка завантаження каталогу.</p>';
-            }
-        }
-
-        async function saveToLibrary(title, url) {
-            const newTrack = { title: title, url: url };
-            try {
-                const docRef = await db.collection("users").doc(currentUserId).collection("library").add(newTrack);
-                newTrack.id = docRef.id;
-            } catch (e) {
-                newTrack.id = 'temp_' + Date.now();
-            }
-            myLibrary.push(newTrack);
-            renderMyLibrary();
-            alert("Додано в 'Мою Бібліотеку'!");
-        }
-
-        function switchAudioSubTab(subTab) {
-            document.getElementById('subtab-my-library').classList.add('hidden');
-            document.getElementById('subtab-search').classList.add('hidden');
-            document.getElementById('btn-tab-library').style.background = '#6c757d';
-            document.getElementById('btn-tab-search').style.background = '#6c757d';
-
-            if (subTab === 'my-library') {
-                document.getElementById('subtab-my-library').classList.remove('hidden');
-                document.getElementById('btn-tab-library').style.background = '#4a76a8';
-            } else {
-                document.getElementById('subtab-search').classList.remove('hidden');
-                document.getElementById('btn-tab-search').style.background = '#4a76a8';
-            }
-        }
-
-        // ----------------- ІНШИЙ ФУНКЦІОНАЛ СОЦМЕРЕЖІ -----------------
-        function updateCoinsDisplay() {
-            document.getElementById('user-coins-count').innerText = userCoins;
-            document.getElementById('profile-coins-text').innerText = `${userCoins} балів`;
-        }
-
-        async function claimDailyBonus() {
-            userCoins += 50;
-            updateCoinsDisplay();
-            await db.collection("users").doc(currentUserId).update({ coins: userCoins });
-            alert("🎉 Ви отримали щоденний бонус: +50 балів!");
-        }
-
-        function calculateVkRating() {
-            const barFill = document.getElementById('rating-bar-fill');
-            const ratingText = document.getElementById('rating-text');
-            const directorBadge = document.getElementById('director-badge');
-
-            if (isDirector) {
-                barFill.style.width = '100%';
-                barFill.classList.add('gold');
-                ratingText.innerText = '+500%';
-                directorBadge.classList.remove('hidden');
-                document.getElementById('user-role-text').innerText = "Генеральний Директор 👑";
-            } else {
-                let rating = 35;
-                if (currentUserAvatar) rating += 35;
-                if (document.getElementById('user-status').innerText !== '[встановити статус]') rating += 15;
-                if (document.getElementById('status-val').innerText !== 'Не вказано') rating += 15;
-
-                if (rating > 100) { rating = 100; barFill.classList.add('gold'); }
-                else { barFill.classList.remove('gold'); }
-                
-                barFill.style.width = rating + '%';
-                ratingText.innerText = '+' + rating + '%';
-                document.getElementById('user-role-text').innerText = "Учасник";
-            }
-        }
-
-        function openChatWith(friendId, friendName) {
-            activeChatUserId = friendId;
-            document.getElementById('chat-partner-name').innerText = friendName;
-            switchTab('chat');
-
-            if (chatUnsubscribe) chatUnsubscribe();
-
-            const chatId = [currentUserId, friendId].sort().join("_");
-            chatUnsubscribe = db.collection("chats").doc(chatId).collection("messages")
-                .orderBy("createdAt", "asc")
-                .onSnapshot((snapshot) => {
-                    const box = document.getElementById('chat-messages-box');
-                    box.innerHTML = '';
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const isMy = data.senderId === currentUserId;
-                        let bodyContent = data.text;
-                        if (data.isAudio) {
-                            bodyContent = `<audio controls src="${data.audioUrl}" style="max-width:200px; height:30px;"></audio>`;
-                        }
-                        box.innerHTML += `
-                            <div class="chat-msg ${isMy ? 'my' : ''}">
-                                <span class="author">${data.senderName}:</span> ${bodyContent}
-                            </div>
-                        `;
-                    });
-                    box.scrollTop = box.scrollHeight;
-                });
-
-            db.collection("users").doc(friendId).collection("guests").doc(currentUserId).set({
-                name: currentUserName,
-                visitedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-
-        async function sendChatMessage(audioDataUrl = null) {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text && !audioDataUrl) return;
-
-            const chatId = [currentUserId, activeChatUserId].sort().join("_");
-            await db.collection("chats").doc(chatId).collection("messages").add({
-                senderId: currentUserId,
-                senderName: currentUserName,
-                text: audioDataUrl ? '' : text,
-                isAudio: !!audioDataUrl,
-                audioUrl: audioDataUrl || '',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            input.value = '';
-        }
-
-        function toggleVoiceRecording() {
-            const btn = document.getElementById('voice-rec-btn');
-            if (!isRecording) {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = () => {
-                            sendChatMessage(reader.result);
-                        };
-                    };
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btn.innerText = "🛑";
-                    btn.style.background = "red";
-                }).catch(err => alert("Немає доступу до мікрофону"));
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-                btn.innerText = "🎤";
-                btn.style.background = "var(--primary-color)";
-            }
-        }
-
-        async function buyGift(icon, price) {
-            if (userCoins < price) return alert("Недостатньо балів на балансі!");
-            const targetId = prompt("Введіть ID або Ім'я друга для подарунка (або залиште порожнім для себе):");
-            const recipientId = targetId || currentUserId;
-
-            userCoins -= price;
-            updateCoinsDisplay();
-
-            await db.collection("users").doc(currentUserId).update({ coins: userCoins });
-            await db.collection("users").doc(recipientId).collection("gifts").add({
-                icon: icon,
-                from: currentUserName,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            if (recipientId !== currentUserId) {
-                await db.collection("users").doc(recipientId).collection("notifs").add({
-                    text: `🎁 ${currentUserName} надіслав(ла) вам подарунок ${icon}!`,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            }
-
-            alert("🎉 Подарунок успішно відправлено!");
-        }
-
-        function listenToGifts() {
-            db.collection("users").doc(currentUserId).collection("gifts").onSnapshot(snapshot => {
-                const container = document.getElementById('gifts-list');
-                container.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const gift = doc.data();
-                    container.innerHTML += `<div class="gift-badge" title="Від ${gift.from}">${gift.icon}</div>`;
+                    const c = doc.data();
+                    list.innerHTML += `
+                        <div class="comment-item">
+                            <span class="comment-author">${escapeHtml(c.authorName)}:</span>
+                            <span>${escapeHtml(c.text)}</span>
+                        </div>
+                    `;
                 });
             });
-        }
-
-        async function createPost() {
-            const text = document.getElementById('post-input').value.trim();
-            const imageUrl = document.getElementById('post-image-input').value.trim();
-            if (!text && !imageUrl) return;
-
-            await db.collection("posts").add({
-                author: currentUserName, text: text, imageUrl: imageUrl,
-                likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            document.getElementById('post-input').value = '';
-            document.getElementById('post-image-input').value = '';
-        }
-
-        db.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-            const container = document.getElementById('posts-container');
-            container.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const postId = doc.id;
-                const imageHtml = data.imageUrl ? `<img src="${data.imageUrl}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : '';
-
-                container.innerHTML += `
-                    <div class="card" style="padding:10px; margin-bottom:8px;">
-                        <b style="color:#3b6998; font-size:12px;">${data.author}</b>
-                        <p style="margin:4px 0; font-size:13px;">${data.text || ''}</p>
-                        ${imageHtml}
-                        <div class="post-actions">
-                            <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
-                            <button class="action-btn" onclick="toggleComments('${postId}')">💬 Коментарі</button>
-                        </div>
-                        <div id="comments-box-${postId}" class="comments-box hidden">
-                            <div id="comments-list-${postId}"></div>
-                            <div style="display:flex; gap:4px; margin-top:4px;">
-                                <input type="text" id="comment-input-${postId}" placeholder="Коментар..." style="font-size:11px; margin:0;">
-                                <button class="btn btn-sm" onclick="addComment('${postId}')">💬</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                listenToComments(postId);
-            });
-        });
-
-        function toggleComments(postId) {
-            document.getElementById(`comments-box-${postId}`).classList.toggle('hidden');
         }
 
         async function addComment(postId) {
@@ -1026,168 +961,255 @@
             const text = input.value.trim();
             if (!text) return;
 
-            await db.collection("posts").doc(postId).collection("comments").add({
-                author: currentUserName, text: text,
+            await db.collection('posts').doc(postId).collection('comments').add({
+                authorId: currentUser.id,
+                authorName: fullName,
+                text: text,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+
             input.value = '';
         }
 
-        function listenToComments(postId) {
-            db.collection("posts").doc(postId).collection("comments").orderBy("createdAt", "asc").onSnapshot(snapshot => {
-                const box = document.getElementById(`comments-list-${postId}`);
-                if (!box) return;
-                box.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const c = doc.data();
-                    box.innerHTML += `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`;
-                });
+        // ==========================================
+        // 5. ЗАГАЛЬНИЙ ЧАТ ТА ГОЛОСОВІ ПОВІДОМЛЕННЯ
+        // ==========================================
+        function handleChatKeyPress(e) {
+            if (e.key === 'Enter') sendTextMessage();
+        }
+
+        async function sendTextMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            await db.collection('messages').add({
+                senderId: currentUser.id,
+                senderName: fullName,
+                type: 'text',
+                text: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+
+            input.value = '';
         }
 
-        function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
+        // Відстеження повідомлень чату в реальному часі
+        db.collection('messages').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
+            const box = document.getElementById('chat-messages');
+            box.innerHTML = '';
 
-        async function createGroup() {
-            const name = document.getElementById('group-name-input').value.trim();
-            const desc = document.getElementById('group-desc-input').value.trim();
-            if (!name) return alert("Введіть назву спільноти!");
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                const isMy = msg.senderId === currentUser.id;
+                const timeStr = msg.createdAt ? new Date(msg.createdAt.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
 
-            await db.collection("groups").add({
-                name: name, desc: desc, creator: currentUserName,
-                membersCount: 1, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                let bodyHtml = '';
+                if (msg.type === 'voice') {
+                    bodyHtml = `<audio controls src="${msg.audioUrl}" style="width: 100%; max-width: 200px; height: 32px;"></audio>`;
+                } else {
+                    bodyHtml = `<div>${escapeHtml(msg.text)}</div>`;
+                }
+
+                const msgHtml = `
+                    <div class="msg ${isMy ? 'my' : 'other'}">
+                        <div class="msg-sender">${escapeHtml(msg.senderName)}</div>
+                        ${bodyHtml}
+                        <div class="msg-time">${timeStr}</div>
+                    </div>
+                `;
+                box.insertAdjacentHTML('beforeend', msgHtml);
             });
-            document.getElementById('group-name-input').value = '';
-            document.getElementById('group-desc-input').value = '';
-            alert("Спільноту успішно створено!");
-        }
 
-        function listenToGroups() {
-            db.collection("groups").onSnapshot(snapshot => {
-                const box = document.getElementById('groups-list-container');
-                box.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const g = doc.data();
-                    box.innerHTML += `
-                        <div style="border-bottom:1px solid var(--border-color); padding:8px 0; font-size:12px;">
-                            <b style="color:#3b6998;">${g.name}</b>
-                            <p style="margin:2px 0; font-size:11px; color:gray;">${g.desc || 'Немає опису'}</p>
-                            <button class="btn btn-sm" onclick="alert('Ви підписалися на спільноту!')">➕ Підписатися</button>
-                        </div>
-                    `;
-                });
-            });
-        }
+            box.scrollTop = box.scrollHeight;
+        });
 
-        function listenToNotifications() {
-            db.collection("users").doc(currentUserId).collection("notifs").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-                const box = document.getElementById('notifs-list');
-                box.innerHTML = '';
-                if (snapshot.empty) return box.innerHTML = '<p style="font-size:12px; color:gray;">Немає нових сповіщень.</p>';
-                snapshot.forEach(doc => {
-                    const n = doc.data();
-                    box.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">${n.text}</div>`;
-                });
-            });
-        }
+        // Запис голосових повідомлень (MediaRecorder + Firebase Storage)
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
 
-        function listenToGuests() {
-            db.collection("users").doc(currentUserId).collection("guests").onSnapshot((snapshot) => {
-                const box = document.getElementById('guests-list');
-                box.innerHTML = '';
-                if (snapshot.empty) return box.innerHTML = '<p style="font-size:12px; color:gray;">Поки ніхто не заходив.</p>';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    box.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">👁️ <b>${data.name}</b> заходив(ла) на вашу сторінку</div>`;
-                });
-            });
-        }
+        async function toggleVoiceRecording() {
+            const btn = document.getElementById('voice-rec-btn');
 
-        function listenToRealFriends() {
-            db.collection("users").onSnapshot((snapshot) => {
-                const grid = document.getElementById('profile-friends-grid');
-                const fullList = document.getElementById('full-friends-list');
-                grid.innerHTML = ''; fullList.innerHTML = '';
-                let totalFriends = 0; const now = new Date();
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
 
-                snapshot.forEach((doc) => {
-                    if (doc.id === currentUserId) return;
-                    totalFriends++;
-                    const data = doc.data();
-                    const name = data.name || "Користувач";
-                    let isOnline = data.lastSeen && (now - data.lastSeen.toDate()) / 1000 / 60 <= 5;
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        await uploadAndSendVoice(audioBlob);
+                    };
 
-                    if (totalFriends <= 6) {
-                        grid.innerHTML += `
-                            <div class="friend-item" onclick="openChatWith('${doc.id}', '${name}')">
-                                <div class="friend-avatar-wrapper">
-                                    <div class="friend-avatar">${name[0]}</div>
-                                    ${isOnline ? '<div class="friend-online-badge"></div>' : ''}
-                                </div>
-                                <div>${name.split(' ')[0]}</div>
-                            </div>
-                        `;
-                    }
-
-                    fullList.innerHTML += `
-                        <div class="friends-list-item">
-                            <div>
-                                <b style="color:#3b6998; font-size:13px;">${name}</b>
-                                <div style="font-size:11px;">${isOnline ? '<span class="online-dot"></span>Online' : 'Offline'}</div>
-                            </div>
-                            <button class="btn btn-sm" onclick="openChatWith('${doc.id}', '${name}')">💬 Повідомлення</button>
-                        </div>
-                    `;
-                });
-                document.getElementById('profile-friends-count').innerText = totalFriends;
-            });
-        }
-
-        function switchTab(tab) {
-            ['feed', 'friends', 'groups', 'shop', 'chat', 'notifs', 'audio', 'guests', 'settings'].forEach(t => {
-                const el = document.getElementById(`tab-${t}`);
-                if (el) el.classList.add('hidden');
-            });
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            const target = document.getElementById(`tab-${tab}`);
-            if (target) target.classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-btn-${tab}`);
-            if (activeBtn) activeBtn.classList.add('active');
-        }
-
-        function toggleStatusInput() { document.getElementById('status-input-box').classList.toggle('hidden'); }
-        function saveStatusText() {
-            const val = document.getElementById('status-text-input').value;
-            document.getElementById('user-status').innerText = val;
-            toggleStatusInput();
-            calculateVkRating();
-        }
-        function toggleMoreInfo() { document.getElementById('more-info-box').classList.toggle('hidden'); }
-        function toggleStatusEdit() { document.getElementById('status-edit-box').classList.toggle('hidden'); }
-        function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); calculateVkRating(); }
-        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-
-        function changeViewMode(mode) {
-            if (mode === 'pc') {
-                document.body.classList.remove('mode-auto');
-                document.body.classList.add('mode-pc');
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.classList.add('recording');
+                    btn.innerText = '⏹️';
+                } catch (err) {
+                    alert('Не вдалося отримати доступ до мікрофона.');
+                    console.error(err);
+                }
             } else {
-                document.body.classList.remove('mode-pc');
-                document.body.classList.add('mode-auto');
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.classList.remove('recording');
+                btn.innerText = '🎤';
             }
-            const select = document.getElementById('view-mode-select');
-            if (select) select.value = mode;
         }
 
-        function setAvatar(url) {
-            document.getElementById('user-avatar-img').src = url;
-            document.getElementById('user-avatar-img').classList.remove('hidden');
-            document.getElementById('user-avatar-placeholder').classList.add('hidden');
+        async function uploadAndSendVoice(blob) {
+            const filename = `voice/${currentUser.id}_${Date.now()}.mp3`;
+            const ref = storage.ref().child(filename);
+
+            try {
+                await ref.put(blob);
+                const audioUrl = await ref.getDownloadURL();
+
+                await db.collection('messages').add({
+                    senderId: currentUser.id,
+                    senderName: fullName,
+                    type: 'voice',
+                    audioUrl: audioUrl,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (err) {
+                console.error("Помилка завантаження голосового:", err);
+                alert("Помилка відправки голосового повідомлення.");
+            }
         }
 
-        function shareApp() {
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent("https://t.me/NaZviazku_UA_bot")}&text=Приєднуйся!`);
+        // ==========================================
+        // 6. ПОДАРУНКИ ТА РЕЙТИНГ
+        // ==========================================
+        let selectedGiftEmoji = '🌹';
+        let selectedGiftName = 'Троянда';
+
+        function openSendGiftModal() {
+            document.getElementById('modal-gift').classList.add('active');
+        }
+
+        function openRatingModal() {
+            document.getElementById('modal-rating').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function selectGift(emoji, name) {
+            selectedGiftEmoji = emoji;
+            selectedGiftName = name;
+            alert(`Обрано: ${name} ${emoji}`);
+        }
+
+        async function sendGift() {
+            const comment = document.getElementById('gift-comment-input').value.trim();
+
+            await db.collection('users').doc(currentUser.id).collection('gifts').add({
+                emoji: selectedGiftEmoji,
+                name: selectedGiftName,
+                from: fullName,
+                comment: comment,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            closeModal('modal-gift');
+            alert('Подарунок успішно відправлено!');
+        }
+
+        // Підписка на отримані подарунки
+        db.collection('users').doc(currentUser.id).collection('gifts').onSnapshot(snapshot => {
+            const container = document.getElementById('gifts-container');
+            document.getElementById('gifts-count').innerText = snapshot.size;
+
+            if (snapshot.empty) {
+                container.innerHTML = '<div style="font-size: 11px; color: var(--vk-subtext);">Немає подарунків</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const g = doc.data();
+                container.innerHTML += `
+                    <div class="gift-item" title="${escapeHtml(g.comment || '')}">
+                        <div style="font-size: 26px;">${g.emoji}</div>
+                        <p>Від: ${escapeHtml(g.from)}</p>
+                    </div>
+                `;
+            });
+        });
+
+        async function increaseRating() {
+            const val = parseInt(document.getElementById('rating-add-input').value) || 0;
+            if (val <= 0) return;
+
+            currentUser.rating += val;
+            await db.collection('users').doc(currentUser.id).update({
+                rating: currentUser.rating
+            });
+
+            document.getElementById('vk-rating').innerText = `Рейтинг: ${currentUser.rating}%`;
+            closeModal('modal-rating');
+        }
+
+        // ==========================================
+        // 7. МУЗИКА (JAMENDO MUSIC API)
+        // ==========================================
+        function handleMusicKeyPress(e) {
+            if (e.key === 'Enter') searchMusic();
+        }
+
+        async function searchMusic() {
+            const query = document.getElementById('music-search').value.trim();
+            const list = document.getElementById('music-list');
+
+            if (!query) return;
+            list.innerHTML = '<div style="font-size: 12px; color: var(--vk-subtext);">Пошук...</div>';
+
+            const clientId = '56b41217'; // Публічний Client ID Jamendo
+            const url = `https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&limit=10&search=${encodeURIComponent(query)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                list.innerHTML = '';
+                if (!data.results || data.results.length === 0) {
+                    list.innerHTML = '<div style="font-size: 12px; color: var(--vk-subtext);">Нічого не знайдено.</div>';
+                    return;
+                }
+
+                data.results.forEach(track => {
+                    list.innerHTML += `
+                        <div class="track-item">
+                            <div class="track-info">
+                                <div class="track-title">${escapeHtml(track.name)}</div>
+                                <div class="track-artist">${escapeHtml(track.artist_name)}</div>
+                            </div>
+                            <audio controls src="${track.audio}"></audio>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<div style="font-size: 12px; color: red;">Помилка завантаження треків.</div>';
+            }
+        }
+
+        // Вспомогательная функция защиты от XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
         }
     </script>
 </body>
 </html>
+
+
