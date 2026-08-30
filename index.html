@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>На Зв'язку</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Firebase SDK (v9 compatibility mode) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --bg-color: #e9efe7;
@@ -27,11 +32,11 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 10px;
+            padding: 0;
         }
 
-        .desktop-nav { display: none; }
-        .main-wrapper { width: 100%; max-width: 800px; margin: 0 auto; }
+        .desktop-header, .desktop-nav { display: none; }
+        .main-wrapper { width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; }
 
         .header {
             display: flex;
@@ -108,182 +113,305 @@
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* --- РЕЖИМ ПК 2010 (ВК-стиль) --- */
+        /* --- СТИЛЬ VK 2006 (ПК РЕЖИМ) --- */
         body.mode-pc {
-            background-color: #edf1f5 !important;
+            background-color: #ffffff !important;
             font-family: tahoma, arial, verdana, sans-serif !important;
             font-size: 11px !important;
-            padding: 0 !important;
+            color: #000000 !important;
         }
 
-        body.mode-pc .header {
+        body.mode-pc .mobile-header { display: none !important; }
+        body.mode-pc .desktop-header {
+            display: flex !important;
             background: #45688e;
-            height: 42px;
-            border-radius: 0;
-            padding: 0 15px;
-            margin-bottom: 15px;
+            height: 30px;
+            color: white;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 11px;
+            border-bottom: 1px solid #365373;
         }
+
+        body.mode-pc .desktop-header a {
+            color: #d2e2f2;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        body.mode-pc .desktop-header a:hover { text-decoration: underline; }
 
         body.mode-pc .main-wrapper {
             display: flex;
-            width: 100%;
-            max-width: 790px;
-            margin: 0 auto;
+            width: 790px;
+            margin: 10px auto;
             gap: 15px;
+            padding: 0;
         }
 
         body.mode-pc .desktop-nav {
             display: block !important;
             width: 140px;
+            flex-shrink: 0;
+        }
+
+        body.mode-pc .search-box {
+            border: 1px solid #aaa;
+            padding: 2px 4px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            font-size: 11px;
         }
 
         body.mode-pc .desktop-nav ul { list-style: none; padding: 0; margin: 0; }
+        body.mode-pc .desktop-nav li { margin-bottom: 3px; }
         body.mode-pc .desktop-nav li a {
             display: block;
-            padding: 4px 6px;
+            padding: 2px 4px;
             color: #2b587a;
             text-decoration: none;
-            font-weight: bold;
+        }
+        body.mode-pc .desktop-nav li a:hover {
+            background: #e1e7ed;
+            text-decoration: underline;
         }
 
         body.mode-pc .card {
-            border-radius: 2px;
-            border: 1px solid #ccc;
+            border-radius: 0;
+            border: none;
             box-shadow: none;
-            padding: 10px;
+            padding: 0;
+            margin-bottom: 15px;
+            background: transparent;
         }
 
         body.mode-pc .avatar {
-            border-radius: 2px;
-            width: 100px;
-            height: 100px;
+            border-radius: 0;
+            width: 160px;
+            height: 160px;
+            border: 1px solid #ccc;
         }
 
         body.mode-pc .nav-tabs { display: none !important; }
 
-        /* Адаптив за замовчуванням */
+        body.mode-pc .vk-section-header {
+            background: #d8dfa3; /* або #d8dfa8 */
+            background: #dbe0ea;
+            color: #36577c;
+            font-weight: bold;
+            padding: 3px 5px;
+            border-bottom: 1px solid #b9c4da;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        body.mode-pc .vk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        body.mode-pc .vk-table td {
+            padding: 3px 0;
+            vertical-align: top;
+        }
+
+        body.mode-pc .vk-table td.label {
+            color: #666;
+            width: 120px;
+        }
+
+        body.mode-pc .vk-link {
+            color: #2b587a;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        body.mode-pc .vk-link:hover { text-decoration: underline; }
+
         @media (min-width: 769px) {
             body.mode-auto {
-                background-color: #edf1f5;
+                background-color: #ffffff;
                 font-family: tahoma, arial, verdana, sans-serif;
                 font-size: 11px;
-                padding: 0;
             }
-            body.mode-auto .header { background: #45688e; border-radius: 0; height: 42px; }
-            body.mode-auto .main-wrapper { display: flex; width: 790px; margin: 0 auto; gap: 15px; }
-            body.mode-auto .desktop-nav { display: block; width: 140px; }
+            body.mode-auto .mobile-header { display: none; }
+            body.mode-auto .desktop-header {
+                display: flex;
+                background: #45688e;
+                height: 30px;
+                color: white;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+            }
+            body.mode-auto .desktop-header a { color: #d2e2f2; text-decoration: none; margin-left: 10px; }
+            body.mode-auto .main-wrapper { display: flex; width: 790px; margin: 10px auto; gap: 15px; padding: 0; }
+            body.mode-auto .desktop-nav { display: block; width: 140px; flex-shrink: 0; }
             body.mode-auto .desktop-nav ul { list-style: none; padding: 0; margin: 0; }
-            body.mode-auto .desktop-nav li a { display: block; padding: 4px 6px; color: #2b587a; text-decoration: none; font-weight: bold; }
-            body.mode-auto .card { border-radius: 2px; border: 1px solid #ccc; box-shadow: none; padding: 10px; }
-            body.mode-auto .avatar { border-radius: 2px; width: 100px; height: 100px; }
+            body.mode-auto .desktop-nav li a { display: block; padding: 2px 4px; color: #2b587a; text-decoration: none; }
+            body.mode-auto .desktop-nav li a:hover { background: #e1e7ed; text-decoration: underline; }
+            body.mode-auto .card { border-radius: 0; border: none; box-shadow: none; padding: 0; margin-bottom: 15px; background: transparent; }
+            body.mode-auto .avatar { border-radius: 0; width: 160px; height: 160px; border: 1px solid #ccc; }
             body.mode-auto .nav-tabs { display: none; }
+            body.mode-auto .vk-section-header { background: #dbe0ea; color: #36577c; font-weight: bold; padding: 3px 5px; border-bottom: 1px solid #b9c4da; margin-bottom: 8px; display: flex; justify-content: space-between; }
+            body.mode-auto .vk-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            body.mode-auto .vk-table td { padding: 3px 0; vertical-align: top; }
+            body.mode-auto .vk-table td.label { color: #666; width: 120px; }
+            body.mode-auto .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
+            body.mode-auto .vk-link:hover { text-decoration: underline; }
         }
     </style>
 </head>
 <body class="mode-auto">
 
-    <div class="header">
+    <!-- Верхній банер VK Style для ПК -->
+    <div class="desktop-header">
+        <div style="font-weight: bold; font-size: 13px;">Вконтакте / На Зв'язку</div>
+        <div>
+            <a href="#" onclick="comingSoon('Новости')">новости</a>
+            <a href="#" onclick="comingSoon('Люди')">люди</a>
+            <a href="#" onclick="comingSoon('Обзор')">обзор</a>
+            <a href="#" onclick="switchTab('friends')">пригласить</a>
+            <a href="#" onclick="comingSoon('Помощь')">помощь</a>
+            <a href="#" onclick="switchTab('settings')">настройки</a>
+        </div>
+    </div>
+
+    <!-- Мобільна шапка -->
+    <div class="header mobile-header">
         <h2 style="margin:0;">На Зв'язку 🇺🇦</h2>
         <div>
-            <button class="btn btn-sm" onclick="switchTab('settings')">⚙️ Налаштування</button>
+            <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
             <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
         </div>
     </div>
 
     <div class="main-wrapper">
-        <!-- Ліве меню ПК -->
+        <!-- Ліве меню VK ПК -->
         <div class="desktop-nav">
+            <input type="text" class="search-box" placeholder="🔍 Поиск" onfocus="comingSoon('Поиск')">
             <ul>
-                <li><a href="#" onclick="switchTab('feed')">Моя Сторінка</a></li>
-                <li><a href="#" onclick="switchTab('friends')">Мої Друзі</a></li>
-                <li><a href="#" onclick="switchTab('settings')">Мої Налаштування</a></li>
+                <li><a href="#" onclick="switchTab('feed')">Моя Страница</a></li>
+                <li><a href="#" onclick="switchTab('friends')">Мои Друзья</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Фотографии')">Мои Фотографии</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Видеозаписи')">Мои Видеозаписи</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Аудиозаписи')">Мои Аудиозаписи</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Сообщения')">Мои Сообщения</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Группы')">Мои Группы</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Встречи')">Мои Встречи</a></li>
+                <li><a href="#" onclick="comingSoon('Мои Игры')">Мои Игры</a></li>
+                <li><a href="#" onclick="switchTab('settings')">Мои Настройки</a></li>
             </ul>
         </div>
 
         <div class="content-area" style="flex-grow: 1;">
-            <!-- Вкладки мобільні -->
+            <!-- Перемикач для мобільних -->
             <div class="nav-tabs">
                 <div class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed')">📰 Стіна</div>
                 <div class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends')">👥 Друзі</div>
                 <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Налаштування</div>
             </div>
 
-            <!-- Вкладка Стіна -->
             <div id="tab-feed">
                 <div class="card">
-                    <div class="profile-info">
-                        <div class="avatar-container">
-                            <img id="user-avatar-img" class="avatar hidden" src="" alt="Avatar">
-                            <div id="user-avatar-placeholder" class="avatar">V</div>
-                        </div>
-                        <div style="flex-grow: 1;">
-                            <h3 id="user-name" style="margin:0; font-size: 16px; color: #2b587a;">Vladyslav Svershok</h3>
-                            <p style="margin:2px 0; color: gray; font-size: 11px;">Засновник (ID #1)</p>
+                    <div style="display: flex; gap: 20px;">
+                        <div>
+                            <div class="avatar-container">
+                                <img id="user-avatar-img" class="avatar hidden" src="" alt="Avatar">
+                                <div id="user-avatar-placeholder" class="avatar">V</div>
+                            </div>
                             
-                            <div class="rating-container">
+                            <div class="rating-container" style="width: 160px;">
                                 <div class="rating-title">Рейтинг: <span style="color: #f57c00;">100%</span></div>
                                 <div class="rating-bar-bg">
                                     <div class="rating-bar-fill"></div>
                                 </div>
                             </div>
 
-                            <div style="font-size: 11px; margin-bottom: 6px;">
-                                Сімейний стан: <b>Заміжня / Одружений</b>
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+                            <a class="vk-link" style="display: block; margin-top: 5px;" onclick="document.getElementById('avatar-input').click()">Изменить фотографию</a>
+                        </div>
+
+                        <div style="flex-grow: 1;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px;">
+                                <h2 id="user-name" style="margin:0; font-size: 15px; color: #2b587a;">Пользователь</h2>
+                                <span style="color: gray;">Online</span>
                             </div>
 
-                            <!-- Приховане поле вибору файлу з галереї -->
-                            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
-                            <button class="btn btn-sm" onclick="document.getElementById('avatar-input').click()">📷 Змінити фото</button>
+                            <table class="vk-table">
+                                <tr><td class="label">Пол:</td><td>мужской</td></tr>
+                                <tr><td class="label">Статус:</td><td>Учасник мережі На Зв'язку</td></tr>
+                                <tr><td class="label">Город:</td><td>Україна</td></tr>
+                            </table>
+
+                            <div class="vk-section-header">
+                                <span>Информация</span>
+                                <a class="vk-link" onclick="comingSoon('Редактирование профиля')">редактировать</a>
+                            </div>
+
+                            <table class="vk-table">
+                                <tr><td class="label">Деятельность:</td><td>Разработка веб-приложений, программирование</td></tr>
+                                <tr><td class="label">Интересы:</td><td>Технологии, общение, футбол, видеоигры</td></tr>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h4 style="margin-top:0;">Створити допис</h4>
-                    <textarea id="post-input" rows="3" placeholder="Що у вас нового?"></textarea>
-                    <button class="btn" style="width: 100%;" onclick="createPost()">Опублікувати</button>
+                <!-- Блок створення допису -->
+                <div class="card" style="border-top: 1px solid #ccc; padding-top: 10px;">
+                    <div class="vk-section-header">Стена</div>
+                    <textarea id="post-input" rows="2" placeholder="Что у вас нового?"></textarea>
+                    <button class="btn" style="background: #45688e; border-radius: 2px;" onclick="createPost()">Опубликовать</button>
                 </div>
 
                 <div id="posts-container">
-                    <div class="card">
-                        <b style="color: #2b587a;">На Зв'язку (Офіційно)</b>
-                        <p style="margin: 5px 0;">Ласкаво просимо до нашої нової мережі! Напишіть щось на своїй стіні 🎉</p>
-                    </div>
+                    <p style="text-align: center; color: gray;">Завантаження дописів...</p>
                 </div>
             </div>
 
-            <!-- Вкладка Друзі -->
             <div id="tab-friends" class="card hidden">
-                <h3 style="margin-top:0; color: #2b587a;">Ваші друзі</h3>
-                <p style="color: gray;">У вас поки немає доданих друзів.</p>
-                <button class="btn" onclick="alert('Пошук користувачів буде доступний у наступному оновленні!')">🔍 Знайти друзів</button>
+                <div class="vk-section-header">Мои Друзья</div>
+                <p>Запрошуйте друзів до нашої спільної мережі!</p>
+                <button class="btn" style="background: #45688e; border-radius: 2px;" onclick="shareApp()">🔗 Пригласить друга в Telegram</button>
             </div>
 
-            <!-- Вкладка Налаштування -->
             <div id="tab-settings" class="card hidden">
-                <h3 style="margin-top:0; color: #2b587a;">Налаштування інтерфейсу</h3>
+                <div class="vk-section-header">Мои Настройки</div>
                 
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Версія дизайну:</label>
+                <label style="font-weight: bold; display: block; margin: 10px 0 5px 0;">Версія дизайну:</label>
                 <select id="view-mode-select" onchange="changeViewMode(this.value)">
                     <option value="auto">🌐 Автоматично (залежно від екрана)</option>
-                    <option value="mobile">📱 Мобільна версія (Telegram App)</option>
-                    <option value="pc">💻 ПК версія (ВКонтакті 2010)</option>
+                    <option value="pc">💻 ПК версія (ВКонтакті 2006)</option>
+                    <option value="mobile">📱 Мобільна версія</option>
                 </select>
-
-                <p style="color: gray; font-size: 12px; margin-top: 10px;">
-                    Виберіть версію ПК, щоб увімкнути ностальгічний стиль 2010 року з лівим меню навіть на смартфоні!
-                </p>
             </div>
         </div>
     </div>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVvoI9NW-BSXVbjiTyGeKutAqJjaarsr0",
+            authDomain: "nazviazku-38b50.firebaseapp.com",
+            projectId: "nazviazku-38b50",
+            storageBucket: "nazviazku-38b50.firebasestorage.app",
+            messagingSenderId: "1027185291009",
+            appId: "1:1027185291009:web:db922f3d5a7325588c7500"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        let currentUserName = "Пользователь";
+
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
-            document.getElementById('user-name').innerText = `${user.first_name} ${user.last_name || ''}`;
+            currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
+            document.getElementById('user-name').innerText = currentUserName;
             document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
 
             if (user.photo_url) {
@@ -291,7 +419,10 @@
             }
         }
 
-        // Завантаження фото з галереї пристрою
+        function comingSoon(featureName) {
+            alert(`Розділ «${featureName}» з'явиться в наступних оновленнях! 🚀`);
+        }
+
         function uploadAvatar(event) {
             const file = event.target.files[0];
             if (file) {
@@ -332,32 +463,64 @@
             if (activeBtn) activeBtn.classList.add('active');
         }
 
-        function createPost() {
+        async function createPost() {
             const text = document.getElementById('post-input').value.trim();
             if (!text) return;
 
-            const postHtml = `
-                <div class="card">
-                    <b style="color: #2b587a;">${document.getElementById('user-name').innerText}</b>
-                    <p style="margin: 5px 0;">${text}</p>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="likePost(this)">❤️ <span class="like-count">0</span></button>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('posts-container').insertAdjacentHTML('afterbegin', postHtml);
-            document.getElementById('post-input').value = '';
+            try {
+                await db.collection("posts").add({
+                    author: currentUserName,
+                    text: text,
+                    likes: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('post-input').value = '';
+            } catch (error) {
+                alert("Помилка публікації: " + error.message);
+            }
         }
 
-        function likePost(btn) {
-            const countSpan = btn.querySelector('.like-count');
-            let count = parseInt(countSpan.innerText);
-            countSpan.innerText = count + 1;
+        function likePost(id, currentLikes) {
+            db.collection("posts").doc(id).update({
+                likes: currentLikes + 1
+            });
+        }
+
+        db.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="card" style="padding:10px;"><p style="margin:0;">Стіна порожня. Напишіть щось першим!</p></div>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const postId = doc.id;
+
+                const postHtml = `
+                    <div class="card" style="border-top: 1px solid #e7e7e7; padding: 8px 0; margin-bottom: 5px;">
+                        <b class="vk-link">${data.author || 'Анонім'}</b>
+                        <p style="margin: 5px 0;">${data.text}</p>
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ <span class="like-count">${data.likes || 0}</span></button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += postHtml;
+            });
+        });
+
+        function shareApp() {
+            const botUrl = "https://t.me/NaZviazku_UA_bot";
+            const text = "Приєднуйся до нової соціальної мережі «На Зв'язку»!";
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(text)}`);
         }
     </script>
 </body>
 </html>
+
 
 
 
