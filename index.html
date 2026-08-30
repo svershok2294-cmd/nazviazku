@@ -8,7 +8,7 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Firebase SDKs (Безкоштовний тариф Spark, без прив'язки картки) -->
+    <!-- Firebase SDKs (Сумісний безкоштовний тариф Spark, без картки) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -715,22 +715,22 @@
     syncLayout();
 
     // ==========================================================
-    // 2. БЕЗКОШТОВНИЙ FIREBASE (ТІЛЬКИ FIRESTORE)
+    // 2. РЕАЛЬНИЙ FIREBASE (ВАШІ КЛЮЧІ)
     // ==========================================================
-    // Вставте ваші реальні ключі Firebase тут:
     const firebaseConfig = {
-        apiKey: "AIzaSyYOUR_API_KEY_HERE",
-        authDomain: "your-app.firebaseapp.com",
-        projectId: "your-app-id",
-        storageBucket: "your-app-id.appspot.com",
-        messagingSenderId: "1234567890",
-        appId: "1:1234567890:web:abcdef123456"
+        apiKey: "AIzaSyC5Ox_25cWYi12M3dMlCpCXKfT-oZub8ts",
+        authDomain: "nazviazku.firebaseapp.com",
+        projectId: "nazviazku",
+        storageBucket: "nazviazku.firebasestorage.app",
+        messagingSenderId: "888760556395",
+        appId: "1:888760556395:web:8262589e08a7726d2c4a2e",
+        measurementId: "G-1QY879RQGX"
     };
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Стискання зображень у браузері без необхідності стороннього сховища
+    // Стискання зображень у браузері без необхідності платного сховища
     function compressImageFile(file, maxWidth, quality, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -787,15 +787,19 @@
     document.getElementById('profile-avatar').src = activeUser.photo_url;
 
     async function loadUserData() {
-        const docRef = db.collection('users').doc(activeUser.id);
-        const doc = await docRef.get();
-        if (!doc.exists) {
-            await docRef.set({ ...activeUser, name: userFullName, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        } else {
-            Object.assign(activeUser, doc.data());
+        try {
+            const docRef = db.collection('users').doc(activeUser.id);
+            const doc = await docRef.get();
+            if (!doc.exists) {
+                await docRef.set({ ...activeUser, name: userFullName, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            } else {
+                Object.assign(activeUser, doc.data());
+            }
+            renderProfileInfo();
+            checkInviteDeepLink();
+        } catch (e) {
+            console.error("Firestore init error:", e);
         }
-        renderProfileInfo();
-        checkInviteDeepLink();
     }
 
     function renderProfileInfo() {
@@ -901,7 +905,7 @@
     }
 
     // ==========================================================
-    // 6. СИСТЕМА ДРУЗІВ ТА ІНВАЙТІВ (УНІВЕРСАЛЬНИЙ ЗЧИТУВАЧ ДЛЯ IOS/ANDROID)
+    // 6. СИСТЕМА ДРУЗІВ ТА ІНВАЙТІВ (ДЛЯ ВСІХ ПРИСТРОЇВ)
     // ==========================================================
     let userFriendsMap = new Map();
     let cachedUsers = [];
@@ -931,7 +935,6 @@
         });
     }
 
-    // Безпомилкове зчитування start_param на iPhone (iOS) та Android
     function getTelegramStartParam() {
         if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
             return window.Telegram.WebApp.initDataUnsafe.start_param;
