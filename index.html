@@ -624,14 +624,25 @@
             <span style="cursor: pointer;" onclick="closeModal('modal-edit-profile')">✕</span>
         </div>
         <div class="vk-modal-body">
+            <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Основні дані:</div>
             <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто">
             <input type="text" id="edit-relationship" class="input-vk modal-input" placeholder="Сімейний стан">
             <input type="text" id="edit-phone" class="input-vk modal-input" placeholder="Номер телефону">
             <input type="text" id="edit-icq" class="input-vk modal-input" placeholder="Номер ICQ">
+
+            <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Особисті погляди:</div>
+            <input type="text" id="edit-politics" class="input-vk modal-input" placeholder="Політичні погляди">
+            <input type="text" id="edit-worldview" class="input-vk modal-input" placeholder="Світогляд">
+            <input type="text" id="edit-smoking" class="input-vk modal-input" placeholder="Ставлення до паління">
+            <input type="text" id="edit-alcohol" class="input-vk modal-input" placeholder="Ставлення до алкоголю">
+
+            <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Інтереси та про себе:</div>
             <input type="text" id="edit-activity" class="input-vk modal-input" placeholder="Діяльність">
             <input type="text" id="edit-music" class="input-vk modal-input" placeholder="Улюблена музика">
             <input type="text" id="edit-movies" class="input-vk modal-input" placeholder="Улюблені фільми">
+            <input type="text" id="edit-quotes" class="input-vk modal-input" placeholder="Улюблені цитати">
             <textarea id="edit-about" class="wall-textarea" placeholder="Про себе..."></textarea>
+
             <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 8px;">
                 <button class="btn-vk-secondary" onclick="closeModal('modal-edit-profile')">Скасувати</button>
                 <button class="btn-vk" onclick="saveProfileChanges()">Зберегти</button>
@@ -842,13 +853,18 @@
         relationship: "все складно",
         phone: "+380 (XX) XXX-XX-XX",
         icq: "345-982-110",
+        politics: "помірні",
+        worldview: "гуманізм",
+        smoking: "нейтральне",
+        alcohol: "компромісне",
         activity: "розробка додатків, подорожі",
         music: "Rock, Retro Synthwave, Hip-Hop",
         movies: "Бійцівський клуб, Матриця",
+        quotes: "«Все що нас не вбиває — робить нас сильнішими»",
         about: "Завжди на зв'язку!"
     };
 
-    // Адмін перевірка за вашим унікальним ID
+    // Адмін-права прив'язані виключно до вашого ID
     const ADMIN_ID = "325300795";
     function checkIsAdmin(userId) {
         return userId === ADMIN_ID;
@@ -924,9 +940,14 @@
         document.getElementById('profile-relationship').innerText = u.relationship || 'не вказано';
         document.getElementById('profile-phone').innerText = u.phone || 'не вказано';
         document.getElementById('profile-icq').innerText = u.icq || 'не вказано';
+        document.getElementById('info-politics').innerText = u.politics || 'не вказано';
+        document.getElementById('info-worldview').innerText = u.worldview || 'не вказано';
+        document.getElementById('info-smoking').innerText = u.smoking || 'не вказано';
+        document.getElementById('info-alcohol').innerText = u.alcohol || 'не вказано';
         document.getElementById('info-activity').innerText = u.activity || 'не вказано';
         document.getElementById('info-music').innerText = u.music || 'не вказано';
         document.getElementById('info-movies').innerText = u.movies || 'не вказано';
+        document.getElementById('info-quotes').innerText = u.quotes || 'не вказано';
         document.getElementById('info-about').innerText = u.about || 'не вказано';
 
         const musicStatusEl = document.getElementById('profile-music-status');
@@ -943,7 +964,7 @@
         document.getElementById('status-edit-btn').style.display = isMe ? 'inline-block' : 'none';
         document.getElementById('sidebar-photos-add-link').style.display = isMe ? 'inline' : 'none';
         
-        // Кнопка завдань для підвищення рейтингу (тільки для звичайних друзів на їхніх власних сторінках)
+        // Кнопка завдань для підвищення рейтингу (тільки для звичайних користувачів на власній сторінці)
         const taskBtnWrap = document.getElementById('profile-task-btn-wrap');
         if (isMe && !userIsAdmin) {
             taskBtnWrap.style.display = 'block';
@@ -985,15 +1006,20 @@
 
     function openEditProfileModal() {
         if (viewingProfileId && viewingProfileId !== activeUser.id) {
-            return vkAlert('Помилка', 'Ви не можете редагувати чужу сторінку!');
+            return vkAlert('Помилка', 'Ви можете редагувати лише власну сторінку!');
         }
         document.getElementById('edit-city').value = activeUser.city || '';
         document.getElementById('edit-relationship').value = activeUser.relationship || '';
         document.getElementById('edit-phone').value = activeUser.phone || '';
         document.getElementById('edit-icq').value = activeUser.icq || '';
+        document.getElementById('edit-politics').value = activeUser.politics || '';
+        document.getElementById('edit-worldview').value = activeUser.worldview || '';
+        document.getElementById('edit-smoking').value = activeUser.smoking || '';
+        document.getElementById('edit-alcohol').value = activeUser.alcohol || '';
         document.getElementById('edit-activity').value = activeUser.activity || '';
         document.getElementById('edit-music').value = activeUser.music || '';
         document.getElementById('edit-movies').value = activeUser.movies || '';
+        document.getElementById('edit-quotes').value = activeUser.quotes || '';
         document.getElementById('edit-about').value = activeUser.about || '';
         openModal('modal-edit-profile');
     }
@@ -1005,9 +1031,14 @@
         activeUser.relationship = document.getElementById('edit-relationship').value.trim();
         activeUser.phone = document.getElementById('edit-phone').value.trim();
         activeUser.icq = document.getElementById('edit-icq').value.trim();
+        activeUser.politics = document.getElementById('edit-politics').value.trim();
+        activeUser.worldview = document.getElementById('edit-worldview').value.trim();
+        activeUser.smoking = document.getElementById('edit-smoking').value.trim();
+        activeUser.alcohol = document.getElementById('edit-alcohol').value.trim();
         activeUser.activity = document.getElementById('edit-activity').value.trim();
         activeUser.music = document.getElementById('edit-music').value.trim();
         activeUser.movies = document.getElementById('edit-movies').value.trim();
+        activeUser.quotes = document.getElementById('edit-quotes').value.trim();
         activeUser.about = document.getElementById('edit-about').value.trim();
 
         await db.collection('users').doc(activeUser.id).update({
@@ -1015,9 +1046,14 @@
             relationship: activeUser.relationship,
             phone: activeUser.phone,
             icq: activeUser.icq,
+            politics: activeUser.politics,
+            worldview: activeUser.worldview,
+            smoking: activeUser.smoking,
+            alcohol: activeUser.alcohol,
             activity: activeUser.activity,
             music: activeUser.music,
             movies: activeUser.movies,
+            quotes: activeUser.quotes,
             about: activeUser.about
         });
 
@@ -1329,8 +1365,13 @@
             phone: "—",
             icq: "—",
             activity: "спілкування за інтересами",
+            politics: "—",
+            worldview: "—",
+            smoking: "—",
+            alcohol: "—",
             music: "—",
             movies: "—",
+            quotes: "—",
             about: "Ласкаво просимо до спільноти!"
         }, gName, false, null);
         document.getElementById('wall-header-title').innerText = `Стіна спільноти «${gName}»`;
