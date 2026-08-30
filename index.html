@@ -189,7 +189,7 @@
         .info-block-header { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 4px 6px; font-weight: bold; color: var(--vk-link); font-size: 11px; margin: 8px 0 4px 0; }
         .spoiler-toggle { color: var(--vk-link); cursor: pointer; text-decoration: underline; font-weight: bold; display: inline-block; margin-bottom: 8px; }
 
-        /* ЗІРОЧКИ ОЦІНКИ ФОТО */
+        /* ЗІРОЧКИ ОЦІНКИ ФОТО / ВІДЕО */
         .star-rating { display: inline-flex; gap: 3px; font-size: 18px; cursor: pointer; }
         .star-rating span { color: #ccc; }
         .star-rating span.active { color: #f5c518; }
@@ -254,6 +254,10 @@
         .audio-progress-fill { height: 100%; background: #45688e; width: 0%; }
         .audio-duration-text { font-size: 9px; color: var(--vk-subtext); width: 32px; text-align: right; }
 
+        /* ВІДЕО КАРТКИ */
+        .video-card-item { border: 1px solid var(--vk-border); padding: 4px; background: #ffffff; text-align: center; cursor: pointer; }
+        .video-card-thumb { width: 100%; height: 100px; background: #222; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; border-radius: 2px; }
+
         /* СПИСКИ ТА ФОТО */
         .user-directory-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
         .user-row-card { display: flex; align-items: center; justify-content: space-between; background: #fafafa; border: 1px solid var(--vk-border-subtle); padding: 6px; border-radius: 2px; }
@@ -299,6 +303,7 @@
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення <span id="msg-badge" class="badge-count" style="display:none;">0</span></button>
         <button class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends', event)">Друзі <span id="req-badge" class="badge-count" style="display:none;">0</span></button>
         <button class="tab-btn" id="tab-btn-photos" onclick="switchTab('photos', event)">Фото</button>
+        <button class="tab-btn" id="tab-btn-videos" onclick="switchTab('videos', event)">Відео</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
         <button class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups', event)">Групи</button>
         <button class="tab-btn" id="tab-btn-notes" onclick="switchTab('notes', event)">Нотатки</button>
@@ -313,6 +318,7 @@
             <a href="javascript:void(0)" id="pc-link-chat" onclick="switchTab('chat', event)">Мої Повідомлення <span id="pc-msg-badge" class="badge-count" style="display:none;">0</span></a>
             <a href="javascript:void(0)" id="pc-link-friends" onclick="switchTab('friends', event)">Мої Друзі <span id="pc-req-badge" class="badge-count" style="display:none;">0</span></a>
             <a href="javascript:void(0)" id="pc-link-photos" onclick="switchTab('photos', event)">Мої Фотографії</a>
+            <a href="javascript:void(0)" id="pc-link-videos" onclick="switchTab('videos', event)">Мої Відеозаписи</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
             <a href="javascript:void(0)" id="pc-link-groups" onclick="switchTab('groups', event)">Спільноти (Групи)</a>
             <a href="javascript:void(0)" id="pc-link-notes" onclick="switchTab('notes', event)">Мої Нотатки</a>
@@ -338,7 +344,7 @@
 
                         <div class="rating-bar-container" id="profile-rating-container" title="Рейтинг профілю">
                             <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
-                                <span id="profile-rating-text" style="color: #4a3600; text-shadow: 0 1px 0 rgba(255,255,255,0.4);">100%</span>
+                                <span id="profile-rating-text" style="text-shadow: 0 1px 0 rgba(255,255,255,0.4);">100%</span>
                             </div>
                         </div>
 
@@ -592,9 +598,10 @@
 
                         <div class="chat-input-bar">
                             <button class="btn-voice" onclick="toggleStickersPopup()" title="Стікери">😊</button>
+                            <button class="btn-voice" onclick="openModal('modal-chat-graffiti')" title="Намалювати графіті">🎨</button>
                             <button id="voice-rec-btn" class="btn-voice" onclick="toggleVoiceRecord()" title="Голосове повідомлення">🎤</button>
                             <button class="btn-voice" onclick="sendTicTacToeGame()" title="Зіграти у хрестики-нулики">🎮</button>
-                            <input type="text" id="chat-message-input" class="input-vk" style="flex: 1; min-width: 100px;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                            <input type="text" id="chat-message-input" class="input-vk" style="flex: 1; min-width: 80px;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                             <button class="btn-vk" onclick="sendChatMessage()">Надіслати</button>
                         </div>
                     </div>
@@ -660,7 +667,18 @@
                 <div id="photos-grid-full" class="photos-grid-layout"></div>
             </div>
 
-            <!-- 6. АУДІОЗАПИСИ -->
+            <!-- 6. ВІДЕОЗАПИСИ -->
+            <div id="tab-videos" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Відеозаписи мережі</span>
+                    <button class="btn-vk" onclick="openModal('modal-video')">+ Додати відео</button>
+                </div>
+                <div id="videos-grid-full" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
+                    <div style="color: var(--vk-subtext); padding: 10px;">Відеозаписів поки немає.</div>
+                </div>
+            </div>
+
+            <!-- 7. АУДІОЗАПИСИ -->
             <div id="tab-music" class="tab-content">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
@@ -676,7 +694,7 @@
                 </div>
             </div>
 
-            <!-- 7. СПІЛЬНОТИ (ГРУПИ) -->
+            <!-- 8. СПІЛЬНОТИ (ГРУПИ) -->
             <div id="tab-groups" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Тематичні спільноти</span>
@@ -685,7 +703,7 @@
                 <div id="groups-list-container" class="user-directory-list"></div>
             </div>
 
-            <!-- 8. НОТАТКИ -->
+            <!-- 9. НОТАТКИ -->
             <div id="tab-notes" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Мої Нотатки</span>
@@ -694,7 +712,7 @@
                 <div id="notes-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
-            <!-- 9. ДУМКИ ТА СЕКРЕТИ -->
+            <!-- 10. ДУМКИ ТА СЕКРЕТИ -->
             <div id="tab-thoughts" class="tab-content">
                 <div style="margin-bottom: 10px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Анонімні думки про вас</span>
@@ -790,7 +808,88 @@
     </div>
 </div>
 
-<!-- ПЕРЕГЛЯД ФОТО ЗІ ЗІРОЧКАМИ ТА КОМЕНТАРЯМИ -->
+<!-- ГРАФІТІ В ЧАТІ -->
+<div class="vk-modal" id="modal-chat-graffiti">
+    <div class="vk-modal-box" style="width: 370px;">
+        <div class="vk-modal-header">
+            <span>Намалювати графіті в чат</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-chat-graffiti')">✕</span>
+        </div>
+        <div class="vk-modal-body" style="text-align: center;">
+            <div style="border: 1px solid #999; display: inline-block; background: #ffffff; touch-action: none; margin-bottom: 6px;">
+                <canvas id="chat-graffiti-canvas" width="340" height="170"></canvas>
+            </div>
+            <div class="graffiti-tools" style="justify-content: center; margin-bottom: 8px;">
+                <span>Колір:</span>
+                <span class="color-dot" style="background: #000000;" onclick="setChatCanvasColor('#000000')"></span>
+                <span class="color-dot" style="background: #e53935;" onclick="setChatCanvasColor('#e53935')"></span>
+                <span class="color-dot" style="background: #1e88e5;" onclick="setChatCanvasColor('#1e88e5')"></span>
+                <span class="color-dot" style="background: #43a047;" onclick="setChatCanvasColor('#43a047')"></span>
+                <span class="color-dot" style="background: #ffffff;" title="Гумка" onclick="setChatCanvasColor('#ffffff')"></span>
+                <button class="btn-vk-secondary" style="margin-left: auto;" onclick="clearChatCanvas()">Очистити</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                <button class="btn-vk-secondary" onclick="closeModal('modal-chat-graffiti')">Скасувати</button>
+                <button class="btn-vk" onclick="sendChatGraffitiMessage()">Надіслати графіті</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ДОДАТИ ВІДЕО -->
+<div class="vk-modal" id="modal-video">
+    <div class="vk-modal-box">
+        <div class="vk-modal-header">
+            <span>Додати відеозапис</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-video')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <input type="text" id="video-title-input" class="input-vk modal-input" placeholder="Назва відео...">
+            <input type="text" id="video-url-input" class="input-vk modal-input" placeholder="Пряме посилання на відео (MP4) або YouTube embed">
+            <textarea id="video-desc-input" class="wall-textarea" style="height: 60px;" placeholder="Опис відео..."></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                <button class="btn-vk-secondary" onclick="closeModal('modal-video')">Скасувати</button>
+                <button class="btn-vk" onclick="commitAddVideo()">Додати</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ПЕРЕГЛЯД ВІДЕО -->
+<div class="vk-modal" id="modal-video-view">
+    <div class="vk-modal-box" style="max-width: 480px;">
+        <div class="vk-modal-header">
+            <span id="modal-video-header-title">Перегляд відео</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-video-view')">✕</span>
+        </div>
+        <div class="vk-modal-body" style="text-align: center;">
+            <div id="modal-video-player-wrap" style="margin-bottom: 8px; background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center; color: #fff;">
+                Відео плеєр
+            </div>
+            <div id="modal-video-desc" style="font-size: 11px; margin-bottom: 8px; text-align: left; color: var(--vk-subtext);"></div>
+            <div style="margin-bottom: 8px;">
+                <div style="font-size: 10px; color: var(--vk-subtext); margin-bottom: 2px;">Оцініть відео:</div>
+                <div class="star-rating" id="video-star-container">
+                    <span onclick="rateVideo(1)">★</span>
+                    <span onclick="rateVideo(2)">★</span>
+                    <span onclick="rateVideo(3)">★</span>
+                    <span onclick="rateVideo(4)">★</span>
+                    <span onclick="rateVideo(5)">★</span>
+                </div>
+                <div id="video-avg-rating-text" style="font-size: 10px; font-weight: bold; color: var(--vk-link); margin-top: 2px;">Середня оцінка: 0.0 (оцінок: 0)</div>
+            </div>
+            <div style="text-align: left; border-top: 1px solid var(--vk-border-subtle); padding-top: 6px; max-height: 100px; overflow-y: auto;" id="video-comments-list">
+                <span style="color: var(--vk-subtext);">Коментарів немає</span>
+            </div>
+            <div class="comment-input-row" style="margin-top: 6px;">
+                <input type="text" id="video-comment-input" class="input-vk" style="flex: 1;" placeholder="Написати коментар..." onkeypress="if(event.key==='Enter') sendVideoComment()">
+                <button class="btn-vk" onclick="sendVideoComment()">ОК</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ПЕРЕГЛЯД ФОТО -->
 <div class="vk-modal" id="modal-photo-view">
     <div class="vk-modal-box" style="max-width: 450px;">
         <div class="vk-modal-header">
@@ -1061,6 +1160,7 @@
             loadGlobalNewsFeed();
             checkBirthdaysWidget();
             initIncomingRequestsListener();
+            loadGlobalVideos();
         } catch (e) {
             console.error("Firestore init error:", e);
         }
@@ -1141,23 +1241,23 @@
         document.getElementById('profile-rating-text').innerText = `${displayRating}%`;
         document.getElementById('profile-rating-fill').style.width = `${Math.min(displayRating, 100)}%`;
 
-        // ДИНАМІЧНИЙ КОЛІР ТА ДИЗАЙН РЕЙТИНГУ ЯК У РАННЬОМУ ВК
+        // ДИНАМІЧНИЙ КОЛІР РЕЙТИНГУ
         const fillEl = document.getElementById('profile-rating-fill');
         const containerEl = document.getElementById('profile-rating-container');
-        let fillBg = "linear-gradient(180deg, #ffe169 0%, #ebb400 100%)"; // Золото (до 300%)
+        let fillBg = "linear-gradient(180deg, #ffe169 0%, #ebb400 100%)";
         let borderCol = "#d0ab26";
         let textCol = "#4a3600";
 
         if (displayRating >= 300 && displayRating < 600) {
-            fillBg = "linear-gradient(180deg, #aed581 0%, #689f38 100%)"; // Зелений (300-600%)
+            fillBg = "linear-gradient(180deg, #aed581 0%, #689f38 100%)";
             borderCol = "#558b2f";
             textCol = "#ffffff";
         } else if (displayRating >= 600 && displayRating < 1000) {
-            fillBg = "linear-gradient(180deg, #64b5f6 0%, #1976d2 100%)"; // Синій (600-1000%)
+            fillBg = "linear-gradient(180deg, #64b5f6 0%, #1976d2 100%)";
             borderCol = "#1565c0";
             textCol = "#ffffff";
         } else if (displayRating >= 1000 || userIsAdmin) {
-            fillBg = "linear-gradient(180deg, #ba68c8 0%, #7b1fa2 100%)"; // Пурпуровий елітний (1000%+)
+            fillBg = "linear-gradient(180deg, #ba68c8 0%, #7b1fa2 100%)";
             borderCol = "#6a1b9a";
             textCol = "#ffffff";
         }
@@ -1249,6 +1349,8 @@
             loadGlobalNewsFeed();
         } else if (tabId === 'music') {
             loadSavedMusic();
+        } else if (tabId === 'videos') {
+            loadGlobalVideos();
         }
     }
 
@@ -1753,6 +1855,135 @@
         });
     }
 
+    // ВІДЕОЗАПИСИ
+    async function commitAddVideo() {
+        const title = document.getElementById('video-title-input').value.trim();
+        const url = document.getElementById('video-url-input').value.trim();
+        const desc = document.getElementById('video-desc-input').value.trim();
+        if (!title || !url) return vkAlert('Помилка', 'Введіть назву та посилання на відео.');
+
+        await db.collection('videos').add({
+            title: title,
+            url: url,
+            description: desc,
+            authorId: activeUser.id,
+            authorName: userFullName,
+            ratings: {},
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal('modal-video');
+        document.getElementById('video-title-input').value = '';
+        document.getElementById('video-url-input').value = '';
+        document.getElementById('video-desc-input').value = '';
+        vkAlert('Відео', 'Відеозапис успішно додано!');
+    }
+
+    function loadGlobalVideos() {
+        const grid = document.getElementById('videos-grid-full');
+        if (!grid) return;
+
+        db.collection('videos').orderBy('timestamp', 'desc').onSnapshot(snap => {
+            grid.innerHTML = '';
+            if (snap.empty) {
+                grid.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Відеозаписів поки немає.</div>';
+                return;
+            }
+            snap.forEach(doc => {
+                const v = doc.data();
+                const vId = doc.id;
+                grid.innerHTML += `
+                    <div class="video-card-item" onclick="openVideoModal('${vId}', '${escapeText(v.title)}', '${escapeText(v.url)}', '${escapeText(v.description || '')}')">
+                        <div class="video-card-thumb">▶</div>
+                        <div style="font-weight: bold; color: var(--vk-link); margin-top: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${escapeText(v.title)}</div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    let selectedVideoId = null;
+    let selectedVideoData = null;
+
+    async function openVideoModal(vId, title, url, desc) {
+        selectedVideoId = vId;
+        document.getElementById('modal-video-header-title').innerText = title;
+        document.getElementById('modal-video-desc').innerText = desc || 'Без опису';
+        
+        let embedHtml = `<a href="${url}" target="_blank" class="btn-vk">Відкрити відео у новому вікні ↗</a>`;
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            let ytId = '';
+            if (url.includes('youtu.be/')) ytId = url.split('youtu.be/')[1].split('?')[0];
+            else if (url.includes('watch?v=')) ytId = url.split('watch?v=')[1].split('&')[0];
+            if (ytId) {
+                embedHtml = `<iframe width="100%" height="220" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
+            }
+        } else if (url.endsWith('.mp4') || url.startsWith('data:video')) {
+            embedHtml = `<video controls src="${url}" style="max-width: 100%; max-height: 220px;"></video>`;
+        }
+        document.getElementById('modal-video-player-wrap').innerHTML = embedHtml;
+        openModal('modal-video-view');
+        listenToVideoDetails(vId);
+    }
+
+    function listenToVideoDetails(vId) {
+        const vRef = db.collection('videos').doc(vId);
+        vRef.onSnapshot(doc => {
+            if (!doc.exists) return;
+            selectedVideoData = doc.data();
+            const ratings = selectedVideoData.ratings || {};
+            const userRating = ratings[activeUser.id] || 0;
+
+            const stars = document.querySelectorAll('#video-star-container span');
+            stars.forEach((star, idx) => {
+                if (idx < userRating) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+
+            let sum = 0, count = 0;
+            for (let uid in ratings) {
+                sum += ratings[uid];
+                count++;
+            }
+            const avg = count > 0 ? (sum / count).toFixed(1) : '0.0';
+            document.getElementById('video-avg-rating-text').innerText = `Середня оцінка: ${avg} (оцінок: ${count})`;
+        });
+
+        vRef.collection('comments').orderBy('timestamp', 'asc').onSnapshot(snap => {
+            const list = document.getElementById('video-comments-list');
+            list.innerHTML = '';
+            if (snap.empty) {
+                list.innerHTML = '<span style="color: var(--vk-subtext);">Коментарів немає</span>';
+                return;
+            }
+            snap.forEach(cDoc => {
+                const c = cDoc.data();
+                list.innerHTML += `<div class="comment-item"><span class="comment-author">${escapeText(c.authorName)}:</span> <span>${escapeText(c.text)}</span></div>`;
+            });
+        });
+    }
+
+    async function rateVideo(starsCount) {
+        if (!selectedVideoId) return;
+        const vRef = db.collection('videos').doc(selectedVideoId);
+        let ratings = selectedVideoData.ratings || {};
+        ratings[activeUser.id] = starsCount;
+        await vRef.update({ ratings });
+    }
+
+    async function sendVideoComment() {
+        const input = document.getElementById('video-comment-input');
+        const text = input.value.trim();
+        if (!text || !selectedVideoId) return;
+
+        await db.collection('videos').doc(selectedVideoId).collection('comments').add({
+            authorId: activeUser.id,
+            authorName: userFullName,
+            text: text,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        input.value = '';
+    }
+
     async function commitCreateGroup() {
         const name = document.getElementById('group-name-input').value.trim();
         const desc = document.getElementById('group-desc-input').value.trim();
@@ -2075,6 +2306,56 @@
         }
     }
 
+    // ГРАФІТІ В ЧАТІ
+    const chatCanvas = document.getElementById('chat-graffiti-canvas');
+    const chatCtx = chatCanvas.getContext('2d');
+    let isChatDrawing = false;
+    let currentChatColor = '#000000';
+    chatCtx.fillStyle = "#ffffff";
+    chatCtx.fillRect(0, 0, chatCanvas.width, chatCanvas.height);
+
+    function getChatCoords(e) {
+        const rect = chatCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: (clientX - rect.left) * (chatCanvas.width / rect.width),
+            y: (clientY - rect.top) * (chatCanvas.height / rect.height)
+        };
+    }
+
+    chatCanvas.addEventListener('mousedown', (e) => { isChatDrawing = true; const p = getChatCoords(e); chatCtx.beginPath(); chatCtx.moveTo(p.x, p.y); e.preventDefault(); });
+    chatCanvas.addEventListener('mousemove', (e) => { if(!isChatDrawing) return; const p = getChatCoords(e); chatCtx.lineTo(p.x, p.y); chatCtx.strokeStyle = currentChatColor; chatCtx.lineWidth = 4; chatCtx.lineCap = 'round'; chatCtx.stroke(); e.preventDefault(); });
+    window.addEventListener('mouseup', () => { isChatDrawing = false; });
+    chatCanvas.addEventListener('touchstart', (e) => { isChatDrawing = true; const p = getChatCoords(e); chatCtx.beginPath(); chatCtx.moveTo(p.x, p.y); e.preventDefault(); }, {passive:false});
+    chatCanvas.addEventListener('touchmove', (e) => { if(!isChatDrawing) return; const p = getChatCoords(e); chatCtx.lineTo(p.x, p.y); chatCtx.strokeStyle = currentChatColor; chatCtx.lineWidth = 4; chatCtx.lineCap = 'round'; chatCtx.stroke(); e.preventDefault(); }, {passive:false});
+    window.addEventListener('touchend', () => { isChatDrawing = false; });
+
+    function setChatCanvasColor(col) { currentChatColor = col; }
+    function clearChatCanvas() { chatCtx.fillStyle="#ffffff"; chatCtx.fillRect(0,0,chatCanvas.width,chatCanvas.height); }
+
+    async function sendChatGraffitiMessage() {
+        const imgUrl = chatCanvas.toDataURL("image/png");
+        clearChatCanvas();
+        closeModal('modal-chat-graffiti');
+
+        const payload = {
+            senderId: activeUser.id,
+            senderName: userFullName,
+            type: 'graffiti',
+            imageUrl: imgUrl,
+            readBy: [activeUser.id],
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (currentChatMode === 'public') {
+            await db.collection('messages').add(payload);
+        } else {
+            const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
+            await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
+        }
+    }
+
     function listenToMessages() {
         if (chatUnsubscribe) { chatUnsubscribe(); chatUnsubscribe = null; }
 
@@ -2113,6 +2394,8 @@
                 let content = '';
                 if (m.type === 'voice') {
                     content = `<audio controls src="${m.audioUrl}" style="max-width: 180px; height: 26px;"></audio>`;
+                } else if (m.type === 'graffiti') {
+                    content = `<img src="${m.imageUrl}" style="max-width: 180px; border: 1px solid var(--vk-border); border-radius: 2px;" alt="Графіті">`;
                 } else if (m.type === 'game') {
                     let boardHtml = '<div class="ttt-board">';
                     for (let i = 0; i < 9; i++) {
