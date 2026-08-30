@@ -78,170 +78,130 @@
             flex-shrink: 0;
         }
 
-        /* ІНДИКАТОР ОНЛАЙНУ */
         .online-dot {
-            width: 9px;
-            height: 9px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
+            width: 9px; height: 9px; background-color: #4CAF50;
+            border-radius: 50%; display: inline-block; margin-right: 4px;
             box-shadow: 0 0 4px #4CAF50;
         }
         .offline-tag { color: gray; font-size: 11px; }
 
-        /* --- КЛАСИЧНИЙ РЕЙТИНГ VK --- */
         .rating-container { margin: 8px 0; width: 100%; }
         .rating-bar-bg { 
-            background: #d0d7de; 
-            height: 14px; 
-            border-radius: 2px; 
-            overflow: hidden; 
-            position: relative;
-            border: 1px solid #b3beca;
+            background: #d0d7de; height: 14px; border-radius: 2px; 
+            overflow: hidden; position: relative; border: 1px solid #b3beca;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
         }
         .rating-bar-fill { 
             background: linear-gradient(to bottom, #fcae39 0%, #ee8700 100%); 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.4s ease;
+            height: 100%; width: 0%; transition: width 0.4s ease;
         }
         .rating-text {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            color: #ffffff;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: bold; color: #ffffff;
             text-shadow: 0 1px 1px rgba(0,0,0,0.6);
         }
 
-        /* --- БЛОК ДРУЗІВ (СІТКА 3х2) --- */
         .friends-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            margin-top: 6px;
-            text-align: center;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+            margin-top: 6px; text-align: center;
         }
-        .friend-item { font-size: 10px; color: #3b6998; text-decoration: none; position: relative; }
+        .friend-item { font-size: 10px; color: #3b6998; cursor: pointer; position: relative; }
         .friend-avatar-wrapper { position: relative; width: 38px; height: 38px; margin: 0 auto 2px auto; }
         .friend-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #45688e;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
+            width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
+            background: #45688e; color: white; display: flex; align-items: center;
+            justify-content: center; font-weight: bold; font-size: 14px;
         }
         .friend-online-badge {
             position: absolute; bottom: 0; right: 0; width: 10px; height: 10px;
             background: #4CAF50; border: 2px solid var(--card-bg); border-radius: 50%;
         }
 
-        /* --- СПИСОК ДРУЗІВ У ВКЛАДЦІ --- */
         .friends-list-item {
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 8px 0; border-bottom: 1px solid var(--border-color);
         }
 
-        /* --- БЛОК ПОДАРУНКІВ --- */
         .gifts-container { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; }
         .gift-badge {
             background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px;
             padding: 4px; font-size: 16px; text-align: center; min-width: 32px;
         }
 
-        /* --- КОМЕНТАРІ --- */
         .comments-section {
-            margin-top: 8px;
-            padding-top: 6px;
-            border-top: 1px dashed var(--border-color);
-            background: rgba(0,0,0,0.02);
-            padding: 6px;
-            border-radius: 6px;
+            margin-top: 8px; padding: 6px; border-top: 1px dashed var(--border-color);
+            background: rgba(0,0,0,0.02); border-radius: 6px;
         }
         .comment-item { font-size: 11px; margin-bottom: 4px; }
         .comment-author { font-weight: bold; color: #3b6998; }
 
         .btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
+            background: var(--primary-color); color: white; border: none;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 13px;
         }
-
         .btn-sm { padding: 4px 8px; font-size: 12px; }
 
-        .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+        .nav-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; }
         .tab-btn {
-            flex: 1; padding: 8px 4px; text-align: center;
+            flex: 1; padding: 8px 4px; text-align: center; white-space: nowrap;
             background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px;
         }
         .tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
         textarea, select, input[type="text"] {
             width: 100%; padding: 8px; border: 1px solid var(--border-color);
-            border-radius: 6px; background: var(--card-bg);
-            color: var(--text-color); margin-bottom: 8px; font-size: 13px;
+            border-radius: 6px; background: var(--card-bg); color: var(--text-color);
+            margin-bottom: 8px; font-size: 13px;
         }
 
         .post-actions {
             display: flex; gap: 12px; margin-top: 8px;
             border-top: 1px solid var(--border-color); padding-top: 6px;
         }
-
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* --- ПК РЕЖИМ --- */
-        body.mode-pc {
-            background-color: #ffffff !important;
-            font-family: tahoma, arial, verdana, sans-serif !important;
-            font-size: 11px !important;
-            padding: 0 !important;
+        /* АУДІОПЛЕЄР */
+        .audio-player-card {
+            background: #f4f7fa; border: 1px solid #c3cedc; border-radius: 6px;
+            padding: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
         }
+        .audio-controls { display: flex; gap: 6px; }
 
+        /* ЧАТ / МЕСЕНДЖЕР */
+        .chat-box {
+            height: 250px; overflow-y: auto; border: 1px solid var(--border-color);
+            padding: 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.01);
+        }
+        .chat-msg { margin-bottom: 6px; font-size: 12px; }
+        .chat-msg.my { text-align: right; color: #2b587a; }
+        .chat-msg .author { font-weight: bold; }
+
+        /* ПК РЕЖИМ */
+        body.mode-pc {
+            background-color: #ffffff !important; font-family: tahoma, arial, verdana, sans-serif !important;
+            font-size: 11px !important; padding: 0 !important;
+        }
         body.mode-pc .mobile-header { display: none !important; }
         body.mode-pc .desktop-header {
-            display: flex !important;
-            background: #45688e; height: 30px; color: white;
-            align-items: center; justify-content: space-between;
-            padding: 0 15px; font-size: 11px;
+            display: flex !important; background: #45688e; height: 30px; color: white;
+            align-items: center; justify-content: space-between; padding: 0 15px; font-size: 11px;
         }
         body.mode-pc .desktop-header a { color: #d2e2f2; text-decoration: none; margin-left: 10px; }
-
-        body.mode-pc .main-wrapper {
-            display: flex; width: 790px; margin: 10px auto; gap: 15px;
-        }
-
+        body.mode-pc .main-wrapper { display: flex; width: 790px; margin: 10px auto; gap: 15px; }
         body.mode-pc .desktop-nav { display: block !important; width: 140px; flex-shrink: 0; }
         body.mode-pc .desktop-nav ul { list-style: none; padding: 0; margin: 0; }
         body.mode-pc .desktop-nav li a { display: block; padding: 2px 4px; color: #2b587a; text-decoration: none; }
-
         body.mode-pc .card { border-radius: 0; border: none; box-shadow: none; padding: 0; background: transparent; }
         body.mode-pc .avatar { border-radius: 0; width: 160px; height: 160px; border: 1px solid #ccc; }
         body.mode-pc .nav-tabs { display: none !important; }
-        
         body.mode-pc .vk-section-header {
-            background: #dbe0ea; color: #36577c; font-weight: bold;
-            padding: 3px 5px; border-bottom: 1px solid #b9c4da; margin-bottom: 8px;
-            display: flex; justify-content: space-between;
+            background: #dbe0ea; color: #36577c; font-weight: bold; padding: 3px 5px;
+            border-bottom: 1px solid #b9c4da; margin-bottom: 8px; display: flex; justify-content: space-between;
         }
-
         body.mode-pc .vk-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         body.mode-pc .vk-table td { padding: 2px 0; vertical-align: top; }
         body.mode-pc .vk-table td.label { color: #666; width: 120px; }
@@ -254,16 +214,17 @@
     <div class="desktop-header">
         <div style="font-weight: bold;">На Зв'язку</div>
         <div>
-            <a href="#" onclick="comingSoon('Новини')">новини</a>
-            <a href="#" onclick="comingSoon('Люди')">люди</a>
-            <a href="#" onclick="switchTab('friends')">запросити</a>
+            <a href="#" onclick="switchTab('feed')">моя сторінка</a>
+            <a href="#" onclick="switchTab('audio')">музика</a>
+            <a href="#" onclick="switchTab('friends')">друзі</a>
+            <a href="#" onclick="switchTab('guests')">гості</a>
             <a href="#" onclick="switchTab('settings')">налаштування</a>
         </div>
     </div>
 
     <!-- Мобільна Шапка -->
     <div class="header mobile-header">
-        <h3 style="margin:0;">На Зв'язку 🇺🇦</h3>
+        <h3 style="margin:0;">На Зв'язку 🇺АК</h3>
         <div>
             <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
             <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
@@ -273,14 +234,13 @@
     <div class="main-wrapper">
         <!-- Ліве меню ПК -->
         <div class="desktop-nav">
-            <input type="text" placeholder="🔍 Пошук" style="width:100%; margin-bottom: 5px; font-size:11px;" onfocus="comingSoon('Пошук')">
+            <input type="text" placeholder="🔍 Пошук" style="width:100%; margin-bottom: 5px; font-size:11px;">
             <ul>
                 <li><a href="#" onclick="switchTab('feed')">Моя сторінка</a></li>
                 <li><a href="#" onclick="switchTab('friends')">Мої друзі</a></li>
-                <li><a href="#" onclick="comingSoon('Мої Фотографії')">Мої фотографії</a></li>
-                <li><a href="#" onclick="comingSoon('Мої Аудіозаписи')">Мої аудіозаписи</a></li>
-                <li><a href="#" onclick="comingSoon('Мої Ігри')">Мої ігри</a></li>
-                <li><a href="#" onclick="switchTab('settings')">Мої налаштування</a></li>
+                <li><a href="#" onclick="switchTab('audio')">Моя музика</a></li>
+                <li><a href="#" onclick="switchTab('guests')">Мої гості</a></li>
+                <li><a href="#" onclick="switchTab('settings')">Налаштування</a></li>
             </ul>
         </div>
 
@@ -289,9 +249,12 @@
             <div class="nav-tabs">
                 <div class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed')">📰 Стіна</div>
                 <div class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends')">👥 Друзі</div>
-                <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Налаштування</div>
+                <div class="tab-btn" id="tab-btn-audio" onclick="switchTab('audio')">🎵 Музика</div>
+                <div class="tab-btn" id="tab-btn-guests" onclick="switchTab('guests')">👁️ Гості</div>
+                <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Режим</div>
             </div>
 
+            <!-- ВКЛАДКА ПРОФІЛЬ ТА СТІНА -->
             <div id="tab-feed">
                 <div class="card">
                     <div class="profile-container">
@@ -301,7 +264,6 @@
                                 <div id="user-avatar-placeholder" class="avatar">V</div>
                             </div>
                             
-                            <!-- Класична шкала рейтингу VK -->
                             <div class="rating-container">
                                 <div class="rating-bar-bg">
                                     <div id="rating-bar-fill" class="rating-bar-fill"></div>
@@ -312,7 +274,6 @@
                             <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
                             <a style="font-size:11px; color:#3b6998; cursor:pointer; display:block; margin-bottom: 8px;" onclick="document.getElementById('avatar-input').click()">Змінити фото</a>
 
-                            <!-- Блок «Подарунки» -->
                             <div class="vk-section-header" style="font-size: 10px; margin-top: 6px;">
                                 Подарунки <a class="vk-link" onclick="sendGift()" style="font-size: 9px;">[+ надіслати]</a>
                             </div>
@@ -322,7 +283,6 @@
                                 <div class="gift-badge">🏆</div>
                             </div>
 
-                            <!-- Блок СПРАВЖНІХ ДРУЗІВ (СІТКА) -->
                             <div class="vk-section-header" style="font-size: 10px; margin-top: 10px;">
                                 Друзі (<span id="profile-friends-count">0</span>)
                             </div>
@@ -334,7 +294,6 @@
                         <div style="flex-grow: 1; min-width: 0;">
                             <h3 id="user-name" style="margin:0 0 2px 0; font-size: 15px; color: #3b6998; word-break: break-word;">Користувач</h3>
                             
-                            <!-- Текст статусу -->
                             <div style="font-size: 11px; margin-bottom: 6px;">
                                 <span id="user-status" style="font-style: italic; color: #444;">[встановити статус]</span>
                                 <a class="vk-link" style="font-size: 10px; margin-left: 4px;" onclick="toggleStatusInput()">[зм.]</a>
@@ -344,16 +303,11 @@
                                 </div>
                             </div>
 
-                            <!-- Справжній Онлайн Специфікатор VK -->
                             <p style="margin:0 0 8px 0; font-size: 11px;">
                                 <span class="online-dot"></span><b style="color: #4CAF50;">Online</b>
                             </p>
 
                             <table class="vk-table" style="font-size: 11px; width: 100%;">
-                                <tr>
-                                    <td class="label">Стать:</td>
-                                    <td><span id="gender-val">чоловіча</span></td>
-                                </tr>
                                 <tr>
                                     <td class="label">Місто:</td>
                                     <td><span id="city-val">Україна</span></td>
@@ -363,16 +317,12 @@
                                     <td>
                                         <span id="status-val">Одружений</span> 
                                         <a class="vk-link" style="font-size: 10px; margin-left: 5px;" onclick="toggleStatusEdit()">[ред.]</a>
-                                        
                                         <div id="status-edit-box" class="hidden" style="margin-top: 4px;">
                                             <select id="status-select" onchange="saveRelationshipStatus(this.value)" style="font-size: 11px; padding: 2px;">
                                                 <option value="Не вказано">Не вказано</option>
                                                 <option value="Неодружений / Незаміжня">Неодружений / Незаміжня</option>
                                                 <option value="Закоханий / Закохана">Закоханий / Закохана</option>
-                                                <option value="Заручений / Заручена">Заручений / Заручена</option>
                                                 <option value="Одружений / Заміжня">Одружений / Заміжня</option>
-                                                <option value="У цивільному шлюбі">У цивільному шлюбі</option>
-                                                <option value="Все складно">Все складно</option>
                                                 <option value="У активному пошуку">У активному пошуку</option>
                                             </select>
                                         </div>
@@ -380,7 +330,6 @@
                                 </tr>
                             </table>
 
-                            <!-- Блок «Особиста інформація» -->
                             <div class="vk-section-header" style="cursor: pointer;" onclick="toggleMoreInfo()">
                                 <span>Особиста інформація</span>
                                 <span id="more-info-toggle-btn" class="vk-link">[показати]</span>
@@ -389,23 +338,14 @@
                             <div id="more-info-box" class="hidden">
                                 <table class="vk-table" style="font-size: 11px; width: 100%;">
                                     <tr>
-                                        <td class="label">Телефон:</td>
-                                        <td><span id="phone-val">Не вказано</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="label">Освіта:</td>
-                                        <td><span id="edu-val">Вища</span></td>
-                                    </tr>
-                                    <tr>
                                         <td class="label">Інтереси:</td>
-                                        <td><span id="interests-val">Програмування, Технології</span></td>
+                                        <td><span id="interests-val">Музика, Технології</span></td>
                                     </tr>
                                     <tr>
                                         <td class="label">Про себе:</td>
                                         <td><span id="about-val">Розробник «На Зв'язку» 🚀</span></td>
                                     </tr>
                                 </table>
-                                <a class="vk-link" style="font-size: 10px;" onclick="editProfileInfo()">[Редагувати деталі]</a>
                             </div>
                         </div>
                     </div>
@@ -415,6 +355,7 @@
                 <div class="card">
                     <div class="vk-section-header">Стіна</div>
                     <textarea id="post-input" rows="2" placeholder="Що у вас нового?"></textarea>
+                    <input type="text" id="post-image-input" placeholder="Посилання на картинку (необов'язково URL)..." style="font-size:11px;">
                     <button class="btn" style="width: 100%;" onclick="createPost()">Опублікувати</button>
                 </div>
 
@@ -423,22 +364,65 @@
                 </div>
             </div>
 
-            <!-- ВКЛАДКА ДРУЗІ (СПРАВЖНІ ДРУЗІ ІЗ МЕРЕЖІ) -->
+            <!-- ВКЛАДКА ДРУЗІ -->
             <div id="tab-friends" class="card hidden">
                 <div class="vk-section-header">Усі Користувачі та Друзі</div>
                 <div id="full-friends-list">
-                    <p style="font-size:12px; color:gray;">Завантаження списку користувачів...</p>
+                    <p style="font-size:12px; color:gray;">Завантаження списку...</p>
                 </div>
                 <br>
-                <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити ще друзів в Telegram</button>
+                <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити друзів у Telegram</button>
             </div>
 
+            <!-- ВКЛАДКА ОСОБИСТИЙ ЧАТ -->
+            <div id="tab-chat" class="card hidden">
+                <div class="vk-section-header" style="display:flex; justify-content:space-between;">
+                    <span>Чат з <b id="chat-partner-name">Другом</b></span>
+                    <a class="vk-link" onclick="switchTab('friends')">[Назад]</a>
+                </div>
+                <div id="chat-messages-box" class="chat-box"></div>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" id="chat-input" placeholder="Напишіть повідомлення..." style="margin:0;">
+                    <button class="btn btn-sm" onclick="sendChatMessage()">Надіслати</button>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА МУЗИКА -->
+            <div id="tab-audio" class="card hidden">
+                <div class="vk-section-header">Мої Аудіозаписи</div>
+                
+                <div style="margin-bottom:12px; padding:8px; background:rgba(0,0,0,0.02); border-radius:6px;">
+                    <b style="font-size:11px;">Додати трек:</b>
+                    <input type="text" id="audio-title-input" placeholder="Назва треку (напр. Океан Ельзи - Без бою)">
+                    <input type="text" id="audio-url-input" placeholder="Пряме посилання на MP3 файл">
+                    <button class="btn btn-sm" onclick="addAudioTrack()">Додати аудіозапис</button>
+                </div>
+
+                <audio id="global-audio-player" style="display:none;"></audio>
+
+                <div id="audio-list">
+                    <!-- Зауваження: використовується безкоштовний відкритий MP3 для тесту -->
+                    <div class="audio-player-card">
+                        <button class="btn btn-sm" onclick="playTrack('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 'Класичний трек 1')">▶</button>
+                        <div style="font-size:12px; flex-grow:1;"><b>SoundHelix</b> — Song 1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА ГОСТІ -->
+            <div id="tab-guests" class="card hidden">
+                <div class="vk-section-header">Гості Моєї Сторінки</div>
+                <div id="guests-list">
+                    <p style="font-size:12px; color:gray;">Тут відображаються ті, хто відкривав вашу сторінку.</p>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА НАЛАШТУВАННЯ -->
             <div id="tab-settings" class="card hidden">
                 <div class="vk-section-header">Мої Налаштування</div>
-                
                 <label style="font-weight: bold; display: block; margin: 10px 0 5px 0; font-size: 12px;">Версія дизайну:</label>
                 <select id="view-mode-select" onchange="changeViewMode(this.value)">
-                    <option value="auto">📱 Мобільна версія (За замовчуванням)</option>
+                    <option value="auto">📱 Мобільна версія</option>
                     <option value="pc">💻 ПК версія (ВКонтакті 2006)</option>
                 </select>
             </div>
@@ -457,20 +441,16 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         let currentUserId = "guest_" + Math.random().toString(36).substr(2, 9);
         let currentUserName = "Користувач";
         let currentUserAvatar = "";
-        let hasCustomAvatar = false;
-        let userStatusText = "";
+        let activeChatUserId = null;
+        let chatUnsubscribe = null;
 
-        // Ініціалізація та реєстрація користувача в БД
         document.addEventListener('DOMContentLoaded', async () => {
-            let savedStatus = localStorage.getItem('user_relationship_status') || 'Одружений';
-
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
                 currentUserId = user.id.toString();
@@ -479,82 +459,185 @@
 
                 document.getElementById('user-name').innerText = currentUserName;
                 document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
-
-                if (user.photo_url) {
-                    setAvatar(user.photo_url);
-                }
+                if (user.photo_url) setAvatar(user.photo_url);
             }
 
-            // Авто-реєстрація / оновлення Онлайн статусу в Firebase
             try {
                 await db.collection("users").doc(currentUserId).set({
                     name: currentUserName,
                     avatarUrl: currentUserAvatar,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
+            } catch (e) { console.error("Помилка реєстрації:", e); }
 
-                // Читаємо налаштування користувача
-                const userDoc = await db.collection("users").doc(currentUserId).get();
-                if (userDoc.exists) {
-                    const data = userDoc.data();
-                    if (data.relationshipStatus) savedStatus = data.relationshipStatus;
-                    if (data.statusText) {
-                        userStatusText = data.statusText;
-                        document.getElementById('user-status').innerText = userStatusText;
-                    }
-                    if (data.interests) document.getElementById('interests-val').innerText = data.interests;
-                    if (data.about) document.getElementById('about-val').innerText = data.about;
-                }
-            } catch (e) {
-                console.error("Помилка реєстрації користувача: ", e);
-            }
-
-            document.getElementById('status-val').innerText = savedStatus;
-            document.getElementById('status-select').value = savedStatus;
-            updateRating();
-            
-            // Відстежувати користувачів (Друзів) у реальному часі
             listenToRealFriends();
+            listenToAudioTracks();
+            listenToGuests();
+            updateRating();
         });
 
-        // Слухач списку справжніх друзів/користувачів мережі
+        // 1. ПЕРСОНАЛЬНИЙ ЧАТ
+        function openChatWith(friendId, friendName) {
+            activeChatUserId = friendId;
+            document.getElementById('chat-partner-name').innerText = friendName;
+            switchTab('chat');
+
+            if (chatUnsubscribe) chatUnsubscribe();
+
+            const chatId = [currentUserId, friendId].sort().join("_");
+            chatUnsubscribe = db.collection("chats").doc(chatId).collection("messages")
+                .orderBy("createdAt", "asc")
+                .onSnapshot((snapshot) => {
+                    const box = document.getElementById('chat-messages-box');
+                    box.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const isMy = data.senderId === currentUserId;
+                        box.innerHTML += `
+                            <div class="chat-msg ${isMy ? 'my' : ''}">
+                                <span class="author">${data.senderName}:</span> ${data.text}
+                            </div>
+                        `;
+                    });
+                    box.scrollTop = box.scrollHeight;
+                });
+
+            // Запис у «Гості» для того, до кого зашли
+            db.collection("users").doc(friendId).collection("guests").doc(currentUserId).set({
+                name: currentUserName,
+                visitedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || !activeChatUserId) return;
+
+            const chatId = [currentUserId, activeChatUserId].sort().join("_");
+            await db.collection("chats").doc(chatId).collection("messages").add({
+                senderId: currentUserId,
+                senderName: currentUserName,
+                text: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = '';
+        }
+
+        // 2. АУДІОПЛЕЄР
+        function playTrack(url, title) {
+            const player = document.getElementById('global-audio-player');
+            player.src = url;
+            player.play();
+            alert(`Грає: ${title}`);
+        }
+
+        async function addAudioTrack() {
+            const title = document.getElementById('audio-title-input').value.trim();
+            const url = document.getElementById('audio-url-input').value.trim();
+            if (!title || !url) return alert("Заповніть назву та посилання!");
+
+            await db.collection("audio").add({
+                title: title, url: url, addedBy: currentUserName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('audio-title-input').value = '';
+            document.getElementById('audio-url-input').value = '';
+        }
+
+        function listenToAudioTracks() {
+            db.collection("audio").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                const list = document.getElementById('audio-list');
+                list.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    list.innerHTML += `
+                        <div class="audio-player-card">
+                            <button class="btn btn-sm" onclick="playTrack('${data.url}', '${data.title}')">▶</button>
+                            <div style="font-size:12px; flex-grow:1;"><b>${data.title}</b></div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // 3. ГОСТІ
+        function listenToGuests() {
+            db.collection("users").doc(currentUserId).collection("guests").onSnapshot((snapshot) => {
+                const box = document.getElementById('guests-list');
+                box.innerHTML = '';
+                if (snapshot.empty) {
+                    box.innerHTML = '<p style="font-size:12px; color:gray;">Поки ніхто не заходив.</p>';
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    box.innerHTML += `
+                        <div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">
+                            👁️ <b>${data.name}</b> заходив(ла) до вас
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // 4. СТІНА ТА ПОСТИ З КАРТИНКАМИ
+        async function createPost() {
+            const text = document.getElementById('post-input').value.trim();
+            const imageUrl = document.getElementById('post-image-input').value.trim();
+            if (!text && !imageUrl) return;
+
+            await db.collection("posts").add({
+                author: currentUserName, text: text, imageUrl: imageUrl,
+                likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('post-input').value = '';
+            document.getElementById('post-image-input').value = '';
+        }
+
+        db.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const postId = doc.id;
+                const imageHtml = data.imageUrl ? `<img src="${data.imageUrl}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : '';
+
+                container.innerHTML += `
+                    <div class="card" style="padding:10px; margin-bottom:8px;">
+                        <b style="color:#3b6998; font-size:12px;">${data.author}</b>
+                        <p style="margin:4px 0; font-size:13px;">${data.text || ''}</p>
+                        ${imageHtml}
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
+
+        // 5. ДРУЗІ
         function listenToRealFriends() {
             db.collection("users").onSnapshot((snapshot) => {
                 const grid = document.getElementById('profile-friends-grid');
                 const fullList = document.getElementById('full-friends-list');
-                
-                grid.innerHTML = '';
-                fullList.innerHTML = '';
-
-                let totalFriends = 0;
-                const now = new Date();
+                grid.innerHTML = ''; fullList.innerHTML = '';
+                let totalFriends = 0; const now = new Date();
 
                 snapshot.forEach((doc) => {
-                    if (doc.id === currentUserId) return; // Пропускаємо самого себе
-
+                    if (doc.id === currentUserId) return;
                     totalFriends++;
                     const data = doc.data();
                     const name = data.name || "Користувач";
-                    const avatar = data.avatarUrl;
-                    
-                    // Перевіряємо активність (якщо заходив в межах останніх 5 хвилин - Online)
-                    let isOnline = false;
-                    if (data.lastSeen && data.lastSeen.toDate) {
-                        const lastSeenTime = data.lastSeen.toDate();
-                        const diffMinutes = (now - lastSeenTime) / 1000 / 60;
-                        if (diffMinutes <= 5) isOnline = true;
-                    }
+                    let isOnline = data.lastSeen && (now - data.lastSeen.toDate()) / 1000 / 60 <= 5;
 
-                    // 1. Заповнюємо сітку (перші 6 друзів у профілі)
                     if (totalFriends <= 6) {
-                        const avatarContent = avatar 
-                            ? `<img src="${avatar}" class="friend-avatar">`
-                            : `<div class="friend-avatar">${name[0]}</div>`;
-
                         grid.innerHTML += `
-                            <div class="friend-item">
+                            <div class="friend-item" onclick="openChatWith('${doc.id}', '${name}')">
                                 <div class="friend-avatar-wrapper">
-                                    ${avatarContent}
+                                    <div class="friend-avatar">${name[0]}</div>
                                     ${isOnline ? '<div class="friend-online-badge"></div>' : ''}
                                 </div>
                                 <div>${name.split(' ')[0]}</div>
@@ -562,253 +645,58 @@
                         `;
                     }
 
-                    // 2. Заповнюємо вкладку "Мої Друзі"
-                    const fullAvatar = avatar 
-                        ? `<img src="${avatar}" class="friend-avatar">`
-                        : `<div class="friend-avatar">${name[0]}</div>`;
-
                     fullList.innerHTML += `
                         <div class="friends-list-item">
-                            ${fullAvatar}
                             <div>
                                 <b style="color:#3b6998; font-size:13px;">${name}</b>
-                                <div style="font-size:11px;">
-                                    ${isOnline ? '<span class="online-dot"></span><b style="color:#4CAF50;">Online</b>' : '<span class="offline-tag">Offline</span>'}
-                                </div>
+                                <div style="font-size:11px;">${isOnline ? '<span class="online-dot"></span>Online' : 'Offline'}</div>
                             </div>
+                            <button class="btn btn-sm" onclick="openChatWith('${doc.id}', '${name}')">💬 Повідомлення</button>
                         </div>
                     `;
                 });
-
                 document.getElementById('profile-friends-count').innerText = totalFriends;
-
-                if (totalFriends === 0) {
-                    grid.innerHTML = '<p style="font-size:10px; color:gray; grid-column: span 3;">У вас поки немає друзів. Запросіть їх!</p>';
-                    fullList.innerHTML = '<p style="font-size:12px; color:gray;">Ще жоден ваш друг не заходив у додаток.</p>';
-                }
             });
         }
 
-        // Підрахунок рейтингу
-        function updateRating() {
-            let rating = 25;
-            if (hasCustomAvatar) rating += 30;
-            if (document.getElementById('gender-val').innerText.trim() !== '') rating += 10;
-            if (document.getElementById('city-val').innerText.trim() !== '') rating += 10;
-            
-            const relStatus = document.getElementById('status-val').innerText.trim();
-            if (relStatus !== '' && relStatus !== 'Не вказано') rating += 10;
-
-            if (userStatusText && userStatusText !== '[встановити статус]') rating += 15;
-
-            if (rating > 100) rating = 100;
-
-            document.getElementById('rating-bar-fill').style.width = rating + '%';
-            document.getElementById('rating-text').innerText = '+' + rating + '%';
-        }
-
-        function toggleStatusInput() {
-            document.getElementById('status-input-box').classList.toggle('hidden');
-        }
-
-        async function saveStatusText() {
-            const inputVal = document.getElementById('status-text-input').value.trim();
-            if (!inputVal) return;
-
-            userStatusText = inputVal;
-            document.getElementById('user-status').innerText = userStatusText;
-            toggleStatusInput();
-            updateRating();
-
-            try {
-                await db.collection("users").doc(currentUserId).set({
-                    statusText: userStatusText
-                }, { merge: true });
-            } catch (e) { console.error("Помилка зберігання статусу: ", e); }
-        }
-
-        function toggleMoreInfo() {
-            const box = document.getElementById('more-info-box');
-            const btn = document.getElementById('more-info-toggle-btn');
-            box.classList.toggle('hidden');
-            btn.innerText = box.classList.contains('hidden') ? '[показати]' : '[приховати]';
-        }
-
-        async function editProfileInfo() {
-            const newInterests = prompt("Введіть ваші інтереси:", document.getElementById('interests-val').innerText);
-            const newAbout = prompt("Розповедіть про себе:", document.getElementById('about-val').innerText);
-
-            if (newInterests !== null) document.getElementById('interests-val').innerText = newInterests;
-            if (newAbout !== null) document.getElementById('about-val').innerText = newAbout;
-
-            try {
-                await db.collection("users").doc(currentUserId).set({
-                    interests: document.getElementById('interests-val').innerText,
-                    about: document.getElementById('about-val').innerText
-                }, { merge: true });
-            } catch (e) { console.error(e); }
-        }
-
-        function sendGift() {
-            const gifts = ['🥊', '🐱', '⚽', '🚗', '🍰'];
-            const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
-            const list = document.getElementById('gifts-list');
-            const badge = document.createElement('div');
-            badge.className = 'gift-badge';
-            badge.innerText = randomGift;
-            list.appendChild(badge);
-            alert("Ви відправили подарунок!");
-        }
-
-        function toggleStatusEdit() {
-            document.getElementById('status-edit-box').classList.toggle('hidden');
-        }
-
-        async function saveRelationshipStatus(val) {
-            document.getElementById('status-val').innerText = val;
-            localStorage.setItem('user_relationship_status', val);
-            toggleStatusEdit();
-            updateRating();
-
-            try {
-                await db.collection("users").doc(currentUserId).set({
-                    relationshipStatus: val,
-                    name: currentUserName
-                }, { merge: true });
-            } catch (e) { console.error("Помилка збереження в БД: ", e); }
-        }
-
-        function comingSoon(featureName) {
-            alert(`Розділ «${featureName}» з'явиться в наступних оновленнях! 🚀`);
-        }
-
-        function uploadAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { setAvatar(e.target.result); };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function setAvatar(url) {
-            const img = document.getElementById('user-avatar-img');
-            const placeholder = document.getElementById('user-avatar-placeholder');
-            img.src = url;
-            img.classList.remove('hidden');
-            placeholder.classList.add('hidden');
-            hasCustomAvatar = true;
-            currentUserAvatar = url;
-            updateRating();
-        }
-
-        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-
-        function changeViewMode(mode) {
-            document.body.classList.remove('mode-auto', 'mode-pc');
-            document.body.classList.add(`mode-${mode}`);
-        }
-
+        // НАВІГАЦІЯ ТА ІНШІ ФУНКЦІЇ
         function switchTab(tab) {
-            document.getElementById('tab-feed').classList.add('hidden');
-            document.getElementById('tab-friends').classList.add('hidden');
-            document.getElementById('tab-settings').classList.add('hidden');
-
+            ['feed', 'friends', 'chat', 'audio', 'guests', 'settings'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (el) el.classList.add('hidden');
+            });
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            const target = document.getElementById(`tab-${tab}`);
+            if (target) target.classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-btn-${tab}`);
             if (activeBtn) activeBtn.classList.add('active');
         }
 
-        // Створення дописів
-        async function createPost() {
-            const text = document.getElementById('post-input').value.trim();
-            if (!text) return;
-
-            try {
-                await db.collection("posts").add({
-                    author: currentUserName,
-                    text: text,
-                    likes: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                document.getElementById('post-input').value = '';
-            } catch (error) { alert("Помилка публікації: " + error.message); }
+        function updateRating() {
+            document.getElementById('rating-bar-fill').style.width = '70%';
+            document.getElementById('rating-text').innerText = '+70%';
         }
 
-        function likePost(id, currentLikes) {
-            db.collection("posts").doc(id).update({ likes: currentLikes + 1 });
+        function toggleStatusInput() { document.getElementById('status-input-box').classList.toggle('hidden'); }
+        function saveStatusText() {
+            const val = document.getElementById('status-text-input').value;
+            document.getElementById('user-status').innerText = val;
+            toggleStatusInput();
         }
-
-        async function addComment(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const text = input.value.trim();
-            if (!text) return;
-
-            try {
-                await db.collection("posts").doc(postId).collection("comments").add({
-                    author: currentUserName,
-                    text: text,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                input.value = '';
-            } catch (e) { console.error("Помилка коментаря: ", e); }
+        function toggleMoreInfo() { document.getElementById('more-info-box').classList.toggle('hidden'); }
+        function toggleStatusEdit() { document.getElementById('status-edit-box').classList.toggle('hidden'); }
+        function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); }
+        function sendGift() { alert("Подарунок відправлено!"); }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+        function changeViewMode(m) { document.body.className = `mode-${m}`; }
+        function setAvatar(url) {
+            document.getElementById('user-avatar-img').src = url;
+            document.getElementById('user-avatar-img').classList.remove('hidden');
+            document.getElementById('user-avatar-placeholder').classList.add('hidden');
         }
-
-        // Пости у реальному часі
-        db.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-            const container = document.getElementById('posts-container');
-            container.innerHTML = '';
-
-            if (snapshot.empty) {
-                container.innerHTML = '<div class="card"><p style="margin:0; font-size:12px;">Стіна порожня. Будьте першим, хто напише!</p></div>';
-                return;
-            }
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const postId = doc.id;
-
-                const postHtml = `
-                    <div class="card" style="padding: 10px; margin-bottom: 8px;">
-                        <b style="color: #3b6998; font-size:12px;">${data.author || 'Анонім'}</b>
-                        <p style="margin: 4px 0; font-size:13px;">${data.text}</p>
-                        <div class="post-actions">
-                            <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ <span class="like-count">${data.likes || 0}</span></button>
-                        </div>
-                        
-                        <div class="comments-section">
-                            <div id="comments-list-${postId}"></div>
-                            <div style="display: flex; gap: 4px; margin-top: 4px;">
-                                <input type="text" id="comment-input-${postId}" placeholder="Написати коментар..." style="font-size: 11px; padding: 3px; margin: 0;">
-                                <button class="btn btn-sm" onclick="addComment('${postId}')">💬</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += postHtml;
-
-                db.collection("posts").doc(postId).collection("comments").orderBy("createdAt", "asc").onSnapshot((commentsSnap) => {
-                    const commentsBox = document.getElementById(`comments-list-${postId}`);
-                    if (!commentsBox) return;
-                    commentsBox.innerHTML = '';
-                    commentsSnap.forEach((cDoc) => {
-                        const cData = cDoc.data();
-                        commentsBox.innerHTML += `
-                            <div class="comment-item">
-                                <span class="comment-author">${cData.author}:</span> ${cData.text}
-                            </div>
-                        `;
-                    });
-                });
-            });
-        });
-
         function shareApp() {
-            const botUrl = "https://t.me/NaZviazku_UA_bot";
-            const text = "Приєднуйся до нової соціальної мережі «На Зв'язку»!";
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(text)}`);
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent("https://t.me/NaZviazku_UA_bot")}&text=Приєднуйся!`);
         }
     </script>
 </body>
