@@ -8,7 +8,7 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Firebase SDKs (Тільки безкоштовна база даних, без платного Storage) -->
+    <!-- Firebase SDKs (Безкоштовний тариф Spark, без прив'язки картки) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -730,7 +730,7 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Допоміжна функція швидкого стискання картинок перед записом у Firestore
+    // Допоміжна функція стискання картинок перед збереженням у Firestore
     function compressImageFile(file, maxWidth, quality, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -757,8 +757,8 @@
     // ==========================================================
     // 3. TELEGRAM ТА КОРИСТУВАЧ
     // ==========================================================
-    const BOT_USERNAME = "VASH_BOT_USERNAME"; // Вкажіть юзернейм свого бота без @
-    const APP_SHORTNAME = "app"; // Коротке ім'я додатка в BotFather
+    const BOT_USERNAME = "NaZviazku_UA_bot"; 
+    const APP_SHORTNAME = "app"; // Якщо в BotFather задано інше коротке ім'я додатка, змініть його тут
 
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
@@ -1250,7 +1250,6 @@
         input.value = '';
     }
 
-    // Запис аудіо з конвертацією у Base64 (без використання Google Storage)
     let voiceRecorder = null;
     let voiceChunks = [];
     let isVoiceRecording = false;
