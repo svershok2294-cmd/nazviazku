@@ -11,6 +11,8 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- YouTube IFrame Player API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         :root {
@@ -3784,7 +3786,33 @@
         if (!str) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
-</script>
+</script>    <!-- Контейнер для відеоплеєра YouTube (прихований) -->
+    <div id="youtube-player" style="display:none;"></div>
+
+    <script>
+        let player;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: '',
+                events: {
+                    'onReady': function(event) {
+                        console.log("YouTube плеєр готовий!");
+                    }
+                }
+            });
+        }
+
+        function playTrack(videoId, trackName) {
+            if (player && player.loadVideoById) {
+                player.loadVideoById(videoId);
+                console.log("Грає: " + trackName);
+            }
+        }
+    </script>
+
 
 </body>
 </html>
