@@ -128,7 +128,7 @@
         body.mode-pc { background-color: #ffffff !important; font-family: tahoma, arial, verdana, sans-serif !important; font-size: 11px !important; padding: 0 !important; }
         body.mode-pc .mobile-header { display: none !important; }
         body.mode-pc .desktop-header { display: flex !important; background: #45688e; height: 30px; color: white; align-items: center; justify-content: space-between; padding: 0 15px; font-size: 11px; }
-        body.mode-pc .desktop-header a { color: #d2e2f2; text-decoration: none; margin-left: 10px; }
+        body.mode-pc .desktop-header a, body.mode-pc .desktop-header button { color: #d2e2f2; text-decoration: none; margin-left: 10px; background: none; border: none; cursor: pointer; font-size: 11px; }
         body.mode-pc .main-wrapper { display: flex; width: 790px; margin: 10px auto; gap: 15px; }
         body.mode-pc .desktop-nav { display: block !important; width: 140px; flex-shrink: 0; }
         body.mode-pc .desktop-nav ul { list-style: none; padding: 0; margin: 0; }
@@ -147,12 +147,13 @@
     <div class="desktop-header">
         <div style="font-weight: bold;">На Зв'язку</div>
         <div>
-            <a href="#" onclick="switchTab('feed')">моя сторінка</a>
-            <a href="#" onclick="switchTab('friends')">друзі</a>
-            <a href="#" onclick="switchTab('groups')">групи</a>
-            <a href="#" onclick="switchTab('audio')">музика</a>
-            <a href="#" onclick="switchTab('notifs')">сповіщення 🔔</a>
-            <a href="#" onclick="switchTab('settings')">налаштування</a>
+            <a onclick="switchTab('feed')">моя сторінка</a>
+            <a onclick="switchTab('friends')">друзі</a>
+            <a onclick="switchTab('groups')">групи</a>
+            <a onclick="switchTab('audio')">музика</a>
+            <a onclick="switchTab('notifs')">сповіщення 🔔</a>
+            <a onclick="switchTab('settings')">налаштування</a>
+            <button onclick="changeViewMode('auto')" style="color:#ffd700; font-weight:bold;">📱 Мобільний вид</button>
         </div>
     </div>
 
@@ -162,6 +163,7 @@
         <div style="display:flex; gap:6px; align-items:center;">
             <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 6px; border-radius:12px;">🪙 <b id="user-coins-count">100</b></span>
             <button class="btn btn-sm" onclick="switchTab('notifs')">🔔</button>
+            <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
             <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
         </div>
     </div>
@@ -171,13 +173,13 @@
         <div class="desktop-nav">
             <input type="text" placeholder="🔍 Пошук" style="width:100%; margin-bottom: 5px; font-size:11px;">
             <ul>
-                <li><a href="#" onclick="switchTab('feed')">Моя сторінка</a></li>
-                <li><a href="#" onclick="switchTab('friends')">Мої друзі</a></li>
-                <li><a href="#" onclick="switchTab('groups')">Спільноти</a></li>
-                <li><a href="#" onclick="switchTab('audio')">Моя музика</a></li>
-                <li><a href="#" onclick="switchTab('guests')">Мої гості</a></li>
-                <li><a href="#" onclick="switchTab('notifs')">Сповіщення 🔔</a></li>
-                <li><a href="#" onclick="switchTab('settings')">Налаштування</a></li>
+                <li><a onclick="switchTab('feed')">Моя сторінка</a></li>
+                <li><a onclick="switchTab('friends')">Мої друзі</a></li>
+                <li><a onclick="switchTab('groups')">Спільноти</a></li>
+                <li><a onclick="switchTab('audio')">Моя музика</a></li>
+                <li><a onclick="switchTab('guests')">Мої гості</a></li>
+                <li><a onclick="switchTab('notifs')">Сповіщення 🔔</a></li>
+                <li><a onclick="switchTab('settings')">Налаштування</a></li>
             </ul>
         </div>
 
@@ -190,6 +192,7 @@
                 <div class="tab-btn" id="tab-btn-audio" onclick="switchTab('audio')">🎵 Музика</div>
                 <div class="tab-btn" id="tab-btn-guests" onclick="switchTab('guests')">👁️ Гості</div>
                 <div class="tab-btn" id="tab-btn-shop" onclick="switchTab('shop')">🎁 Лавка</div>
+                <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Налаштування</div>
             </div>
 
             <!-- ВКЛАДКА ПРОФІЛЬ ТА СТІНА -->
@@ -444,7 +447,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 🎯 ВСТАВЛЕНО ТВІЙ ТОЧНИЙ TELEGRAM ID:
         const ADMIN_TELEGRAM_ID = "325300795"; 
 
         let currentUserId = "guest_" + Math.random().toString(36).substr(2, 9);
@@ -643,7 +645,6 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Сповіщення
             if (recipientId !== currentUserId) {
                 await db.collection("users").doc(recipientId).collection("notifs").add({
                     text: `🎁 ${currentUserName} надіслав(ла) вам подарунок ${icon}!`,
@@ -870,12 +871,26 @@
         function toggleStatusEdit() { document.getElementById('status-edit-box').classList.toggle('hidden'); }
         function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); calculateVkRating(); }
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-        function changeViewMode(m) { document.body.className = `mode-${m}`; }
+
+        // ВИПРАВЛЕНО: Зміна версії вигляду без скидання інших класів body
+        function changeViewMode(mode) {
+            if (mode === 'pc') {
+                document.body.classList.remove('mode-auto');
+                document.body.classList.add('mode-pc');
+            } else {
+                document.body.classList.remove('mode-pc');
+                document.body.classList.add('mode-auto');
+            }
+            const select = document.getElementById('view-mode-select');
+            if (select) select.value = mode;
+        }
+
         function setAvatar(url) {
             document.getElementById('user-avatar-img').src = url;
             document.getElementById('user-avatar-img').classList.remove('hidden');
             document.getElementById('user-avatar-placeholder').classList.add('hidden');
         }
+
         function shareApp() {
             tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent("https://t.me/NaZviazku_UA_bot")}&text=Приєднуйся!`);
         }
