@@ -279,8 +279,8 @@
     <!-- ГОЛОВНА ШАПКА -->
     <header>
         <div class="logo" onclick="goHome()">
-            <span class="logo-box">зв'язок</span>
-            <span class="logo-title">На зв'язку</span>
+            <span class="logo-box">На</span>
+            <span class="logo-title">зв'яязку 🔱</span>
         </div>
         <div style="font-size: 11px; color: #dae2e8;">
             <span id="top-user-name">Завантаження...</span>
@@ -981,7 +981,6 @@
         const uData = doc.data();
         const uName = uData.name || "Користувач";
 
-        // Перевірка приватності профілю
         if (uData.privacyProfile === 'friends' && !userFriendsMap.has(targetId) && !checkIsAdmin(activeUser.id)) {
             vkAlert('Приватність', 'Користувач обмежив доступ до своєї сторінки для не-друзів.');
             return;
@@ -1424,7 +1423,6 @@
         if (!feedContainer) return;
         feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Завантаження новин...</div>';
 
-        // Збираємо пости зі стін усіх користувачів (обмежуємо для швидкості)
         db.collection('users').limit(15).get().then(userSnap => {
             let allPosts = [];
             let fetchedCount = 0;
@@ -1440,7 +1438,6 @@
                     });
                     fetchedCount++;
                     if (fetchedCount === userSnap.size) {
-                        // Сортуємо за часом
                         allPosts.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
                         renderNewsFeedHtml(allPosts, feedContainer);
                     }
@@ -1673,7 +1670,6 @@
     }
 
     function openDirectMessage(targetId, targetName) {
-        // Перевірка приватності повідомлень друга
         db.collection('users').doc(targetId).get().then(doc => {
             if (doc.exists && doc.data().privacyMessages === 'friends' && !userFriendsMap.has(targetId) && !checkIsAdmin(activeUser.id)) {
                 vkAlert('Приватність', 'Користувач приймає повідомлення тільки від друзів.');
@@ -1825,7 +1821,6 @@
             const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
             await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
         }
-        input.value.trim = '';
         input.value = '';
     }
 
@@ -1942,7 +1937,7 @@
         } catch (e) {}
     }
 
-    // Фотоальбоми із зірочками (оцінками 1-5) та коментарями
+    // Фотоальбоми з лайками та коментарями
     let selectedPhotoId = null;
     let selectedPhotoData = null;
 
@@ -1953,7 +1948,7 @@
         compressImageFile(file, 600, 0.75, async function(base64Photo) {
             await db.collection('users').doc(activeUser.id).collection('photos').add({
                 url: base64Photo,
-                ratings: {}, // зберігає оцінки користувачів {userId: starsCount}
+                ratings: {},
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             vkAlert('Світлини', 'Фото додано до альбому!');
@@ -2006,14 +2001,12 @@
             const ratings = selectedPhotoData.ratings || {};
             const userRating = ratings[activeUser.id] || 0;
 
-            // Підсвічуємо зірочки відповідно до оцінки користувача
             const stars = document.querySelectorAll('#photo-star-container span');
             stars.forEach((star, idx) => {
                 if (idx < userRating) star.classList.add('active');
                 else star.classList.remove('active');
             });
 
-            // Рахуємо середню оцінку
             let sum = 0, count = 0;
             for (let uid in ratings) {
                 sum += ratings[uid];
