@@ -360,16 +360,30 @@
                             <button id="avatar-change-btn" class="btn-vk-secondary" style="width: 100%; font-size: 10px; margin-top: 4px; display: none;" onclick="document.getElementById('avatar-file-input').click()">Змінити фото</button>
                         </div>
 
+                        <!-- НАЛАШТУВАННЯ ПІД АВАТАРКОЮ -->
+                        <div id="profile-action-btns" style="display: flex; gap: 4px; margin-top: 6px;">
+                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
+                            <button class="btn-vk" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">⚙️ Налаштування</button>
+                        </div>
+
                         <div class="rating-bar-container" id="profile-rating-container" title="Рейтинг профілю">
                             <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
                                 <span id="profile-rating-text" style="text-shadow: 0 1px 0 rgba(255,255,255,0.4);">100%</span>
                             </div>
                         </div>
 
-                        <!-- ДЛЯ ВЛАСНОГО ПРОФІЛЮ -->
-                        <div id="profile-action-btns" style="display: none; gap: 4px; margin-top: 6px;">
-                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
-                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
+                        <!-- ГАЛЕРЕЯ ПОДАРУНКІВ ПІД АВАТАРОМ -->
+                        <div class="side-block" id="avatar-gifts-block" style="display:none;">
+                            <div class="side-block-header"><span>🎁 Вітрина подарунків</span></div>
+                            <div class="gifts-list" id="avatar-gifts-grid" style="padding: 6px; display: flex; gap: 6px; overflow-x: auto; flex-wrap: wrap;"></div>
+                        </div>
+
+                        <!-- БЛОК ДОСЯГНЕНЬ (БЕДЖІ АВТОРИТЕТУ) -->
+                        <div class="side-block">
+                            <div class="side-block-header"><span>🏆 Трофеї та беджі</span></div>
+                            <div id="profile-badges-list" style="padding: 6px; display: flex; gap: 4px; flex-wrap: wrap; font-size: 14px;">
+                                🏆
+                            </div>
                         </div>
 
                         <!-- КНОПКА ЗАВДАНЬ ДЛЯ ДРУЗІВ -->
@@ -446,17 +460,6 @@
                                 <span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає фото</span>
                             </div>
                         </div>
-
-                        <!-- БЛОК ПОДАРУНКІВ -->
-                        <div class="side-block">
-                            <div class="side-block-header">
-                                <span>Подарунки (<span id="gifts-counter">0</span>)</span>
-                                <span style="font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="openModal('modal-gift')">подарувати</span>
-                            </div>
-                            <div class="gifts-list" id="gifts-grid" style="padding: 6px; display: flex; gap: 8px; overflow-x: auto;">
-                                <span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- ПРАВА КОЛОНКА ПРОФІЛЮ -->
@@ -470,6 +473,8 @@
                                     <span class="status-edit-link" id="status-edit-btn" style="display: none;" onclick="promptStatus()">[змінити]</span>
                                 </div>
                                 <div class="profile-music-status" id="profile-music-status"></div>
+                                <!-- МУЗИКА ПРОФІЛЮ ПЛЕЄР -->
+                                <div id="profile-favorite-music-box" style="margin-top: 4px; display: none;"></div>
                             </div>
                         </div>
 
@@ -757,7 +762,7 @@
                     <div style="color: var(--vk-subtext); padding: 10px;">Завантаження бібліотеки ігор...</div>
                 </div>
 
-                <!-- Вбудована Ретро-Ферма у вкладці ігор також -->
+                <!-- Вбудована Ретро-Ферма -->
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin: 15px 0 10px 0; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
                     🏡 Ретро-Ферма («Щаслива ферма»)
                 </div>
@@ -783,7 +788,7 @@
                         </div>
                     </div>
                     <div id="farm-animals-container">
-                        <div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>
+                        <div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас ще немає тварин. Купіть курку чи корову!</div>
                     </div>
                 </div>
             </div>
@@ -1120,10 +1125,10 @@
         </div>
         <div class="vk-modal-body">
             <div class="gifts-picker-row">
-                <div class="gift-select-item" onclick="pickGift('🌹', 'Троянда')"><span>🌹</span><br>Троянда</div>
-                <div class="gift-select-item" onclick="pickGift('🍫', 'Шоколад')"><span>🍫</span><br>Шоколад</div>
-                <div class="gift-select-item" onclick="pickGift('👑', 'Корона')"><span>👑</span><br>Корона</div>
-                <div class="gift-select-item" onclick="pickGift('🍺', 'Пиво')"><span>🍺</span><br>Пиво</div>
+                <div class="gift-select-item" onclick="pickGift('🌹', 'Троянда', 15)"><span>🌹</span><br>Троянда (15 🪙)</div>
+                <div class="gift-select-item" onclick="pickGift('🍫', 'Шоколад', 25)"><span>🍫</span><br>Шоколад (25 🪙)</div>
+                <div class="gift-select-item" onclick="pickGift('👑', 'Корона', 100)"><span>👑</span><br>Корона (100 🪙)</div>
+                <div class="gift-select-item" onclick="pickGift('🍺', 'Пиво', 40)"><span>🍺</span><br>Пиво (40 🪙)</div>
             </div>
             <input type="text" id="gift-message-text" class="input-vk modal-input" placeholder="Прикріпити побажання...">
             <div style="display: flex; justify-content: flex-end; gap: 6px;">
@@ -1200,7 +1205,6 @@
     window.addEventListener('resize', () => { if (userPreference === 'auto') syncLayout(); });
     syncLayout();
 
-    // Firebase конфігурація
     const firebaseConfig = {
         apiKey: "AIzaSyC5Ox_25cWYi12M3dMlCpCXKfT-oZub8ts",
         authDomain: "nazviazku.firebaseapp.com",
@@ -1251,6 +1255,8 @@
         rating: 100,
         status: "на зв'язку",
         currentTrack: "",
+        profileTrackUrl: "",
+        profileTrackName: "",
         coins: 100,
         wheat: 0,
         eggs: 0,
@@ -1309,6 +1315,21 @@
                 }
             }
 
+            const todayStr = new Date().toDateString();
+            if (activeUser.lastLoginDay !== todayStr) {
+                activeUser.coins = (activeUser.coins || 100) + 10;
+                activeUser.rating = (activeUser.rating || 100) + 2;
+                activeUser.lastLoginDay = todayStr;
+                await docRef.update({
+                    coins: activeUser.coins,
+                    rating: activeUser.rating,
+                    lastLoginDay: todayStr
+                });
+                setTimeout(() => {
+                    vkAlert('Щоденний бонус', 'Вітаємо у мережі! За активний вхід ви отримали +10 монет 🪙 та +2% до рейтингу ⭐!');
+                }, 1000);
+            }
+
             setInterval(() => {
                 db.collection('users').doc(activeUser.id).update({
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
@@ -1339,6 +1360,7 @@
         loadWallPosts(activeUser.id);
         loadProfileVisitors(activeUser.id);
         loadMyInstalledApps();
+        loadProfileGifts(activeUser.id);
         switchTab('profile');
     }
 
@@ -1369,6 +1391,7 @@
         loadWallPosts(targetId);
         loadProfileVisitors(targetId);
         loadUserInstalledApps(targetId);
+        loadProfileGifts(targetId);
         switchTab('profile');
     }
 
@@ -1389,6 +1412,25 @@
         });
     }
 
+    function loadProfileGifts(userId) {
+        const grid = document.getElementById('avatar-gifts-grid');
+        const block = document.getElementById('avatar-gifts-block');
+        if (!grid || !block) return;
+
+        db.collection('users').doc(userId).collection('gifts').onSnapshot(snap => {
+            if (snap.empty) {
+                block.style.display = 'none';
+                return;
+            }
+            block.style.display = 'block';
+            grid.innerHTML = '';
+            snap.forEach(d => {
+                const g = d.data();
+                grid.innerHTML += `<div title="${escapeText(g.comment || '')} (від: ${escapeText(g.sender)})" style="text-align: center; background:#f9f9f9; border:1px solid var(--vk-border); padding:4px; border-radius:2px;"><span style="font-size: 18px;">${g.emoji}</span></div>`;
+            });
+        });
+    }
+
     function calculateAge(dateString) {
         if (!dateString) return null;
         const today = new Date();
@@ -1399,6 +1441,18 @@
             age--;
         }
         return isNaN(age) ? null : age;
+    }
+
+    function renderBadges(uData, rating) {
+        const listEl = document.getElementById('profile-badges-list');
+        if (!listEl) return;
+        let badges = [];
+        if (rating >= 300) badges.push('<span title="Авторитетний користувач (300%+)">⭐</span>');
+        if (rating >= 1000 || checkIsAdmin(uData.id)) badges.push('<span title="Легенда мережі / Адмін">👑</span>');
+        if ((uData.wheat || 0) > 10) badges.push('<span title="Головний агроном (багато пшениці)">🌾</span>');
+        if ((uData.coins || 100) > 200) badges.push('<span title="Багатій (>200 монет)">💰</span>');
+        if (badges.length === 0) badges.push('<span style="font-size:10px; color:var(--vk-subtext);">Немає трофеїв</span>');
+        listEl.innerHTML = badges.join(' ');
     }
 
     function renderProfileInfo(u, uName, isMe, userId) {
@@ -1414,6 +1468,8 @@
 
         document.getElementById('profile-rating-text').innerText = `${displayRating}%`;
         document.getElementById('profile-rating-fill').style.width = `${Math.min(displayRating, 100)}%`;
+
+        renderBadges(u, displayRating);
 
         const fillEl = document.getElementById('profile-rating-fill');
         const containerEl = document.getElementById('profile-rating-container');
@@ -1439,7 +1495,6 @@
         fillEl.style.color = textCol;
         containerEl.style.borderColor = borderCol;
 
-        // ПРИВАТНІСТЬ ДАТИ НАРОДЖЕННЯ
         const isFriend = userFriendsMap.has(userId);
         const canSeeBirthdate = isMe || checkIsAdmin(activeUser.id) || u.privacyBirthdate === 'all' || (u.privacyBirthdate === 'friends' && isFriend);
         
@@ -1479,6 +1534,19 @@
         document.getElementById('info-movies').innerText = u.movies || 'не вказано';
         document.getElementById('info-quotes').innerText = u.quotes || 'не вказано';
         document.getElementById('info-about').innerText = u.about || 'не вказано';
+
+        const profileMusicBox = document.getElementById('profile-favorite-music-box');
+        if (u.profileTrackUrl) {
+            profileMusicBox.innerHTML = `
+                <div style="background:#f5f7fa; border:1px solid var(--vk-border); padding:4px 6px; border-radius:2px; display:flex; align-items:center; gap:6px;">
+                    <button class="vintage-play-btn" onclick="playProfileMusic('${u.profileTrackUrl}')">▶</button>
+                    <span style="font-size:10px; color:var(--vk-link);">Музика профілю: <b>${escapeText(u.profileTrackName || 'Трек')}</b></span>
+                </div>
+            `;
+            profileMusicBox.style.display = 'block';
+        } else {
+            profileMusicBox.style.display = 'none';
+        }
 
         const musicStatusEl = document.getElementById('profile-music-status');
         if (u.currentTrack) {
@@ -1525,6 +1593,29 @@
         }
 
         document.getElementById('wall-header-title').innerText = isMe ? 'Стіна' : `Стіна користувача ${uName}`;
+    }
+
+    let profileMusicObj = null;
+    function playProfileMusic(url) {
+        if (profileMusicObj && profileMusicObj.src === url) {
+            if (profileMusicObj.paused) profileMusicObj.play();
+            else profileMusicObj.pause();
+            return;
+        }
+        if (profileMusicObj) profileMusicObj.pause();
+        profileMusicObj = new Audio(url);
+        profileMusicObj.play();
+    }
+
+    async function setAsProfileMusic(artist, title, url) {
+        activeUser.profileTrackUrl = url;
+        activeUser.profileTrackName = `${artist} - ${title}`;
+        await db.collection('users').doc(activeUser.id).update({
+            profileTrackUrl: url,
+            profileTrackName: activeUser.profileTrackName
+        });
+        vkAlert('Аудіо', 'Трек успішно встановлено музикою вашого профілю!');
+        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
     }
 
     loadUserData();
@@ -1631,8 +1722,17 @@
             partnerStatus = '';
         }
 
+        let profileBonusCoins = 0;
+        let profileBonusRating = 0;
+        const filledCity = document.getElementById('edit-city').value.trim();
+        const filledAbout = document.getElementById('edit-about').value.trim();
+        if ((filledCity && !activeUser.city) || (filledAbout && !activeUser.about) || (newBirthDate && !activeUser.birthDate)) {
+            profileBonusCoins = 15;
+            profileBonusRating = 5;
+        }
+
         activeUser.birthDate = newBirthDate;
-        activeUser.city = document.getElementById('edit-city').value.trim();
+        activeUser.city = filledCity;
         activeUser.relationshipType = newRelType;
         activeUser.partnerId = newPartnerId;
         activeUser.partnerName = partnerName;
@@ -1651,7 +1751,9 @@
         activeUser.music = document.getElementById('edit-music').value.trim();
         activeUser.movies = document.getElementById('edit-movies').value.trim();
         activeUser.quotes = document.getElementById('edit-quotes').value.trim();
-        activeUser.about = document.getElementById('edit-about').value.trim();
+        activeUser.about = filledAbout;
+        activeUser.coins = (activeUser.coins || 100) + profileBonusCoins;
+        activeUser.rating = (activeUser.rating || 100) + profileBonusRating;
 
         await db.collection('users').doc(activeUser.id).update({
             birthDate: activeUser.birthDate,
@@ -1674,12 +1776,14 @@
             music: activeUser.music,
             movies: activeUser.movies,
             quotes: activeUser.quotes,
-            about: activeUser.about
+            about: activeUser.about,
+            coins: activeUser.coins,
+            rating: activeUser.rating
         });
 
         if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         closeModal('modal-edit-profile');
-        vkAlert('Успіх', 'Дані профілю та приватність успішно збережено!');
+        vkAlert('Успіх', profileBonusCoins > 0 ? `Анкету оновлено! Бонус за заповнення: +${profileBonusCoins} 🪙 та +${profileBonusRating}% до рейтингу!` : 'Дані профілю та приватність успішно збережено!');
     }
 
     let pendingRelationshipProposal = null;
@@ -1733,7 +1837,6 @@
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
     }
 
-    // КАТАЛОГ ТА ІГРОВИЙ АРХІВ ДОДАТКІВ
     async function commitAddAppToLibrary() {
         const title = document.getElementById('app-title-input').value.trim();
         const url = document.getElementById('app-url-input').value.trim();
@@ -1846,7 +1949,6 @@
         openModal('modal-play-game');
     }
 
-    // ЛОГІКА РЕТРО-ФЕРМИ
     function loadFarmData() {
         const farmContainer = document.getElementById('farm-plots-container');
         const animalsContainer = document.getElementById('farm-animals-container');
@@ -1892,7 +1994,7 @@
 
         db.collection('users').doc(activeUser.id).collection('farm_animals').onSnapshot(snap => {
             if (snap.empty) {
-                animalsContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>';
+                animalsContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас ще немає тварин. Купіть курку чи корову!</div>';
                 return;
             }
             animalsContainer.innerHTML = '';
@@ -3312,50 +3414,6 @@
         input.value = '';
     }
 
-    async function saveTrackToMyMusic(artist, title, url, duration) {
-        await db.collection('users').doc(activeUser.id).collection('my_music').add({
-            artist: artist,
-            title: title,
-            url: url,
-            duration: duration,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        vkAlert('Аудіо', 'Трек успішно додано до ваших аудіозаписів!');
-        loadSavedMusic();
-    }
-
-    function loadSavedMusic() {
-        const savedCont = document.getElementById('my-saved-music-container');
-        if (!savedCont) return;
-
-        db.collection('users').doc(activeUser.id).collection('my_music').orderBy('timestamp', 'desc').onSnapshot(snap => {
-            if (snap.empty) {
-                savedCont.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>';
-                return;
-            }
-            savedCont.innerHTML = '';
-            snap.forEach(doc => {
-                const tr = doc.data();
-                const row = document.createElement('div');
-                row.className = 'vintage-audio-row';
-                row.innerHTML = `
-                    <button class="vintage-play-btn" id="btn-save-play-${doc.id}">▶</button>
-                    <div class="audio-track-info">
-                        <b>${escapeText(tr.artist)}</b> — <span>${escapeText(tr.title)}</span>
-                    </div>
-                    <div class="audio-progress-bar" id="bar-save-${doc.id}">
-                        <div class="audio-progress-fill" id="fill-save-${doc.id}"></div>
-                    </div>
-                    <span class="audio-duration-text" id="dur-save-${doc.id}">${formatTime(tr.duration || 180)}</span>
-                `;
-                savedCont.appendChild(row);
-                const btn = row.querySelector(`#btn-save-play-${doc.id}`);
-                const fill = row.querySelector(`#fill-save-${doc.id}`);
-                btn.onclick = () => playVintageTrack(tr.url, tr.artist, tr.title, btn, fill);
-            });
-        });
-    }
-
     // Графіті
     const canvas = document.getElementById('graffiti-canvas');
     const ctx = canvas.getContext('2d');
@@ -3450,339 +3508,6 @@
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         input.value = '';
-    }
-
-    // ПРИВАТНІСТЬ СТІНИ ПРИ ЗАВАНТАЖЕННІ
-    function loadWallPosts(targetId) {
-        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
-
-        db.collection('users').doc(targetId).get().then(userDoc => {
-            if (userDoc.exists && !viewingGroupId) {
-                const uData = userDoc.data();
-                const isMe = (targetId === activeUser.id);
-                const isFriend = userFriendsMap.has(targetId);
-                const canSeeWall = isMe || checkIsAdmin(activeUser.id) || uData.privacyWall === 'all' || (uData.privacyWall === 'friends' && isFriend) || (uData.privacyWall === 'nobody' && isMe);
-
-                const cont = document.getElementById('wall-posts-list');
-                if (!cont) return;
-
-                if (!canSeeWall) {
-                    cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">Користувач обмежив доступ до своєї стіни.</div>';
-                    document.getElementById('wall-counter').innerText = '0 записів';
-                    return;
-                }
-            }
-
-            targetCollection.orderBy('timestamp', 'desc').onSnapshot(snap => {
-                const cont = document.getElementById('wall-posts-list');
-                if (!cont) return;
-                cont.innerHTML = '';
-                document.getElementById('wall-counter').innerText = `${snap.size} записів`;
-
-                if (snap.empty) {
-                    cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">На стіні поки немає записів.</div>';
-                    return;
-                }
-
-                snap.forEach(docSnap => {
-                    const p = docSnap.data();
-                    const id = docSnap.id;
-                    const isLiked = p.likes && p.likes.includes(activeUser.id);
-                    const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
-
-                    const canDelete = (p.authorId === activeUser.id) || (viewingProfileId === activeUser.id) || (viewingGroupId && currentGroupCreatorId === activeUser.id) || checkIsAdmin(activeUser.id);
-
-                    let bodyHtml = p.type === 'graffiti'
-                        ? `<img src="${p.imageUrl}" class="post-image" alt="Графіті">`
-                        : `<div class="post-text">${formatTextWithHashtags(p.text)}</div>`;
-
-                    cont.innerHTML += `
-                        <div class="post-card">
-                            <img src="${p.authorAvatar}" class="post-author-pic" alt="Аватар">
-                            <div class="post-body">
-                                <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
-                                ${bodyHtml}
-                                <div class="post-footer">
-                                    <span>${dateStr}</span>
-                                    <span class="post-action" onclick="togglePostLike('${id}')">
-                                        ${isLiked ? 'Не подобається' : 'Мені подобається'} (${p.likes ? p.likes.length : 0})
-                                    </span>
-                                    <span class="post-action" onclick="toggleCommentsSection('${id}')">Коментувати</span>
-                                    ${canDelete ? `<span class="post-action" style="color: #c62828;" onclick="deleteWallPost('${id}')">Видалити</span>` : ''}
-                                </div>
-                                <div id="comments-box-${id}" class="comments-container" style="display: none;">
-                                    <div id="comments-list-${id}">Завантаження...</div>
-                                    <div class="comment-input-row">
-                                        <input type="text" id="comment-input-${id}" class="input-vk" style="flex: 1;" placeholder="Написати коментар..." onkeypress="if(event.key==='Enter') sendPostComment('${id}')">
-                                        <button class="btn-vk" onclick="sendPostComment('${id}')">ОК</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        });
-    }
-
-    async function deleteWallPost(postId) {
-        if (!confirm('Видалити цей запис?')) return;
-        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
-        await targetCollection.doc(postId).delete();
-    }
-
-    async function togglePostLike(id) {
-        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
-        const ref = targetCollection.doc(id);
-        const doc = await ref.get();
-        if (!doc.exists) return;
-        let likes = doc.data().likes || [];
-        likes = likes.includes(activeUser.id) ? likes.filter(uid => uid !== activeUser.id) : [...likes, activeUser.id];
-        await ref.update({ likes });
-    }
-
-    function toggleCommentsSection(postId) {
-        const box = document.getElementById(`comments-box-${postId}`);
-        if (box.style.display === 'none') {
-            box.style.display = 'block';
-            listenToComments(postId);
-        } else {
-            box.style.display = 'none';
-        }
-    }
-
-    function listenToComments(postId) {
-        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
-        targetCollection.doc(postId).collection('comments').orderBy('timestamp', 'asc').onSnapshot(snap => {
-            const wrap = document.getElementById(`comments-list-${postId}`);
-            if (!wrap) return;
-            wrap.innerHTML = '';
-            if (snap.empty) {
-                wrap.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px;">Коментарів поки немає.</span>';
-                return;
-            }
-            snap.forEach(cDoc => {
-                const c = cDoc.data();
-                wrap.innerHTML += `
-                    <div class="comment-item">
-                        <span class="comment-author">${escapeText(c.authorName)}:</span>
-                        <span>${escapeText(c.text)}</span>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    async function sendPostComment(postId) {
-        const field = document.getElementById(`comment-input-${postId}`);
-        const text = field.value.trim();
-        if (!text) return;
-        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
-        await targetCollection.doc(postId).collection('comments').add({
-            authorId: activeUser.id,
-            authorName: userFullName,
-            text: text,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        field.value = '';
-    }
-
-    let currentAudio = null;
-    let currentPlayBtn = null;
-    let currentProgressFill = null;
-
-    async function performAudioSearch() {
-        const q = document.getElementById('music-query').value.trim();
-        const cont = document.getElementById('vintage-player-container');
-        if (!q) return;
-
-        cont.innerHTML = '<div style="padding: 8px; color: var(--vk-subtext);">Шукаємо пісні...</div>';
-        const res = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56b41217&format=json&limit=12&search=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        cont.innerHTML = '';
-
-        data.results.forEach(tr => {
-            const row = document.createElement('div');
-            row.className = 'vintage-audio-row';
-            row.innerHTML = `
-                <button class="vintage-play-btn" id="btn-play-${tr.id}">▶</button>
-                <button class="btn-vk-secondary" style="font-size:9px; padding:1px 4px;" onclick="saveTrackToMyMusic('${escapeText(tr.artist_name)}', '${escapeText(tr.name)}', '${tr.audio}', ${tr.duration})">+ Мої</button>
-                <div class="audio-track-info">
-                    <b>${escapeText(tr.artist_name)}</b> — <span>${escapeText(tr.name)}</span>
-                </div>
-                <div class="audio-progress-bar" id="bar-${tr.id}">
-                    <div class="audio-progress-fill" id="fill-${tr.id}"></div>
-                </div>
-                <span class="audio-duration-text" id="dur-${tr.id}">${formatTime(tr.duration)}</span>
-            `;
-            cont.appendChild(row);
-            const btn = row.querySelector(`#btn-play-${tr.id}`);
-            const fill = row.querySelector(`#fill-${tr.id}`);
-            btn.onclick = () => playVintageTrack(tr.audio, tr.artist_name, tr.name, btn, fill);
-        });
-    }
-
-    async function playVintageTrack(url, artist, title, btn, fill) {
-        if (currentAudio && currentAudio.src === url) {
-            if (currentAudio.paused) { currentAudio.play(); btn.innerText = '❚❚'; }
-            else { currentAudio.pause(); btn.innerText = '▶'; }
-            return;
-        }
-        if (currentAudio) {
-            currentAudio.pause();
-            if (currentPlayBtn) currentPlayBtn.innerText = '▶';
-            if (currentProgressFill) currentProgressFill.style.width = '0%';
-        }
-        currentAudio = new Audio(url);
-        currentPlayBtn = btn;
-        currentProgressFill = fill;
-        currentAudio.play();
-        btn.innerText = '❚❚';
-
-        activeUser.currentTrack = `${artist} - ${title}`;
-        await db.collection('users').doc(activeUser.id).update({ currentTrack: activeUser.currentTrack });
-        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
-
-        currentAudio.ontimeupdate = () => {
-            if (currentAudio.duration) fill.style.width = `${(currentAudio.currentTime / currentAudio.duration) * 100}%`;
-        };
-        currentAudio.onended = () => { btn.innerText = '▶'; fill.style.width = '0%'; };
-    }
-
-    function formatTime(secs) {
-        const m = Math.floor(secs / 60);
-        const s = Math.floor(secs % 60);
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    async function saveNewNote() {
-        const title = document.getElementById('note-title-input').value.trim();
-        const content = document.getElementById('note-content-input').value.trim();
-        if (!title || !content) return vkAlert('Помилка', 'Заповніть назву та текст нотатки.');
-        await db.collection('notes').add({
-            userId: activeUser.id,
-            authorName: userFullName,
-            title: title,
-            content: content,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        closeModal('modal-note');
-        document.getElementById('note-title-input').value = '';
-        document.getElementById('note-content-input').value = '';
-        vkAlert('Нотатка', 'Нотатку збережено!');
-    }
-
-    db.collection('notes').orderBy('timestamp', 'desc').onSnapshot(snap => {
-        const cont = document.getElementById('notes-container');
-        if (!cont) return;
-        cont.innerHTML = '';
-        if (snap.empty) {
-            cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">У вас ще немає збережених нотаток.</div>';
-            return;
-        }
-        snap.forEach(d => {
-            const n = d.data();
-            const date = n.timestamp ? new Date(n.timestamp.toDate()).toLocaleDateString('uk-UA') : '';
-            cont.innerHTML += `
-                <div style="border: 1px solid var(--vk-border); background: #ffffff; padding: 10px;">
-                    <div style="font-weight: bold; font-size: 12px; color: var(--vk-link); margin-bottom: 3px;">${escapeText(n.title)}</div>
-                    <div style="font-size: 10px; color: var(--vk-subtext); margin-bottom: 6px;">Опубліковано: ${date}</div>
-                    <div style="line-height: 1.4;">${escapeText(n.content)}</div>
-                </div>
-            `;
-        });
-    });
-
-    async function submitAnonymousThought() {
-        const input = document.getElementById('thought-input');
-        const val = input.value.trim();
-        if (!val) return;
-        await db.collection('thoughts').add({
-            targetUserId: activeUser.id,
-            text: val,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        input.value = '';
-        vkAlert('Секрет', 'Вашу думку надіслано!');
-    }
-
-    db.collection('thoughts').orderBy('timestamp', 'desc').onSnapshot(snap => {
-        const cont = document.getElementById('thoughts-list');
-        if (!cont) return;
-        cont.innerHTML = '';
-        if (snap.empty) {
-            cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Ще ніхто не залишав анонімних думок.</div>';
-            return;
-        }
-        snap.forEach(d => {
-            const t = d.data();
-            const date = t.timestamp ? new Date(t.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
-            cont.innerHTML += `
-                <div style="border: 1px solid var(--vk-border); background: #ffffff; padding: 8px;">
-                    <div style="font-weight: bold; color: #45688e; margin-bottom: 2px;">Таємний доброзичливець:</div>
-                    <div style="font-size: 11px;">${escapeText(t.text)}</div>
-                    <div style="font-size: 9px; color: var(--vk-subtext); text-align: right;">${date}</div>
-                </div>
-            `;
-        });
-    });
-
-    let pickedGiftIcon = '🌹';
-    let pickedGiftTitle = 'Троянда';
-
-    function pickGift(emoji, title) {
-        pickedGiftIcon = emoji;
-        pickedGiftTitle = title;
-        vkAlert('Подарунок', `Обрано: ${title} ${emoji}`);
-    }
-
-    async function commitGiftSend() {
-        const comment = document.getElementById('gift-message-text').value.trim();
-        const targetUserId = viewingProfileId || activeUser.id; 
-        await db.collection('users').doc(targetUserId).collection('gifts').add({
-            emoji: pickedGiftIcon,
-            title: pickedGiftTitle,
-            sender: userFullName,
-            comment: comment,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        closeModal('modal-gift');
-        vkAlert('Подарунок', 'Подарунок надіслано!');
-    }
-
-    async function commitRatingBoost() {
-        if (checkIsAdmin(activeUser.id)) return vkAlert('Адмін', 'У вас вже максимальний адмін-рейтинг (999%)!');
-        const val = parseInt(document.getElementById('rating-val-input').value, 10) || 0;
-        if (val <= 0) return;
-        activeUser.rating = (activeUser.rating || 100) + val;
-        await db.collection('users').doc(activeUser.id).update({ rating: activeUser.rating });
-        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
-        closeModal('modal-rating');
-        vkAlert('Рейтинг', `Рейтинг підвищено до ${activeUser.rating}%!`);
-    }
-
-    async function promptStatus() {
-        if (viewingProfileId && viewingProfileId !== activeUser.id) return;
-        const newStatus = prompt("Введіть новий статус:", activeUser.status);
-        if (newStatus !== null && newStatus.trim() !== "") {
-            activeUser.status = newStatus.trim();
-            await db.collection('users').doc(activeUser.id).update({ status: activeUser.status });
-            renderProfileInfo(activeUser, userFullName, true, activeUser.id);
-        }
-    }
-
-    function openModal(id) { document.getElementById(id).classList.add('show'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-    function vkAlert(title, message) {
-        document.getElementById('alert-title').innerText = title;
-        document.getElementById('alert-text').innerText = message;
-        openModal('modal-alert');
-    }
-
-    function escapeText(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 </script>
 
