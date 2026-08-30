@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" id="viewport-tag" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>На зв'язку</title>
     
     <!-- Telegram WebApp SDK -->
@@ -48,19 +48,92 @@
             font-size: 11px;
         }
 
+        /* --- ЗАГАЛЬНИЙ КОНТЕЙНЕР --- */
         .app-container {
             width: 100%;
-            max-width: 620px;
             background: var(--vk-card);
             min-height: 100vh;
-            border-left: 1px solid var(--vk-border);
-            border-right: 1px solid var(--vk-border);
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 10px rgba(0,0,0,0.06);
+            border-left: 1px solid var(--vk-border);
+            border-right: 1px solid var(--vk-border);
         }
 
-        /* ШАПКА 2006-2010 */
+        /* РЕЖИМ 1: МОБІЛЬНА ВЕРСІЯ (За замовчуванням) */
+        body.mode-mobile .app-container {
+            max-width: 620px;
+        }
+        body.mode-mobile .pc-only {
+            display: none !important;
+        }
+        body.mode-mobile .mobile-only {
+            display: flex !important;
+        }
+        body.mode-mobile .main-layout {
+            display: block;
+        }
+        body.mode-mobile .content-area {
+            padding: 12px;
+        }
+
+        /* РЕЖИМ 2: ПК ВЕРСІЯ (Класичний VK 2007) */
+        body.mode-pc {
+            overflow-x: auto;
+        }
+        body.mode-pc .app-container {
+            max-width: 860px;
+            min-width: 860px; /* Фіксована класична ширина моніторів 2000-х */
+            margin: 0 auto;
+        }
+        body.mode-pc .mobile-only {
+            display: none !important;
+        }
+        body.mode-pc .pc-only {
+            display: block !important;
+        }
+        body.mode-pc .main-layout {
+            display: flex;
+            gap: 15px;
+            padding: 14px 15px;
+            background: #ffffff;
+            flex: 1;
+        }
+        body.mode-pc .content-area {
+            flex: 1;
+            padding: 0;
+        }
+
+        /* ЛІВЕ МЕНЮ ДЛЯ ПК-РЕЖИМУ */
+        .pc-sidebar {
+            width: 125px;
+            flex-shrink: 0;
+        }
+        .pc-sidebar a {
+            display: block;
+            padding: 4px 6px;
+            color: var(--vk-link);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 2px;
+            margin-bottom: 2px;
+        }
+        .pc-sidebar a:hover {
+            background: #e1e7ec;
+            text-decoration: underline;
+        }
+        .pc-sidebar a.active {
+            background: #dae2e8;
+            color: #1c3b52;
+        }
+        .sidebar-divider {
+            height: 1px;
+            background: var(--vk-border-subtle);
+            margin: 6px 0;
+        }
+
+        /* ШАПКА */
         header {
             background: linear-gradient(180deg, #4b729f 0%, #3a5f8a 100%);
             border-bottom: 1px solid #2e4d70;
@@ -106,7 +179,7 @@
             color: #dae2e8;
         }
 
-        /* НАВІГАЦІЙНЕ МЕНЮ */
+        /* МОБІЛЬНІ НАВІГАЦІЙНІ ВКЛАДКИ */
         .nav-tabs {
             display: flex;
             background: #eef2f5;
@@ -142,15 +215,13 @@
 
         .tab-content {
             display: none;
-            padding: 12px;
-            flex: 1;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* КНОПКИ ТА ПОЛЯ ВВОДУ */
+        /* КНОПКИ ТА ПОЛЯ */
         .btn-vk {
             background: var(--vk-btn);
             color: #ffffff;
@@ -206,6 +277,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .avatar-wrap {
@@ -304,7 +376,7 @@
             margin: 8px 0 4px 0;
         }
 
-        /* БЛОК ПОДАРУНКІВ */
+        /* ПОДАРУНКИ */
         .gifts-card {
             border: 1px solid var(--vk-border);
             margin-bottom: 12px;
@@ -438,7 +510,6 @@
             text-decoration: none;
         }
 
-        /* КОМЕНТАРІ */
         .comments-box {
             background: #f7f7f7;
             border-top: 1px solid var(--vk-border-subtle);
@@ -526,7 +597,7 @@
             background: #ffffff;
         }
 
-        /* АУДІОЗАПИСИ */
+        /* МУЗИКА */
         .audio-item {
             display: flex;
             align-items: center;
@@ -558,6 +629,31 @@
         audio {
             height: 26px;
             max-width: 170px;
+        }
+
+        /* КЛАСИЧНИЙ ПІДВАЛ (FOOTER) */
+        footer {
+            border-top: 1px solid var(--vk-border);
+            background: #f7f7f7;
+            padding: 10px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--vk-subtext);
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-toggle-btn {
+            color: var(--vk-link);
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: bold;
         }
 
         /* МОДАЛЬНІ ВІКНА */
@@ -601,7 +697,7 @@
         }
     </style>
 </head>
-<body>
+<body class="mode-mobile">
 
 <div class="app-container">
     <!-- ГОЛОВНА ШАПКА -->
@@ -615,121 +711,151 @@
         </div>
     </header>
 
-    <!-- ВКЛАДКИ НАВІГАЦІЇ -->
-    <div class="nav-tabs">
+    <!-- МОБІЛЬНІ ВКЛАДКИ (Видно лише в мобільному режимі) -->
+    <div class="nav-tabs mobile-only">
         <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile', event)">Моя Сторінка</button>
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіозаписи</button>
     </div>
 
-    <!-- 1. МОЯ СТОРІНКА -->
-    <div id="tab-profile" class="tab-content active">
-        <div class="profile-container">
-            <div class="profile-left-col">
-                <div class="avatar-wrap">
-                    <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
-                </div>
-                
-                <div class="rating-bar-container" title="Рейтинг сторінки">
-                    <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
-                        <span id="profile-rating-text">100%</span>
+    <!-- ГОЛОВНЕ ТІЛО ДОДАТКА -->
+    <div class="main-layout">
+        
+        <!-- ЛІВЕ МЕНЮ ПК (Видно лише в режимі комп'ютера) -->
+        <aside class="pc-sidebar pc-only">
+            <a href="javascript:void(0)" id="pc-link-profile" class="active" onclick="switchTab('profile', event)">Моя Сторінка</a>
+            <a href="javascript:void(0)" id="pc-link-chat" onclick="switchTab('chat', event)">Мої Повідомлення</a>
+            <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
+            <div class="sidebar-divider"></div>
+            <a href="javascript:void(0)" style="color: #777; cursor: default;">Мої Друзі</a>
+            <a href="javascript:void(0)" style="color: #777; cursor: default;">Мої Фотографії</a>
+            <a href="javascript:void(0)" style="color: #777; cursor: default;">Мої Закладки</a>
+            <a href="javascript:void(0)" style="color: #777; cursor: default;">Мої Налаштування</a>
+        </aside>
+
+        <!-- ЗОНА КОНТЕНТУ -->
+        <main class="content-area">
+            
+            <!-- 1. МОЯ СТОРІНКА -->
+            <div id="tab-profile" class="tab-content active">
+                <div class="profile-container">
+                    <div class="profile-left-col">
+                        <div class="avatar-wrap">
+                            <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
+                        </div>
+                        
+                        <div class="rating-bar-container" title="Рейтинг сторінки">
+                            <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
+                                <span id="profile-rating-text">100%</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-vk-secondary" style="font-size: 10px; padding: 2px;" onclick="openModal('modal-rating')">
+                            + Підвищити рейтинг
+                        </button>
+                    </div>
+
+                    <div class="profile-right-col">
+                        <div class="profile-name-row">
+                            <div class="profile-title" id="profile-name">Завантаження...</div>
+                            <div class="profile-status-box">
+                                <span id="status-display">на зв'язку</span>
+                                <span class="status-edit-link" onclick="promptStatus()">[змінити]</span>
+                            </div>
+                        </div>
+
+                        <div class="info-block-header">Особиста інформація</div>
+                        <table class="info-table">
+                            <tr>
+                                <td class="info-label">Місто:</td>
+                                <td class="info-value" id="profile-city">Одеса</td>
+                            </tr>
+                            <tr>
+                                <td class="info-label">Сімейний стан:</td>
+                                <td class="info-value" id="profile-relationship">не вказано</td>
+                            </tr>
+                            <tr>
+                                <td class="info-label">Голоси:</td>
+                                <td class="info-value"><b style="color: #45688e;" id="profile-coins">100</b> золотих</td>
+                            </tr>
+                            <tr>
+                                <td class="info-label">ID користувача:</td>
+                                <td class="info-value" id="profile-uid" style="font-family: monospace;">-</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
 
-                <button class="btn-vk-secondary" style="font-size: 10px; padding: 2px;" onclick="openModal('modal-rating')">
-                    + Підвищити рейтинг
-                </button>
-            </div>
-
-            <div class="profile-right-col">
-                <div class="profile-name-row">
-                    <div class="profile-title" id="profile-name">Завантаження...</div>
-                    <div class="profile-status-box">
-                        <span id="status-display">встановити статус</span>
-                        <span class="status-edit-link" onclick="promptStatus()">[змінити]</span>
+                <!-- ПОДАРУНКИ -->
+                <div class="gifts-card">
+                    <div class="gifts-header">
+                        <span>Мої Подарунки (<span id="gifts-counter">0</span>)</span>
+                        <span style="font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="openModal('modal-gift')">
+                            Зробити подарунок
+                        </span>
+                    </div>
+                    <div class="gifts-list" id="gifts-grid">
+                        <div style="color: var(--vk-subtext);">Завантаження подарунків...</div>
                     </div>
                 </div>
 
-                <div class="info-block-header">Особиста інформація</div>
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">Місто:</td>
-                        <td class="info-value" id="profile-city">Одеса</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">Сімейний стан:</td>
-                        <td class="info-value" id="profile-relationship">не вказано</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">Голоси:</td>
-                        <td class="info-value"><b style="color: #45688e;" id="profile-coins">100</b> золотих</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">ID користувача:</td>
-                        <td class="info-value" id="profile-uid" style="font-family: monospace;">-</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+                <!-- СТІНА -->
+                <div class="wall-header-title">
+                    <span>Стіна</span>
+                    <span id="wall-counter" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
+                </div>
 
-        <!-- СЕКЦІЯ ПОДАРУНКІВ -->
-        <div class="gifts-card">
-            <div class="gifts-header">
-                <span>Мої Подарунки (<span id="gifts-counter">0</span>)</span>
-                <span style="font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="openModal('modal-gift')">
-                    Зробити подарунок
-                </span>
-            </div>
-            <div class="gifts-list" id="gifts-grid">
-                <div style="color: var(--vk-subtext);">Завантаження подарунків...</div>
-            </div>
-        </div>
+                <div class="wall-input-box">
+                    <textarea id="new-post-content" class="wall-textarea" placeholder="Що у Вас нового?"></textarea>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="btn-vk" onclick="publishWallPost()">Опублікувати</button>
+                    </div>
+                </div>
 
-        <!-- СТІНА -->
-        <div class="wall-header-title">
-            <span>Стіна</span>
-            <span id="wall-counter" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
-        </div>
-
-        <div class="wall-input-box">
-            <textarea id="new-post-content" class="wall-textarea" placeholder="Що у Вас нового?"></textarea>
-            <div style="display: flex; justify-content: flex-end;">
-                <button class="btn-vk" onclick="publishWallPost()">Опублікувати</button>
+                <div id="wall-posts-list">
+                    <!-- Записи на стіні -->
+                </div>
             </div>
-        </div>
 
-        <div id="wall-posts-list">
-            <!-- Пости генеруються тут -->
-        </div>
+            <!-- 2. ПОВІДОМЛЕННЯ (ЧАТ) -->
+            <div id="tab-chat" class="tab-content">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        Загальний чат «На зв'язку»
+                    </div>
+                    <div class="chat-stream" id="chat-stream">
+                        <!-- Повідомлення -->
+                    </div>
+                    <div class="chat-bar">
+                        <button id="voice-btn" class="btn-vk-secondary" onclick="handleVoiceRecord()" title="Голосове повідомлення">🎤</button>
+                        <input type="text" id="chat-message-input" class="input-vk" style="flex: 1;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                        <button class="btn-vk" onclick="sendChatMessage()">Надіслати</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. АУДІОЗАПИСИ -->
+            <div id="tab-music" class="tab-content">
+                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                    <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень та виконавців..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
+                    <button class="btn-vk" onclick="performAudioSearch()">Шукати</button>
+                </div>
+                <div id="audio-results-list">
+                    <!-- Треки -->
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- 2. ПОВІДОМЛЕННЯ (ЧАТ) -->
-    <div id="tab-chat" class="tab-content">
-        <div class="chat-container">
-            <div class="chat-header">
-                Загальний чат «На зв'язку»
-            </div>
-            <div class="chat-stream" id="chat-stream">
-                <!-- Повідомлення чату -->
-            </div>
-            <div class="chat-bar">
-                <button id="voice-btn" class="btn-vk-secondary" onclick="handleVoiceRecord()" title="Голосове повідомлення">🎤</button>
-                <input type="text" id="chat-message-input" class="input-vk" style="flex: 1;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                <button class="btn-vk" onclick="sendChatMessage()">Надіслати</button>
-            </div>
+    <!-- КЛАСИЧНИЙ ПІДВАЛ З ПЕРЕМИКАЧЕМ -->
+    <footer>
+        <div class="footer-links">
+            <span>На зв'язку © 2006–2010</span>
+            <span>|</span>
+            <span class="footer-toggle-btn" id="version-toggle-btn" onclick="toggleViewMode()">Комп'ютерна версія</span>
         </div>
-    </div>
-
-    <!-- 3. АУДІОЗАПИСИ -->
-    <div id="tab-music" class="tab-content">
-        <div style="display: flex; gap: 6px; margin-bottom: 12px;">
-            <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень та виконавців..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
-            <button class="btn-vk" onclick="performAudioSearch()">Шукати</button>
-        </div>
-        <div id="audio-results-list">
-            <!-- Список треків -->
-        </div>
-    </div>
+    </footer>
 </div>
 
 <!-- МОДАЛЬНЕ ВІКНО: ПОДАРУНКИ -->
@@ -770,7 +896,7 @@
         </div>
         <div class="vk-modal-body">
             <p style="line-height: 1.4; margin-bottom: 10px;">
-                Золота смужка рейтингу підтверджує авторитет сторінки серед усіх користувачів «На зв'язку».
+                Золота смужка рейтингу підтверджує статус вашої сторінки в мережі «На зв'язку».
             </p>
             <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
                 <span>Додати до рейтингу:</span>
@@ -786,7 +912,43 @@
 </div>
 
 <script>
-    // 1. КОНФІГУРАЦІЯ FIREBASE (Вставте дані свого Firebase-проєкту)
+    // ==========================================
+    // 1. ПЕРЕМИКАННЯ РЕЖИМІВ (ПК / МОБІЛЬНИЙ)
+    // ==========================================
+    let currentMode = localStorage.getItem('nz_view_mode') || 'mobile';
+
+    function applyViewMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('nz_view_mode', mode);
+        const body = document.body;
+        const toggleBtn = document.getElementById('version-toggle-btn');
+        const viewport = document.getElementById('viewport-tag');
+
+        if (mode === 'pc') {
+            body.classList.remove('mode-mobile');
+            body.classList.add('mode-pc');
+            toggleBtn.innerText = 'Мобільна версія';
+            // Оптимізація вікна перегляду під ПК-версію на смартфонах
+            viewport.setAttribute('content', 'width=880, user-scalable=yes');
+        } else {
+            body.classList.remove('mode-pc');
+            body.classList.add('mode-mobile');
+            toggleBtn.innerText = "Комп'ютерна версія";
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+    }
+
+    function toggleViewMode() {
+        const nextMode = currentMode === 'mobile' ? 'pc' : 'mobile';
+        applyViewMode(nextMode);
+    }
+
+    // Застосовуємо збережений режим одразу під час відкриття
+    applyViewMode(currentMode);
+
+    // ==========================================
+    // 2. FIREBASE ІНІЦІАЛІЗАЦІЯ
+    // ==========================================
     const firebaseConfig = {
         apiKey: "AIzaSyYOUR_API_KEY_HERE",
         authDomain: "your-app.firebaseapp.com",
@@ -802,7 +964,9 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // 2. ІНІЦІАЛІЗАЦІЯ TELEGRAM ТА КОРИСТУВАЧА
+    // ==========================================
+    // 3. TELEGRAM ТА КОРИСТУВАЧ
+    // ==========================================
     const tg = window.Telegram?.WebApp;
     if (tg) {
         tg.ready();
@@ -821,7 +985,6 @@
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
 
-    // Заповнення полів шапки та профілю
     document.getElementById('top-user-name').innerText = userFullName;
     document.getElementById('profile-name').innerText = userFullName;
     document.getElementById('profile-uid').innerText = activeUser.id;
@@ -860,17 +1023,28 @@
 
     syncUserData();
 
-    // 3. ПЕРЕМИКАННЯ ВКЛАДОК
+    // ==========================================
+    // 4. НАВІГАЦІЯ (Синхронна для мобільного та ПК)
+    // ==========================================
     function switchTab(tabId, event) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.pc-sidebar a').forEach(link => link.classList.remove('active'));
 
         document.getElementById(`tab-${tabId}`).classList.add('active');
+
+        // Активуємо кнопку у верхньому меню
         const activeBtn = document.getElementById(`tab-btn-${tabId}`);
         if (activeBtn) activeBtn.classList.add('active');
+
+        // Активуємо посилання в лівому меню ПК
+        const activePcLink = document.getElementById(`pc-link-${tabId}`);
+        if (activePcLink) activePcLink.classList.add('active');
     }
 
-    // 4. СТАТУС ТА РЕЙТИНГ
+    // ==========================================
+    // 5. СТАТУС ТА РЕЙТИНГ
+    // ==========================================
     async function promptStatus() {
         const newStatus = prompt("Введіть новий статус:", activeUser.status);
         if (newStatus !== null && newStatus.trim() !== "") {
@@ -890,7 +1064,9 @@
         closeModal('modal-rating');
     }
 
-    // 5. СТІНА ТА ПУБЛІКАЦІЇ
+    // ==========================================
+    // 6. СТІНА ТА ПУБЛІКАЦІЇ
+    // ==========================================
     async function publishWallPost() {
         const input = document.getElementById('new-post-content');
         const text = input.value.trim();
@@ -911,7 +1087,7 @@
             input.value = '';
         } catch (e) {
             console.error(e);
-            alert('Помилка додавання запису.');
+            alert('Помилка публікації.');
         }
     }
 
@@ -934,7 +1110,7 @@
                     <img src="${post.authorAvatar || 'https://vk.com/images/camera_200.png'}" class="post-author-pic" alt="Аватар">
                 </div>
                 <div class="post-body">
-                    <a href="#" class="post-author-name">${escapeText(post.authorName)}</a>
+                    <a href="javascript:void(0)" class="post-author-name">${escapeText(post.authorName)}</a>
                     <div class="post-text">${escapeText(post.text)}</div>
                     <div class="post-footer">
                         <span>${dateDisplay}</span>
@@ -1015,7 +1191,9 @@
         field.value = '';
     }
 
-    // 6. ПОВІДОМЛЕННЯ ТА ГОЛОСОВІ НОТАТКИ
+    // ==========================================
+    // 7. ЧАТ ТА ГОЛОСОВІ ПОВІДОМЛЕННЯ
+    // ==========================================
     async function sendChatMessage() {
         const input = document.getElementById('chat-message-input');
         const text = input.value.trim();
@@ -1091,7 +1269,7 @@
                 btn.style.background = '#ff4b4b';
                 btn.innerText = '⏹️';
             } catch (err) {
-                alert('Не вдалося отримати доступ до запису аудіо.');
+                alert('Не вдалося отримати доступ до мікрофона.');
             }
         } else {
             voiceRecorder.stop();
@@ -1101,7 +1279,9 @@
         }
     }
 
-    // 7. ПОДАРУНКИ
+    // ==========================================
+    // 8. ПОДАРУНКИ
+    // ==========================================
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
@@ -1147,7 +1327,9 @@
         });
     });
 
-    // 8. АУДІОЗАПИСИ (JAMENDO API)
+    // ==========================================
+    // 9. АУДІОЗАПИСИ (JAMENDO API)
+    // ==========================================
     async function performAudioSearch() {
         const q = document.getElementById('music-query').value.trim();
         const results = document.getElementById('audio-results-list');
@@ -1184,7 +1366,9 @@
         }
     }
 
-    // 9. МОДАЛЬНІ ВІКНА ТА БЕЗПЕКА
+    // ==========================================
+    // 10. ДОПОМІЖНІ ФУНКЦІЇ ТА МОДАЛКИ
+    // ==========================================
     function openModal(modalId) {
         document.getElementById(modalId).classList.add('show');
     }
