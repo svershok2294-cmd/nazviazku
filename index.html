@@ -1,220 +1,266 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>На Зв'язку</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: #edeef1;
-      margin: 0;
-      padding: 0;
-      color: #000;
-    }
-    .header {
-      background-color: #4a76a8;
-      color: white;
-      padding: 12px 16px;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .container {
-      padding: 12px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .profile-header {
-      display: flex;
-      gap: 12px;
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #4a76a8;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: bold;
-      object-fit: cover;
-    }
-    .user-info {
-      flex: 1;
-    }
-    .user-name {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 4px;
-      color: #2a5885;
-    }
-    .user-status {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-    .rating-bar-bg {
-      background: #e1e8ed;
-      height: 12px;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .rating-bar-fill {
-      background: linear-gradient(90deg, #ffd700, #ff8c00);
-      height: 100%;
-      width: 100%;
-    }
-    .info-row {
-      font-size: 13px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid #f0f2f5;
-      display: flex;
-      justify-content: space-between;
-    }
-    .info-label { color: #828282; }
-    .info-value { color: #2a5885; font-weight: 500; }
-    select {
-      border: none;
-      background: transparent;
-      color: #2a5885;
-      font-weight: 500;
-      font-size: 13px;
-      outline: none;
-    }
-    .wall-input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 8px;
-      border: 1px solid #d3d9de;
-      border-radius: 6px;
-      resize: none;
-      font-family: inherit;
-      margin-bottom: 8px;
-    }
-    .btn {
-      background-color: #4a76a8;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-    }
-    .post {
-      border-bottom: 1px solid #e7e8ec;
-      padding: 10px 0;
-    }
-    .post:last-child { border-bottom: none; }
-    .post-author { font-weight: bold; font-size: 13px; color: #2a5885; }
-    .post-text { font-size: 14px; margin: 4px 0; }
-    .post-date { font-size: 11px; color: #939699; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>На Зв'язку</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #e9efe7;
+            --card-bg: #ffffff;
+            --text-color: #222222;
+            --primary-color: #3b6998;
+            --border-color: #d1d8e0;
+        }
+
+        body.dark-mode {
+            --bg-color: #18222d;
+            --card-bg: #212d3b;
+            --text-color: #f5f5f5;
+            --primary-color: #5288c1;
+            --border-color: #2b394a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar-container {
+            position: relative;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #3b6998;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-  <div class="header">
-    <span>На Зв'язку</span>
-    <span style="font-size: 12px; font-weight: normal;">UA 🇺🇦</span>
-  </div>
-
-  <div class="container">
-    <!-- Профіль -->
-    <div class="card">
-      <div class="profile-header">
-        <div id="user-avatar" class="avatar">?</div>
-        <div class="user-info">
-          <div id="user-name" class="user-name">Користувач</div>
-          <div class="user-status">на зв'язку</div>
-          <div style="font-size: 11px; color: #828282;">Рейтинг: <b style="color: #d88900;">100%</b></div>
-          <div class="rating-bar-bg">
-            <div class="rating-bar-fill"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="info-row">
-        <span class="info-label">Сімейний стан:</span>
-        <span class="info-value">
-          <select id="status-select">
-            <option value="single">Не заміжня / Не одружений</option>
-            <option value="married" selected>Заміжня / Одружений</option>
-            <option value="in_love">Закохана / Закоханий</option>
-            <option value="complicated">Усе складно</option>
-            <option value="searching">У активному пошуку</option>
-          </select>
-        </span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Статус розробника:</span>
-        <span class="info-value" style="color: #4a76a8; font-weight: bold;">Засновник (ID #1)</span>
-      </div>
+    <div class="header">
+        <h2>На Зв'язку 🇺🇦</h2>
+        <button class="btn btn-sm" onclick="toggleTheme()">🌗 Тема</button>
     </div>
 
-    <!-- Стіна -->
-    <div class="card">
-      <div style="font-weight: bold; margin-bottom: 8px; color: #4a76a8;">Стіна</div>
-      <textarea id="post-text" class="wall-input" rows="2" placeholder="Що у вас нового?"></textarea>
-      <button class="btn" onclick="addPost()">Опублікувати</button>
-      
-      <div id="posts-list" style="margin-top: 12px;">
-        <div class="post">
-          <div class="post-author">На Зв'язку (Офіційно)</div>
-          <div class="post-text">Ласкаво просимо до нашої нової мережі! Напишіть щось на своїй стіні 🎉</div>
-          <div class="post-date">щойно</div>
-        </div>
-      </div>
+    <div class="nav-tabs">
+        <div class="tab-btn active" onclick="switchTab('feed')">📰 Стіна</div>
+        <div class="tab-btn" onclick="switchTab('friends')">👥 Друзі (0)</div>
     </div>
-  </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    <div id="tab-feed">
+        <div class="card">
+            <div class="profile-info">
+                <div class="avatar-container">
+                    <img id="user-avatar-img" class="avatar hidden" src="" alt="Avatar">
+                    <div id="user-avatar-placeholder" class="avatar">V</div>
+                </div>
+                <div>
+                    <h3 id="user-name" style="margin:0;">Vladyslav Svershok</h3>
+                    <p style="margin:3px 0; color: gray; font-size: 13px;">Засновник (ID #1)</p>
+                    <button class="btn btn-sm" onclick="changeAvatar()">📷 Змінити фото</button>
+                </div>
+            </div>
+        </div>
 
-    // Завантаження даних з Telegram
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      const user = tg.initDataUnsafe.user;
-      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-      document.getElementById('user-name').innerText = fullName || 'Користувач';
-      document.getElementById('user-avatar').innerText = (user.first_name || 'Н')[0].toUpperCase();
-    }
+        <div class="card">
+            <h4>Створити допис</h4>
+            <textarea id="post-input" rows="3" placeholder="Що у вас нового?"></textarea>
+            <button class="btn" style="width: 100%;" onclick="createPost()">Опублікувати</button>
+        </div>
 
-    // Додавання допису на стіну
-    function addPost() {
-      const input = document.getElementById('post-text');
-      const text = input.value.trim();
-      if (!text) return;
+        <div id="posts-container"></div>
+    </div>
 
-      const userName = document.getElementById('user-name').innerText;
-      const postsList = document.getElementById('posts-list');
-      
-      const newPost = document.createElement('div');
-      newPost.className = 'post';
-      newPost.innerHTML = `
-        <div class="post-author">${userName}</div>
-        <div class="post-text">${text}</div>
-        <div class="post-date">щойно</div>
-      `;
-      
-      postsList.prepend(newPost);
-      input.value = '';
-    }
-  </script>
+    <div id="tab-friends" class="card hidden">
+        <h3>Ваші друзі</h3>
+        <p style="color: gray;">У вас поки немає доданих друзів.</p>
+        <button class="btn" onclick="alert('Пошук користувачів буде доступний у наступному оновленні!')">🔍 Знайти друзів</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Ініціалізація користувача
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('user-name').innerText = `${user.first_name} ${user.last_name || ''}`;
+            document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
+
+            if (user.photo_url) {
+                setAvatar(user.photo_url);
+            }
+        }
+
+        // Зміна аватарки вручну
+        function changeAvatar() {
+            const url = prompt("Введіть посилання (URL) на нове фото:");
+            if (url) {
+                setAvatar(url);
+            }
+        }
+
+        function setAvatar(url) {
+            const img = document.getElementById('user-avatar-img');
+            const placeholder = document.getElementById('user-avatar-placeholder');
+            img.src = url;
+            img.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+
+        // Перемикання теми
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Перемикання вкладок
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-feed').classList.add('hidden');
+            document.getElementById('tab-friends').classList.add('hidden');
+
+            if (tab === 'feed') {
+                document.getElementById('tab-feed').classList.remove('hidden');
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('tab-friends').classList.remove('hidden');
+                event.target.classList.add('active');
+            }
+        }
+
+        // Публікація допису з лайками
+        function createPost() {
+            const text = document.getElementById('post-input').value.trim();
+            if (!text) return;
+
+            const postHtml = `
+                <div class="card">
+                    <b>${document.getElementById('user-name').innerText}</b>
+                    <p>${text}</p>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="likePost(this)">❤️ <span class="like-count">0</span></button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('posts-container').insertAdjacentHTML('afterbegin', postHtml);
+            document.getElementById('post-input').value = '';
+        }
+
+        function likePost(btn) {
+            const countSpan = btn.querySelector('.like-count');
+            let count = parseInt(countSpan.innerText);
+            countSpan.innerText = count + 1;
+        }
+    </script>
 </body>
 </html>
+
