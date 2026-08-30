@@ -31,63 +31,40 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 8px;
-            overflow-x: hidden;
+            background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 8px; overflow-x: hidden;
         }
 
         .desktop-header, .desktop-nav { display: none; }
         .main-wrapper { width: 100%; max-width: 100%; margin: 0 auto; }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--primary-color); color: white; padding: 10px 14px;
+            border-radius: 10px; margin-bottom: 12px;
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-            width: 100%;
+            background: var(--card-bg); border-radius: 10px; padding: 12px;
+            margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); width: 100%;
         }
 
         .profile-container { display: flex; gap: 12px; align-items: flex-start; }
 
         .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #3b6998;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            font-weight: bold;
-            flex-shrink: 0;
+            width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
+            background: #3b6998; color: white; display: flex; align-items: center;
+            justify-content: center; font-size: 26px; font-weight: bold; flex-shrink: 0;
         }
 
         .online-dot {
-            width: 9px; height: 9px; background-color: #4CAF50;
-            border-radius: 50%; display: inline-block; margin-right: 4px;
-            box-shadow: 0 0 4px #4CAF50;
+            width: 9px; height: 9px; background-color: #4CAF50; border-radius: 50%;
+            display: inline-block; margin-right: 4px; box-shadow: 0 0 4px #4CAF50;
         }
 
         /* --- ЗОЛОТА ТА СИНЯ ШКАЛА РЕЙТИНГУ VK --- */
         .rating-container { margin: 8px 0; width: 100%; }
         .rating-bar-bg { 
-            background: #d0d7de; height: 15px; border-radius: 3px; 
+            background: #d0d7de; height: 16px; border-radius: 3px; 
             overflow: hidden; position: relative; border: 1px solid #b3beca;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
         }
@@ -95,21 +72,19 @@
             background: linear-gradient(to bottom, #7ca1c9 0%, #45688e 100%); 
             height: 100%; width: 0%; transition: width 0.5s ease;
         }
+        /* Золота шкала для Директора (+500%) */
         .rating-bar-fill.gold { 
-            background: linear-gradient(to bottom, #ffd700 0%, #ff8c00 100%) !important; 
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+            background: linear-gradient(to bottom, #ffe57f 0%, #ffb300 50%, #ff8f00 100%) !important; 
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.9);
         }
         .rating-text {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             display: flex; align-items: center; justify-content: center;
             font-size: 10px; font-weight: bold; color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.9);
         }
 
-        .friends-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-            margin-top: 6px; text-align: center;
-        }
+        .friends-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; text-align: center; }
         .friend-item { font-size: 10px; color: #3b6998; cursor: pointer; position: relative; }
         .friend-avatar-wrapper { position: relative; width: 38px; height: 38px; margin: 0 auto 2px auto; }
         .friend-avatar {
@@ -122,81 +97,35 @@
             background: #4CAF50; border: 2px solid var(--card-bg); border-radius: 50%;
         }
 
-        .friends-list-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 8px 0; border-bottom: 1px solid var(--border-color);
-        }
-
+        .friends-list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
         .gifts-container { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; }
-        .gift-badge {
-            background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px;
-            padding: 4px; font-size: 16px; text-align: center; min-width: 32px;
-        }
+        .gift-badge { background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px; padding: 4px; font-size: 16px; text-align: center; min-width: 32px; }
 
-        .comments-section {
-            margin-top: 8px; padding: 6px; border-top: 1px dashed var(--border-color);
-            background: rgba(0,0,0,0.02); border-radius: 6px;
-        }
-        .comment-item { font-size: 11px; margin-bottom: 4px; }
-        .comment-author { font-weight: bold; color: #3b6998; }
-
-        .btn {
-            background: var(--primary-color); color: white; border: none;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer;
-            font-weight: bold; font-size: 13px;
-        }
+        .btn { background: var(--primary-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-sm { padding: 4px 8px; font-size: 12px; }
 
         .nav-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; }
-        .tab-btn {
-            flex: 1; padding: 8px 4px; text-align: center; white-space: nowrap;
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px;
-        }
+        .tab-btn { flex: 1; padding: 8px 4px; text-align: center; white-space: nowrap; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
         .tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-        textarea, select, input[type="text"] {
-            width: 100%; padding: 8px; border: 1px solid var(--border-color);
-            border-radius: 6px; background: var(--card-bg); color: var(--text-color);
-            margin-bottom: 8px; font-size: 13px;
-        }
-
-        .post-actions {
-            display: flex; gap: 12px; margin-top: 8px;
-            border-top: 1px solid var(--border-color); padding-top: 6px;
-        }
+        textarea, select, input[type="text"] { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); margin-bottom: 8px; font-size: 13px; }
+        .post-actions { display: flex; gap: 12px; margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 6px; }
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* SoundCloud плеєр */
         .sc-container { margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
-
-        /* ЧАТ */
-        .chat-box {
-            height: 250px; overflow-y: auto; border: 1px solid var(--border-color);
-            padding: 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.01);
-        }
+        .chat-box { height: 250px; overflow-y: auto; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.01); }
         .chat-msg { margin-bottom: 6px; font-size: 12px; }
         .chat-msg.my { text-align: right; color: #2b587a; }
         .chat-msg .author { font-weight: bold; }
 
-        .vk-section-header {
-            background: #dbe0ea; color: #36577c; font-weight: bold;
-            padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px;
-            display: flex; justify-content: space-between;
-        }
+        .vk-section-header { background: #dbe0ea; color: #36577c; font-weight: bold; padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px; display: flex; justify-content: space-between; }
         .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
 
         /* ПК РЕЖИМ */
-        body.mode-pc {
-            background-color: #ffffff !important; font-family: tahoma, arial, verdana, sans-serif !important;
-            font-size: 11px !important; padding: 0 !important;
-        }
+        body.mode-pc { background-color: #ffffff !important; font-family: tahoma, arial, verdana, sans-serif !important; font-size: 11px !important; padding: 0 !important; }
         body.mode-pc .mobile-header { display: none !important; }
-        body.mode-pc .desktop-header {
-            display: flex !important; background: #45688e; height: 30px; color: white;
-            align-items: center; justify-content: space-between; padding: 0 15px; font-size: 11px;
-        }
+        body.mode-pc .desktop-header { display: flex !important; background: #45688e; height: 30px; color: white; align-items: center; justify-content: space-between; padding: 0 15px; font-size: 11px; }
         body.mode-pc .desktop-header a { color: #d2e2f2; text-decoration: none; margin-left: 10px; }
         body.mode-pc .main-wrapper { display: flex; width: 790px; margin: 10px auto; gap: 15px; }
         body.mode-pc .desktop-nav { display: block !important; width: 140px; flex-shrink: 0; }
@@ -297,7 +226,7 @@
                         <div style="flex-grow: 1; min-width: 0;">
                             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                                 <h3 id="user-name" style="margin:0; font-size: 15px; color: #3b6998; word-break: break-word;">Користувач</h3>
-                                <span id="director-badge" class="hidden" style="background: #ffd700; color: #000; font-size: 9px; font-weight: bold; padding: 2px 4px; border-radius: 3px;">👑 ДИРЕКТОР</span>
+                                <span id="director-badge" class="hidden" style="background: #ffd700; color: #000; font-size: 9px; font-weight: bold; padding: 2px 4px; border-radius: 3px; border: 1px solid #b38f00;">👑 ДИРЕКТОР</span>
                             </div>
                             
                             <div style="font-size: 11px; margin: 4px 0;">
@@ -365,7 +294,7 @@
                 <div class="card">
                     <div class="vk-section-header">Стіна</div>
                     <textarea id="post-input" rows="2" placeholder="Що у вас нового?"></textarea>
-                    <input type="text" id="post-image-input" placeholder="Посилання на картинку (необов'язково URL)..." style="font-size:11px;">
+                    <input type="text" id="post-image-input" placeholder="Посилання на картинку (URL)..." style="font-size:11px;">
                     <button class="btn" style="width: 100%;" onclick="createPost()">Опублікувати</button>
                 </div>
 
@@ -450,8 +379,11 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // 🎯 ВСТАВЛЕНО ТВІЙ ТОЧНИЙ TELEGRAM ID:
+        const ADMIN_TELEGRAM_ID = "325300795"; 
+
         let currentUserId = "guest_" + Math.random().toString(36).substr(2, 9);
-        let currentUserName = "Користувач";
+        let currentUserName = "Vladyslav Svershok";
         let currentUserAvatar = "";
         let activeChatUserId = null;
         let chatUnsubscribe = null;
@@ -463,21 +395,24 @@
                 currentUserId = user.id.toString();
                 currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
                 currentUserAvatar = user.photo_url || "";
-
-                document.getElementById('user-name').innerText = currentUserName;
-                document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
-                if (user.photo_url) setAvatar(user.photo_url);
             }
 
-            // Перевірка та реєстрація Директора в БД
+            document.getElementById('user-name').innerText = currentUserName;
+            document.getElementById('user-avatar-placeholder').innerText = currentUserName[0] || 'V';
+            if (currentUserAvatar) setAvatar(currentUserAvatar);
+
+            // 👑 ПЕРЕВІРКА ЗА ТВОРІМ TELEGRAM ID (325300795):
+            if (currentUserId === ADMIN_TELEGRAM_ID) {
+                isDirector = true;
+            }
+
             try {
                 const userRef = db.collection("users").doc(currentUserId);
                 const doc = await userRef.get();
 
                 if (doc.exists && doc.data().isDirector === true) {
                     isDirector = true;
-                } else if (currentUserName.includes("Директор") || currentUserId === "ВАШ_TELEGRAM_ID") {
-                    isDirector = true;
+                } else if (isDirector) {
                     await userRef.set({ isDirector: true }, { merge: true });
                 }
 
@@ -489,42 +424,46 @@
 
             } catch (e) { console.error("Помилка БД:", e); }
 
+            // Оновлюємо рейтинг
             calculateVkRating();
             listenToRealFriends();
             listenToGuests();
         });
 
-        // 1. СИСТЕМА ЗОЛОТОГО ТА ЗВИЧАЙНОГО РЕЙТИНГУ
+        // СИСТЕМА ЗОЛОТОГО РЕЙТИНГУ (+500%)
         function calculateVkRating() {
             const barFill = document.getElementById('rating-bar-fill');
             const ratingText = document.getElementById('rating-text');
             const directorBadge = document.getElementById('director-badge');
 
             if (isDirector) {
-                // Золотий рейтинг Директора (+500%)
+                // 🏆 Золотий рейтинг Директора (+500%)
                 barFill.style.width = '100%';
                 barFill.classList.add('gold');
                 ratingText.innerText = '+500%';
                 directorBadge.classList.remove('hidden');
                 document.getElementById('user-role-text').innerText = "Генеральний Директор 👑";
             } else {
-                // Динамічний рейтинг для звичайних людей (0-100%)
-                let rating = 30;
+                // Звичайний рейтинг від 0 до 100% для інших користувачів
+                let rating = 35;
                 if (currentUserAvatar) rating += 35;
-                if (document.getElementById('user-status').innerText !== '[встановити статус]') rating += 20;
+                if (document.getElementById('user-status').innerText !== '[встановити статус]') rating += 15;
                 if (document.getElementById('status-val').innerText !== 'Не вказано') rating += 15;
 
                 if (rating > 100) {
                     rating = 100;
                     barFill.classList.add('gold');
+                } else {
+                    barFill.classList.remove('gold');
                 }
+                
                 barFill.style.width = rating + '%';
                 ratingText.innerText = '+' + rating + '%';
                 document.getElementById('user-role-text').innerText = "Учасник";
             }
         }
 
-        // 2. ПЕРСОНАЛЬНИЙ ЧАТ
+        // 2. ЧАТ
         function openChatWith(friendId, friendName) {
             activeChatUserId = friendId;
             document.getElementById('chat-partner-name').innerText = friendName;
@@ -550,7 +489,7 @@
                     box.scrollTop = box.scrollHeight;
                 });
 
-            // Відмітка у Гостях
+            // Відмітка в гостях
             db.collection("users").doc(friendId).collection("guests").doc(currentUserId).set({
                 name: currentUserName,
                 visitedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -572,7 +511,7 @@
             input.value = '';
         }
 
-        // 3. SOUNDCLOUD МУЗИКА
+        // 3. МУЗИКА (SOUNDCLOUD)
         function loadCustomSoundCloud() {
             const link = document.getElementById('sc-link-input').value.trim();
             if (!link) return alert("Введіть посилання на SoundCloud!");
@@ -593,7 +532,7 @@
                     const data = doc.data();
                     box.innerHTML += `
                         <div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">
-                            👁️ <b>${data.name}</b> заходив(ла) до вас
+                            👁️ <b>${data.name}</b> заходив(ла) на вашу сторінку
                         </div>
                     `;
                 });
@@ -637,7 +576,7 @@
 
         function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
 
-        // 6. ДРУЗІ В МЕРЕЖІ
+        // 6. СПИСОК ДРУЗІВ
         function listenToRealFriends() {
             db.collection("users").onSnapshot((snapshot) => {
                 const grid = document.getElementById('profile-friends-grid');
@@ -678,7 +617,6 @@
             });
         }
 
-        // НАВІГАЦІЯ ТА ДОПОМІЖНІ ФУНКЦІЇ
         function switchTab(tab) {
             ['feed', 'friends', 'chat', 'audio', 'guests', 'settings'].forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
