@@ -114,8 +114,29 @@
         header .logo-title { font-weight: bold; font-size: 14px; color: #ffffff; letter-spacing: -0.3px; }
 
         /* МОБІЛЬНІ ВКЛАДКИ */
-        .nav-tabs { display: flex; background: #eef2f5; border-bottom: 1px solid var(--vk-border); position: sticky; top: 42px; z-index: 90; overflow-x: auto; }
-        .tab-btn { flex: 1; min-width: 50px; padding: 8px 3px; text-align: center; background: none; border: none; cursor: pointer; font-size: 10px; font-weight: bold; color: var(--vk-link); border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-tabs { 
+            display: flex; 
+            background: #eef2f5; 
+            border-bottom: 1px solid var(--vk-border); 
+            position: sticky; 
+            top: 42px; 
+            z-index: 90; 
+            overflow-x: auto; 
+            white-space: nowrap; 
+            -webkit-overflow-scrolling: touch; 
+        }
+        .tab-btn { 
+            flex: 0 0 auto; 
+            padding: 8px 10px; 
+            text-align: center; 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 10px; 
+            font-weight: bold; 
+            color: var(--vk-link); 
+            border-bottom: 3px solid transparent; 
+        }
         .tab-btn:hover { background: #e3e8ed; }
         .tab-btn.active { border-bottom-color: #45688e; background: #ffffff; color: #000000; }
         .tab-content { display: none; }
@@ -250,7 +271,7 @@
         </div>
     </header>
 
-    <!-- МОБІЛЬНЕ МЕНЮ -->
+    <!-- МОБІЛЬНІ ВКЛАДКИ -->
     <div class="nav-tabs mobile-only">
         <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile', event)">Сторінка</button>
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення</button>
@@ -280,7 +301,7 @@
         <!-- ЗОНА КОНТЕНТУ -->
         <main class="content-area">
             
-            <!-- 1. МОЯ СТОРІНКА (або профіль друга/групи) -->
+            <!-- 1. МОЯ СТОРІНКА -->
             <div id="tab-profile" class="tab-content active">
                 <div class="profile-container">
                     
@@ -289,7 +310,7 @@
                         <div class="avatar-wrap">
                             <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
                             <input type="file" id="avatar-file-input" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
-                            <button id="avatar-change-btn" class="btn-vk-secondary" style="width: 100%; font-size: 10px; margin-top: 4px;" onclick="document.getElementById('avatar-file-input').click()">Змінити фото</button>
+                            <button id="avatar-change-btn" class="btn-vk-secondary" style="width: 100%; font-size: 10px; margin-top: 4px; display: none;" onclick="document.getElementById('avatar-file-input').click()">Змінити фото</button>
                         </div>
 
                         <div class="rating-bar-container" title="Рейтинг профілю">
@@ -298,9 +319,14 @@
                             </div>
                         </div>
 
-                        <div id="profile-action-btns" style="display: flex; gap: 4px; margin-top: 6px;">
+                        <div id="profile-action-btns" style="display: none; gap: 4px; margin-top: 6px;">
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
+                        </div>
+
+                        <!-- КНОПКА ЗАВДАНЬ ДЛЯ ДРУЗІВ -->
+                        <div id="profile-task-btn-wrap" style="margin-top: 6px; display: none;">
+                            <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
                         </div>
 
                         <!-- БЛОК ДРУЗІВ 3x2 -->
@@ -318,7 +344,7 @@
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Фотографії (<span id="sidebar-photos-count">0</span>)</span>
-                                <span style="font-weight: normal; color: var(--vk-link); cursor: pointer; text-decoration: underline;" onclick="switchTab('photos')">додати</span>
+                                <span id="sidebar-photos-add-link" style="font-weight: normal; color: var(--vk-link); cursor: pointer; text-decoration: underline; display: none;" onclick="switchTab('photos')">додати</span>
                             </div>
                             <div class="photos-preview-strip" id="sidebar-photos-strip">
                                 <span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає фото</span>
@@ -345,7 +371,7 @@
                                 <span style="color: var(--vk-subtext); font-size: 10px; margin-left: 6px;" id="profile-online-text">(online)</span>
                                 <div class="profile-status-box">
                                     <span id="status-display">на зв'язку</span>
-                                    <span class="status-edit-link" id="status-edit-btn" onclick="promptStatus()">[змінити]</span>
+                                    <span class="status-edit-link" id="status-edit-btn" style="display: none;" onclick="promptStatus()">[змінити]</span>
                                 </div>
                                 <div class="profile-music-status" id="profile-music-status"></div>
                             </div>
@@ -527,7 +553,7 @@
             <div id="tab-photos" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Мої Фотографії</span>
-                    <button class="btn-vk" onclick="document.getElementById('photo-upload-input').click()">+ Завантажити світлину</button>
+                    <button id="photo-upload-main-btn" class="btn-vk" onclick="document.getElementById('photo-upload-input').click()">+ Завантажити світлину</button>
                     <input type="file" id="photo-upload-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
                 </div>
                 <div id="photos-grid-full" class="photos-grid-layout"></div>
@@ -645,7 +671,7 @@
             <span style="cursor: pointer;" onclick="closeModal('modal-group')">✕</span>
         </div>
         <div class="vk-modal-body">
-            <input type="text" id="group-name-input" class="input-vk modal-input" placeholder="Назва групи (напр. Реро-рок фани)">
+            <input type="text" id="group-name-input" class="input-vk modal-input" placeholder="Назва групи (напр. Ретро-рок фани)">
             <textarea id="group-desc-input" class="wall-textarea" style="height: 70px;" placeholder="Опис спільноти..."></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 6px;">
                 <button class="btn-vk-secondary" onclick="closeModal('modal-group')">Скасувати</button>
@@ -822,8 +848,14 @@
         about: "Завжди на зв'язку!"
     };
 
-    let viewingProfileId = null; // Поточний переглядуваний профіль (null = свій)
-    let viewingGroupId = null;   // Поточна група для стіни
+    // Адмін перевірка за вашим унікальним ID
+    const ADMIN_ID = "325300795";
+    function checkIsAdmin(userId) {
+        return userId === ADMIN_ID;
+    }
+
+    let viewingProfileId = null; 
+    let viewingGroupId = null;   
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
     document.getElementById('top-user-name').innerText = userFullName;
@@ -833,9 +865,16 @@
             const docRef = db.collection('users').doc(activeUser.id);
             const doc = await docRef.get();
             if (!doc.exists) {
+                if (checkIsAdmin(activeUser.id)) {
+                    activeUser.rating = 999;
+                }
                 await docRef.set({ ...activeUser, name: userFullName, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             } else {
                 Object.assign(activeUser, doc.data());
+                if (checkIsAdmin(activeUser.id) && activeUser.rating < 999) {
+                    activeUser.rating = 999;
+                    await docRef.update({ rating: 999 });
+                }
             }
             goHome();
             checkInviteDeepLink();
@@ -847,7 +886,7 @@
     function goHome() {
         viewingProfileId = null;
         viewingGroupId = null;
-        renderProfileInfo(activeUser, userFullName, true);
+        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         loadWallPosts(activeUser.id);
         switchTab('profile');
     }
@@ -862,18 +901,24 @@
         const uData = doc.data();
         const uName = uData.name || "Користувач";
 
-        renderProfileInfo(uData, uName, false);
+        renderProfileInfo(uData, uName, false, targetId);
         loadWallPosts(targetId);
         switchTab('profile');
     }
 
-    function renderProfileInfo(u, uName, isMe) {
+    function renderProfileInfo(u, uName, isMe, userId) {
         document.getElementById('profile-avatar').src = u.photo_url || "https://vk.com/images/camera_200.png";
-        document.getElementById('profile-name').innerText = uName;
+        
+        const userIsAdmin = checkIsAdmin(userId);
+        document.getElementById('profile-name').innerText = uName + (userIsAdmin ? " 👑 [Адмін]" : "");
         document.getElementById('status-display').innerText = u.status || "на зв'язку";
         document.getElementById('profile-coins').innerText = u.coins || 100;
-        document.getElementById('profile-rating-text').innerText = `${u.rating || 100}%`;
-        document.getElementById('profile-rating-fill').style.width = `${Math.min(u.rating || 100, 100)}%`;
+        
+        let displayRating = u.rating || 100;
+        if (userIsAdmin) displayRating = 999;
+
+        document.getElementById('profile-rating-text').innerText = `${displayRating}%`;
+        document.getElementById('profile-rating-fill').style.width = `${Math.min(displayRating, 100)}%`;
 
         document.getElementById('profile-city').innerText = u.city || 'не вказано';
         document.getElementById('profile-relationship').innerText = u.relationship || 'не вказано';
@@ -884,7 +929,6 @@
         document.getElementById('info-movies').innerText = u.movies || 'не вказано';
         document.getElementById('info-about').innerText = u.about || 'не вказано';
 
-        // Статус музики
         const musicStatusEl = document.getElementById('profile-music-status');
         if (u.currentTrack) {
             musicStatusEl.innerHTML = `🎵 слухає: <b>${escapeText(u.currentTrack)}</b>`;
@@ -893,10 +937,20 @@
             musicStatusEl.style.display = 'none';
         }
 
-        // Кнопки редагування для чужого профілю ховаємо
+        // Редагувати профіль та змінювати фото може кожен ТІЛЬКИ на своїй власній сторінці
         document.getElementById('avatar-change-btn').style.display = isMe ? 'block' : 'none';
         document.getElementById('profile-action-btns').style.display = isMe ? 'flex' : 'none';
         document.getElementById('status-edit-btn').style.display = isMe ? 'inline-block' : 'none';
+        document.getElementById('sidebar-photos-add-link').style.display = isMe ? 'inline' : 'none';
+        
+        // Кнопка завдань для підвищення рейтингу (тільки для звичайних друзів на їхніх власних сторінках)
+        const taskBtnWrap = document.getElementById('profile-task-btn-wrap');
+        if (isMe && !userIsAdmin) {
+            taskBtnWrap.style.display = 'block';
+        } else {
+            taskBtnWrap.style.display = 'none';
+        }
+
         document.getElementById('wall-header-title').innerText = isMe ? 'Стіна' : `Стіна користувача ${uName}`;
     }
 
@@ -930,6 +984,9 @@
     }
 
     function openEditProfileModal() {
+        if (viewingProfileId && viewingProfileId !== activeUser.id) {
+            return vkAlert('Помилка', 'Ви не можете редагувати чужу сторінку!');
+        }
         document.getElementById('edit-city').value = activeUser.city || '';
         document.getElementById('edit-relationship').value = activeUser.relationship || '';
         document.getElementById('edit-phone').value = activeUser.phone || '';
@@ -942,6 +999,8 @@
     }
 
     async function saveProfileChanges() {
+        if (viewingProfileId && viewingProfileId !== activeUser.id) return;
+        
         activeUser.city = document.getElementById('edit-city').value.trim();
         activeUser.relationship = document.getElementById('edit-relationship').value.trim();
         activeUser.phone = document.getElementById('edit-phone').value.trim();
@@ -962,12 +1021,22 @@
             about: activeUser.about
         });
 
-        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true);
+        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         closeModal('modal-edit-profile');
-        vkAlert('Успіх', 'Дані профілю збережено!');
+        vkAlert('Успіх', 'Дані профілю успішно збережено!');
+    }
+
+    // Завдання для рейтингу друзів
+    async function doRatingTask() {
+        if (checkIsAdmin(activeUser.id)) return;
+        activeUser.rating = (activeUser.rating || 100) + 10;
+        await db.collection('users').doc(activeUser.id).update({ rating: activeUser.rating });
+        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
+        vkAlert('Рейтинг', 'Завдання виконано! Ваш рейтинг збільшено на 10%.');
     }
 
     function handleAvatarUpload(e) {
+        if (viewingProfileId && viewingProfileId !== activeUser.id) return;
         const file = e.target.files[0];
         if (!file) return;
         compressImageFile(file, 250, 0.75, async function(base64Image) {
@@ -1263,11 +1332,8 @@
             music: "—",
             movies: "—",
             about: "Ласкаво просимо до спільноти!"
-        }, gName, false);
+        }, gName, false, null);
         document.getElementById('wall-header-title').innerText = `Стіна спільноти «${gName}»`;
-        document.getElementById('profile-action-btns').style.display = 'none';
-        document.getElementById('avatar-change-btn').style.display = 'none';
-        document.getElementById('status-edit-btn').style.display = 'none';
         loadWallPosts(gId);
         switchTab('profile');
     }
@@ -1528,6 +1594,7 @@
     let selectedPhotoData = null;
 
     function handlePhotoUpload(e) {
+        if (viewingProfileId && viewingProfileId !== activeUser.id) return;
         const file = e.target.files[0];
         if (!file) return;
         compressImageFile(file, 600, 0.75, async function(base64Photo) {
@@ -1705,7 +1772,6 @@
         vkAlert('Графіті', 'Графіті опубліковано!');
     }
 
-    // Стіна та пости (підтримує свій профіль, профіль друга або групу)
     async function publishWallPost() {
         const input = document.getElementById('new-post-content');
         const text = input.value.trim();
@@ -1884,10 +1950,9 @@
         currentAudio.play();
         btn.innerText = '❚❚';
 
-        // Зберігаємо поточний трек у профіль для статусу
         activeUser.currentTrack = `${artist} - ${title}`;
         await db.collection('users').doc(activeUser.id).update({ currentTrack: activeUser.currentTrack });
-        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true);
+        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
 
         currentAudio.ontimeupdate = () => {
             if (currentAudio.duration) fill.style.width = `${(currentAudio.currentTime / currentAudio.duration) * 100}%`;
@@ -2013,21 +2078,23 @@
     });
 
     async function commitRatingBoost() {
+        if (checkIsAdmin(activeUser.id)) return vkAlert('Адмін', 'У вас вже максимальний адмін-рейтинг (999%)!');
         const val = parseInt(document.getElementById('rating-val-input').value, 10) || 0;
         if (val <= 0) return;
-        activeUser.rating += val;
+        activeUser.rating = (activeUser.rating || 100) + val;
         await db.collection('users').doc(activeUser.id).update({ rating: activeUser.rating });
-        renderProfileInfo(activeUser, userFullName, true);
+        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         closeModal('modal-rating');
         vkAlert('Рейтинг', `Рейтинг підвищено до ${activeUser.rating}%!`);
     }
 
     async function promptStatus() {
+        if (viewingProfileId && viewingProfileId !== activeUser.id) return;
         const newStatus = prompt("Введіть новий статус:", activeUser.status);
         if (newStatus !== null && newStatus.trim() !== "") {
             activeUser.status = newStatus.trim();
             await db.collection('users').doc(activeUser.id).update({ status: activeUser.status });
-            renderProfileInfo(activeUser, userFullName, true);
+            renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         }
     }
 
