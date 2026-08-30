@@ -1,4 +1,4 @@
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -78,6 +78,18 @@
             flex-shrink: 0;
         }
 
+        /* ІНДИКАТОР ОНЛАЙНУ */
+        .online-dot {
+            width: 9px;
+            height: 9px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+            box-shadow: 0 0 4px #4CAF50;
+        }
+        .offline-tag { color: gray; font-size: 11px; }
+
         /* --- КЛАСИЧНИЙ РЕЙТИНГ VK --- */
         .rating-container { margin: 8px 0; width: 100%; }
         .rating-bar-bg { 
@@ -115,19 +127,30 @@
             margin-top: 6px;
             text-align: center;
         }
-        .friend-item { font-size: 10px; color: #3b6998; }
+        .friend-item { font-size: 10px; color: #3b6998; text-decoration: none; position: relative; }
+        .friend-avatar-wrapper { position: relative; width: 38px; height: 38px; margin: 0 auto 2px auto; }
         .friend-avatar {
             width: 38px;
             height: 38px;
             border-radius: 50%;
+            object-fit: cover;
             background: #45688e;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 2px auto;
             font-weight: bold;
             font-size: 14px;
+        }
+        .friend-online-badge {
+            position: absolute; bottom: 0; right: 0; width: 10px; height: 10px;
+            background: #4CAF50; border: 2px solid var(--card-bg); border-radius: 50%;
+        }
+
+        /* --- СПИСОК ДРУЗІВ У ВКЛАДЦІ --- */
+        .friends-list-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; border-bottom: 1px solid var(--border-color);
         }
 
         /* --- БЛОК ПОДАРУНКІВ --- */
@@ -184,7 +207,7 @@
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* --- ПРИМУСОВИЙ РЕЖИМ ПК --- */
+        /* --- ПК РЕЖИМ --- */
         body.mode-pc {
             background-color: #ffffff !important;
             font-family: tahoma, arial, verdana, sans-serif !important;
@@ -299,17 +322,12 @@
                                 <div class="gift-badge">🏆</div>
                             </div>
 
-                            <!-- Блок «Друзі» (6 аватарок) -->
+                            <!-- Блок СПРАВЖНІХ ДРУЗІВ (СІТКА) -->
                             <div class="vk-section-header" style="font-size: 10px; margin-top: 10px;">
-                                Друзі (6)
+                                Друзі (<span id="profile-friends-count">0</span>)
                             </div>
-                            <div class="friends-grid">
-                                <div class="friend-item"><div class="friend-avatar">О</div>Олег</div>
-                                <div class="friend-item"><div class="friend-avatar">А</div>Анна</div>
-                                <div class="friend-item"><div class="friend-avatar">М</div>Максим</div>
-                                <div class="friend-item"><div class="friend-avatar">І</div>Ірина</div>
-                                <div class="friend-item"><div class="friend-avatar">Д</div>Дмитро</div>
-                                <div class="friend-item"><div class="friend-avatar">О</div>Олена</div>
+                            <div id="profile-friends-grid" class="friends-grid">
+                                <p style="font-size: 10px; color: gray; grid-column: span 3;">Завантаження...</p>
                             </div>
                         </div>
 
@@ -326,7 +344,10 @@
                                 </div>
                             </div>
 
-                            <p style="margin:0 0 8px 0; font-size: 11px; color: gray;">Online</p>
+                            <!-- Справжній Онлайн Специфікатор VK -->
+                            <p style="margin:0 0 8px 0; font-size: 11px;">
+                                <span class="online-dot"></span><b style="color: #4CAF50;">Online</b>
+                            </p>
 
                             <table class="vk-table" style="font-size: 11px; width: 100%;">
                                 <tr>
@@ -359,7 +380,7 @@
                                 </tr>
                             </table>
 
-                            <!-- Блок «Особиста інформація» (Розгортається) -->
+                            <!-- Блок «Особиста інформація» -->
                             <div class="vk-section-header" style="cursor: pointer;" onclick="toggleMoreInfo()">
                                 <span>Особиста інформація</span>
                                 <span id="more-info-toggle-btn" class="vk-link">[показати]</span>
@@ -402,10 +423,14 @@
                 </div>
             </div>
 
+            <!-- ВКЛАДКА ДРУЗІ (СПРАВЖНІ ДРУЗІ ІЗ МЕРЕЖІ) -->
             <div id="tab-friends" class="card hidden">
-                <div class="vk-section-header">Мої Друзі</div>
-                <p style="font-size: 12px;">Запрошуйте друзів до нашої спільної мережі!</p>
-                <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити друга в Telegram</button>
+                <div class="vk-section-header">Усі Користувачі та Друзі</div>
+                <div id="full-friends-list">
+                    <p style="font-size:12px; color:gray;">Завантаження списку користувачів...</p>
+                </div>
+                <br>
+                <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити ще друзів в Telegram</button>
             </div>
 
             <div id="tab-settings" class="card hidden">
@@ -436,52 +461,137 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        let currentUserId = "guest_" + Math.random().toString(36).substr(2, 9);
         let currentUserName = "Користувач";
+        let currentUserAvatar = "";
         let hasCustomAvatar = false;
         let userStatusText = "";
 
-        // Ініціалізація даних при завантаженні
+        // Ініціалізація та реєстрація користувача в БД
         document.addEventListener('DOMContentLoaded', async () => {
             let savedStatus = localStorage.getItem('user_relationship_status') || 'Одружений';
 
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
-                const userId = user.id.toString();
+                currentUserId = user.id.toString();
                 currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
+                currentUserAvatar = user.photo_url || "";
+
                 document.getElementById('user-name').innerText = currentUserName;
                 document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
 
                 if (user.photo_url) {
                     setAvatar(user.photo_url);
                 }
+            }
 
-                // Зчитування профілю з Firebase Firestore
-                try {
-                    const userDoc = await db.collection("users").doc(userId).get();
-                    if (userDoc.exists) {
-                        const data = userDoc.data();
-                        if (data.relationshipStatus) savedStatus = data.relationshipStatus;
-                        if (data.statusText) {
-                            userStatusText = data.statusText;
-                            document.getElementById('user-status').innerText = userStatusText;
-                        }
-                        if (data.interests) document.getElementById('interests-val').innerText = data.interests;
-                        if (data.about) document.getElementById('about-val').innerText = data.about;
+            // Авто-реєстрація / оновлення Онлайн статусу в Firebase
+            try {
+                await db.collection("users").doc(currentUserId).set({
+                    name: currentUserName,
+                    avatarUrl: currentUserAvatar,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                // Читаємо налаштування користувача
+                const userDoc = await db.collection("users").doc(currentUserId).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    if (data.relationshipStatus) savedStatus = data.relationshipStatus;
+                    if (data.statusText) {
+                        userStatusText = data.statusText;
+                        document.getElementById('user-status').innerText = userStatusText;
                     }
-                } catch (e) {
-                    console.error("Помилка зчитування даних з БД: ", e);
+                    if (data.interests) document.getElementById('interests-val').innerText = data.interests;
+                    if (data.about) document.getElementById('about-val').innerText = data.about;
                 }
+            } catch (e) {
+                console.error("Помилка реєстрації користувача: ", e);
             }
 
             document.getElementById('status-val').innerText = savedStatus;
             document.getElementById('status-select').value = savedStatus;
             updateRating();
+            
+            // Відстежувати користувачів (Друзів) у реальному часі
+            listenToRealFriends();
         });
+
+        // Слухач списку справжніх друзів/користувачів мережі
+        function listenToRealFriends() {
+            db.collection("users").onSnapshot((snapshot) => {
+                const grid = document.getElementById('profile-friends-grid');
+                const fullList = document.getElementById('full-friends-list');
+                
+                grid.innerHTML = '';
+                fullList.innerHTML = '';
+
+                let totalFriends = 0;
+                const now = new Date();
+
+                snapshot.forEach((doc) => {
+                    if (doc.id === currentUserId) return; // Пропускаємо самого себе
+
+                    totalFriends++;
+                    const data = doc.data();
+                    const name = data.name || "Користувач";
+                    const avatar = data.avatarUrl;
+                    
+                    // Перевіряємо активність (якщо заходив в межах останніх 5 хвилин - Online)
+                    let isOnline = false;
+                    if (data.lastSeen && data.lastSeen.toDate) {
+                        const lastSeenTime = data.lastSeen.toDate();
+                        const diffMinutes = (now - lastSeenTime) / 1000 / 60;
+                        if (diffMinutes <= 5) isOnline = true;
+                    }
+
+                    // 1. Заповнюємо сітку (перші 6 друзів у профілі)
+                    if (totalFriends <= 6) {
+                        const avatarContent = avatar 
+                            ? `<img src="${avatar}" class="friend-avatar">`
+                            : `<div class="friend-avatar">${name[0]}</div>`;
+
+                        grid.innerHTML += `
+                            <div class="friend-item">
+                                <div class="friend-avatar-wrapper">
+                                    ${avatarContent}
+                                    ${isOnline ? '<div class="friend-online-badge"></div>' : ''}
+                                </div>
+                                <div>${name.split(' ')[0]}</div>
+                            </div>
+                        `;
+                    }
+
+                    // 2. Заповнюємо вкладку "Мої Друзі"
+                    const fullAvatar = avatar 
+                        ? `<img src="${avatar}" class="friend-avatar">`
+                        : `<div class="friend-avatar">${name[0]}</div>`;
+
+                    fullList.innerHTML += `
+                        <div class="friends-list-item">
+                            ${fullAvatar}
+                            <div>
+                                <b style="color:#3b6998; font-size:13px;">${name}</b>
+                                <div style="font-size:11px;">
+                                    ${isOnline ? '<span class="online-dot"></span><b style="color:#4CAF50;">Online</b>' : '<span class="offline-tag">Offline</span>'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('profile-friends-count').innerText = totalFriends;
+
+                if (totalFriends === 0) {
+                    grid.innerHTML = '<p style="font-size:10px; color:gray; grid-column: span 3;">У вас поки немає друзів. Запросіть їх!</p>';
+                    fullList.innerHTML = '<p style="font-size:12px; color:gray;">Ще жоден ваш друг не заходив у додаток.</p>';
+                }
+            });
+        }
 
         // Підрахунок рейтингу
         function updateRating() {
-            let rating = 25; // Базові бали
-
+            let rating = 25;
             if (hasCustomAvatar) rating += 30;
             if (document.getElementById('gender-val').innerText.trim() !== '') rating += 10;
             if (document.getElementById('city-val').innerText.trim() !== '') rating += 10;
@@ -497,7 +607,6 @@
             document.getElementById('rating-text').innerText = '+' + rating + '%';
         }
 
-        // Керування статусом під ім'ям
         function toggleStatusInput() {
             document.getElementById('status-input-box').classList.toggle('hidden');
         }
@@ -511,17 +620,13 @@
             toggleStatusInput();
             updateRating();
 
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const userId = tg.initDataUnsafe.user.id.toString();
-                try {
-                    await db.collection("users").doc(userId).set({
-                        statusText: userStatusText
-                    }, { merge: true });
-                } catch (e) { console.error("Помилка зберігання статусу: ", e); }
-            }
+            try {
+                await db.collection("users").doc(currentUserId).set({
+                    statusText: userStatusText
+                }, { merge: true });
+            } catch (e) { console.error("Помилка зберігання статусу: ", e); }
         }
 
-        // Особиста інформація
         function toggleMoreInfo() {
             const box = document.getElementById('more-info-box');
             const btn = document.getElementById('more-info-toggle-btn');
@@ -536,18 +641,14 @@
             if (newInterests !== null) document.getElementById('interests-val').innerText = newInterests;
             if (newAbout !== null) document.getElementById('about-val').innerText = newAbout;
 
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const userId = tg.initDataUnsafe.user.id.toString();
-                try {
-                    await db.collection("users").doc(userId).set({
-                        interests: document.getElementById('interests-val').innerText,
-                        about: document.getElementById('about-val').innerText
-                    }, { merge: true });
-                } catch (e) { console.error(e); }
-            }
+            try {
+                await db.collection("users").doc(currentUserId).set({
+                    interests: document.getElementById('interests-val').innerText,
+                    about: document.getElementById('about-val').innerText
+                }, { merge: true });
+            } catch (e) { console.error(e); }
         }
 
-        // Подарунки
         function sendGift() {
             const gifts = ['🥊', '🐱', '⚽', '🚗', '🍰'];
             const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
@@ -563,22 +664,18 @@
             document.getElementById('status-edit-box').classList.toggle('hidden');
         }
 
-        // Збереження сімейного стану
         async function saveRelationshipStatus(val) {
             document.getElementById('status-val').innerText = val;
             localStorage.setItem('user_relationship_status', val);
             toggleStatusEdit();
             updateRating();
 
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const userId = tg.initDataUnsafe.user.id.toString();
-                try {
-                    await db.collection("users").doc(userId).set({
-                        relationshipStatus: val,
-                        name: currentUserName
-                    }, { merge: true });
-                } catch (e) { console.error("Помилка збереження в БД: ", e); }
-            }
+            try {
+                await db.collection("users").doc(currentUserId).set({
+                    relationshipStatus: val,
+                    name: currentUserName
+                }, { merge: true });
+            } catch (e) { console.error("Помилка збереження в БД: ", e); }
         }
 
         function comingSoon(featureName) {
@@ -601,6 +698,7 @@
             img.classList.remove('hidden');
             placeholder.classList.add('hidden');
             hasCustomAvatar = true;
+            currentUserAvatar = url;
             updateRating();
         }
 
@@ -623,7 +721,7 @@
             if (activeBtn) activeBtn.classList.add('active');
         }
 
-        // Створення та робота з дописами
+        // Створення дописів
         async function createPost() {
             const text = document.getElementById('post-input').value.trim();
             if (!text) return;
@@ -643,7 +741,6 @@
             db.collection("posts").doc(id).update({ likes: currentLikes + 1 });
         }
 
-        // Коментарі до дописів
         async function addComment(postId) {
             const input = document.getElementById(`comment-input-${postId}`);
             const text = input.value.trim();
@@ -656,10 +753,10 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 input.value = '';
-            } catch (e) { console.error("Помилка додання коментаря: ", e); }
+            } catch (e) { console.error("Помилка коментаря: ", e); }
         }
 
-        // Відображення дописів і коментарів
+        // Пости у реальному часі
         db.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = '';
@@ -681,7 +778,6 @@
                             <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ <span class="like-count">${data.likes || 0}</span></button>
                         </div>
                         
-                        <!-- Розділ коментарів -->
                         <div class="comments-section">
                             <div id="comments-list-${postId}"></div>
                             <div style="display: flex; gap: 4px; margin-top: 4px;">
@@ -693,7 +789,6 @@
                 `;
                 container.innerHTML += postHtml;
 
-                // Завантаження коментарів для кожного допису в реальному часі
                 db.collection("posts").doc(postId).collection("comments").orderBy("createdAt", "asc").onSnapshot((commentsSnap) => {
                     const commentsBox = document.getElementById(`comments-list-${postId}`);
                     if (!commentsBox) return;
@@ -718,4 +813,3 @@
     </script>
 </body>
 </html>
-               
