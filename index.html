@@ -248,6 +248,14 @@
         .ttt-cell { background: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; cursor: pointer; user-select: none; }
         .ttt-cell:hover { background: #f0f4f8; }
 
+        /* РЕТРО ФЕРМА СТИЛІ */
+        .farm-house-card { background: #d7ccc8; border: 2px solid #6d4c41; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 11px; }
+        .farm-plot { background: #bcaaa4; border: 2px dashed #6d4c41; padding: 8px; text-align: center; border-radius: 4px; cursor: pointer; min-height: 70px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 10px; }
+        .farm-plot:hover { background: #a1887f; }
+        .farm-plot.growing { background: #c8e6c9; border-color: #388e3c; }
+        .farm-plot.ready { background: #fff9c4; border-color: #fbc02d; animation: pulse 1s infinite; }
+        .animal-card { background: #f5f5f5; border: 1px solid var(--vk-border); padding: 6px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+
         /* ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 */
         .vintage-player-box { border: 1px solid var(--vk-border); background: #ffffff; }
         .vintage-audio-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--vk-border-subtle); }
@@ -309,7 +317,7 @@
         <button class="tab-btn" id="tab-btn-videos" onclick="switchTab('videos', event)">Відео</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
         <button class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups', event)">Групи</button>
-        <button class="tab-btn" id="tab-btn-games" onclick="switchTab('games', event)">Ігри 🎮</button>
+        <button class="tab-btn" id="tab-btn-games" onclick="switchTab('games', event)">Ферма 🏡</button>
         <button class="tab-btn" id="tab-btn-notes" onclick="switchTab('notes', event)">Нотатки</button>
         <button class="tab-btn" id="tab-btn-thoughts" onclick="switchTab('thoughts', event)">Секрети</button>
     </div>
@@ -325,7 +333,7 @@
             <a href="javascript:void(0)" id="pc-link-videos" onclick="switchTab('videos', event)">Мої Відеозаписи</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
             <a href="javascript:void(0)" id="pc-link-groups" onclick="switchTab('groups', event)">Спільноти (Групи)</a>
-            <a href="javascript:void(0)" id="pc-link-games" onclick="switchTab('games', event)">Ігри та Аркади</a>
+            <a href="javascript:void(0)" id="pc-link-games" onclick="switchTab('games', event)">Ретро-Ферма 🏡</a>
             <a href="javascript:void(0)" id="pc-link-notes" onclick="switchTab('notes', event)">Мої Нотатки</a>
             <a href="javascript:void(0)" id="pc-link-thoughts" onclick="switchTab('thoughts', event)">Думки та Секрети</a>
             <div class="sidebar-divider"></div>
@@ -722,14 +730,41 @@
                 <div id="groups-list-container" class="user-directory-list"></div>
             </div>
 
-            <!-- 9. ІГРИ ТА АРКАДИ -->
+            <!-- 9. РЕТРО-ФЕРМА ТА ІГРИ -->
             <div id="tab-games" class="tab-content">
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
-                    Ігровий зал та Аркади 🎮
+                    🏡 Ретро-Ферма та Склад
                 </div>
+
+                <!-- ХАТА / СКЛАД -->
+                <div class="farm-house-card">
+                    <div style="font-weight: bold; color: #4e342e; margin-bottom: 4px; font-size: 12px;">🏠 Ваша Хата (Склад)</div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span>🌾 Пшениця: <b id="storage-wheat">0</b></span>
+                        <span>🥚 Яйця: <b id="storage-eggs">0</b></span>
+                        <span>🥛 Молоко: <b id="storage-milk">0</b></span>
+                        <span>🪙 Монети: <b id="storage-coins">100</b></span>
+                    </div>
+                </div>
+
+                <!-- ГРЯДКИ -->
+                <div style="background: #ffffff; border: 1px solid var(--vk-border); padding: 10px; margin-bottom: 10px; border-radius: 2px;">
+                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 4px;">🌱 Грядки для врожаю</div>
+                    <div id="farm-plots-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;"></div>
+                </div>
+
+                <!-- ТВРИНИ -->
                 <div style="background: #ffffff; border: 1px solid var(--vk-border); padding: 10px; margin-bottom: 12px; border-radius: 2px;">
-                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 4px;">Хрестики-нулики в особистих повідомленнях</div>
-                    <p style="color: var(--vk-subtext); margin-bottom: 8px;">Киньте виклик будь-якому другу прямо в ЛС! Натисніть кнопку гри 🎮 у чаті з другом, щоб розіграти партію.</p>
+                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🐄 Тварини на подвір'ї</span>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-vk" style="font-size: 9px;" onclick="buyAnimal('chicken')">+ Курка (30 🪙)</button>
+                            <button class="btn-vk" style="font-size: 9px;" onclick="buyAnimal('cow')">+ Корова (70 🪙)</button>
+                        </div>
+                    </div>
+                    <div id="farm-animals-container">
+                        <div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>
+                    </div>
                 </div>
                 
                 <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-link);">Турнірна таблиця лідерів мережі:</div>
@@ -1147,6 +1182,9 @@
         status: "на зв'язку",
         currentTrack: "",
         coins: 100,
+        wheat: 0,
+        eggs: 0,
+        milk: 0,
         city: "Київ",
         relationshipType: "",
         partnerId: "",
@@ -1215,6 +1253,7 @@
             initRelationshipProposalListener();
             loadGlobalVideos();
             loadGlobalLeaderboard();
+            loadFarmData();
         } catch (e) {
             console.error("Firestore init error:", e);
         }
@@ -1341,7 +1380,6 @@
 
         document.getElementById('profile-city').innerText = u.city || 'не вказано';
 
-        // СІМЕЙНИЙ СТАН З КЛІКАБЕЛЬНИМ ІМЕНЕМ ПАРТНЕРА (ВІДКРИВАЄ ПРОФІЛЬ)
         let relText = u.relationshipType || 'не вказано';
         if (u.relationshipType && u.partnerId) {
             const partnerLink = `<a href="javascript:void(0)" onclick="openUserProfile('${u.partnerId}')" style="color:var(--vk-link); font-weight:bold; text-decoration:underline;">${escapeText(u.partnerName || 'партнер')}</a>`;
@@ -1440,6 +1478,7 @@
             loadGlobalVideos();
         } else if (tabId === 'games') {
             loadGlobalLeaderboard();
+            loadFarmData();
         }
     }
 
@@ -1614,6 +1653,156 @@
         await db.collection('users').doc(activeUser.id).collection('relationship_proposals').doc(pendingRelationshipProposal.id).delete();
         document.getElementById('relationship-proposal-banner').style.display = 'none';
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
+    }
+
+    // ЛОГІКА РЕТРО-ФЕРМИ (ГРЯДКИ + СКЛАД + ТВРИНИ)
+    function loadFarmData() {
+        const farmContainer = document.getElementById('farm-plots-container');
+        const animalsContainer = document.getElementById('farm-animals-container');
+        if (!farmContainer || !animalsContainer) return;
+
+        // Оновлюємо склад у шапці ферми
+        document.getElementById('storage-wheat').innerText = activeUser.wheat || 0;
+        document.getElementById('storage-eggs').innerText = activeUser.eggs || 0;
+        document.getElementById('storage-milk').innerText = activeUser.milk || 0;
+        document.getElementById('storage-coins').innerText = activeUser.coins || 100;
+
+        // Слухаємо грядки
+        db.collection('users').doc(activeUser.id).collection('farm_plots').orderBy('plotIndex').onSnapshot(snap => {
+            let plots = {};
+            snap.forEach(doc => { plots[doc.data().plotIndex] = { id: doc.id, ...doc.data() }; });
+
+            farmContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                let plot = plots[i];
+                let content = '🟫 Порожня грядка<br><span style="color:#555">Натисніть, щоб посадити</span>';
+                let plotClass = 'farm-plot';
+
+                if (plot) {
+                    const now = new Date().getTime();
+                    const plantedTime = plot.plantedAt?.toMillis() || now;
+                    const growTime = 10000; // 10 секунд
+                    const elapsed = now - plantedTime;
+
+                    if (elapsed >= growTime) {
+                        content = '🌾 Пшениця дозріла!<br><span style="color:#2e7d32; font-weight:bold;">Зібрати врожай</span>';
+                        plotClass = 'farm-plot ready';
+                    } else {
+                        content = '🌱 Пшениця росте...<br><span style="color:#666">Зачекайте трохи</span>';
+                        plotClass = 'farm-plot growing';
+                    }
+                }
+
+                farmContainer.innerHTML += `
+                    <div class="${plotClass}" onclick="handlePlotClick(${i}, ${plot ? (new Date().getTime() - (plot.plantedAt?.toMillis()||0) >= 10000 ? 2 : 1) : 0}, '${plot ? plot.id : ''}')">
+                        ${content}
+                    </div>
+                `;
+            }
+        });
+
+        // Слухаємо тварин
+        db.collection('users').doc(activeUser.id).collection('farm_animals').onSnapshot(snap => {
+            if (snap.empty) {
+                animalsContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>';
+                return;
+            }
+            animalsContainer.innerHTML = '';
+            snap.forEach(doc => {
+                const a = doc.data();
+                const aId = doc.id;
+                const icon = a.type === 'chicken' ? '🐔 Курка' : '🐄 Корова';
+                const product = a.type === 'chicken' ? '🥚 Яйце' : '🥛 Молоко';
+                const costToFeed = a.type === 'chicken' ? 2 : 4;
+                const sellPrice = a.type === 'chicken' ? 12 : 30;
+
+                const now = new Date().getTime();
+                const fedTime = a.fedAt?.toMillis() || 0;
+                const readyTime = 15000; // 15 секунд
+                const isReady = fedTime && (now - fedTime >= readyTime);
+
+                let statusHtml = '';
+                if (!fedTime) {
+                    statusHtml = `<button class="btn-vk" style="font-size:9px;" onclick="feedAnimal('${aId}', ${costToFeed})">Годувати (${costToFeed} 🌾)</button>`;
+                } else if (!isReady) {
+                    statusHtml = `<span style="color:#666; font-size:9px;">Дає продукцію...</span>`;
+                } else {
+                    statusHtml = `<button class="btn-vk" style="font-size:9px; background:#43a047;" onclick="collectAnimal('${aId}', '${sellPrice}')">Зібрати ${product} (+${sellPrice} 🪙)</button>`;
+                }
+
+                animalsContainer.innerHTML += `
+                    <div class="animal-card">
+                        <div><b>${icon}</b></div>
+                        <div>${statusHtml}</div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    async function handlePlotClick(index, state, docId) {
+        const plotsRef = db.collection('users').doc(activeUser.id).collection('farm_plots');
+        if (state === 0) {
+            await plotsRef.add({
+                plotIndex: index,
+                crop: 'Пшениця',
+                plantedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            vkAlert('Ферма', 'Ви посадили пшеницю на грядці!');
+        } else if (state === 2) {
+            await plotsRef.doc(docId).delete();
+            activeUser.wheat = (activeUser.wheat || 0) + 3;
+            await db.collection('users').doc(activeUser.id).update({ wheat: activeUser.wheat });
+            document.getElementById('storage-wheat').innerText = activeUser.wheat;
+            vkAlert('Врожай!', 'Ви зібрали 3 мішки пшениці у склад!');
+        } else {
+            vkAlert('Ферма', 'Пшениця ще росте!');
+        }
+    }
+
+    async function buyAnimal(type) {
+        const cost = type === 'chicken' ? 30 : 70;
+        if ((activeUser.coins || 100) < cost) {
+            return vkAlert('Ферма', 'Недостатньо золотих монет на рахунку!');
+        }
+        activeUser.coins -= cost;
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+        document.getElementById('storage-coins').innerText = activeUser.coins;
+
+        await db.collection('users').doc(activeUser.id).collection('farm_animals').add({
+            type: type,
+            fedAt: null,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        vkAlert('Ферма', `Ви успішно придбали тварину!`);
+    }
+
+    async function feedAnimal(animalId, cost) {
+        if ((activeUser.wheat || 0) < cost) {
+            return vkAlert('Ферма', `Недостатньо пшениці у складі! Потрібно ${cost} 🌾.`);
+        }
+        activeUser.wheat -= cost;
+        await db.collection('users').doc(activeUser.id).update({ wheat: activeUser.wheat });
+        document.getElementById('storage-wheat').innerText = activeUser.wheat;
+
+        await db.collection('users').doc(activeUser.id).collection('farm_animals').doc(animalId).update({
+            fedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        vkAlert('Ферма', 'Ви погодували тварину!');
+    }
+
+    async function collectAnimal(animalId, priceStr) {
+        const price = parseInt(priceStr, 10);
+        activeUser.coins = (activeUser.coins || 100) + price;
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+        document.getElementById('storage-coins').innerText = activeUser.coins;
+
+        // Зкидаємо час годування, щоб тварина знову чекала їжу
+        await db.collection('users').doc(activeUser.id).collection('farm_animals').doc(animalId).update({
+            fedAt: null
+        });
+        vkAlert('Прибуток', `Продукцію продано за ${price} золотих монет!`);
+        loadGlobalLeaderboard();
     }
 
     async function doRatingTask() {
