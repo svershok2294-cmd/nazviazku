@@ -360,10 +360,10 @@
                             <button id="avatar-change-btn" class="btn-vk-secondary" style="width: 100%; font-size: 10px; margin-top: 4px; display: none;" onclick="document.getElementById('avatar-file-input').click()">Змінити фото</button>
                         </div>
 
-                        <!-- ГАЛЕРЕЯ ПОДАРУНКІВ ПІД АВАТАРОМ -->
-                        <div class="side-block" id="avatar-gifts-block" style="display:none;">
-                            <div class="side-block-header"><span>🎁 Вітрина подарунків</span></div>
-                            <div class="gifts-list" id="avatar-gifts-grid" style="padding: 6px; display: flex; gap: 6px; overflow-x: auto; flex-wrap: wrap;"></div>
+                        <!-- НАЛАШТУВАННЯ ТА РЕДАГУВАННЯ (ПОВЕРНУТО ПІД АВАТАРКУ) -->
+                        <div id="profile-action-btns" style="display: flex; gap: 4px; margin-top: 6px;">
+                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
+                            <button class="btn-vk" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">⚙️ Налаштування</button>
                         </div>
 
                         <div class="rating-bar-container" id="profile-rating-container" title="Рейтинг профілю">
@@ -372,18 +372,18 @@
                             </div>
                         </div>
 
+                        <!-- ГАЛЕРЕЯ ПОДАРУНКІВ ПІД АВАТАРОМ -->
+                        <div class="side-block" id="avatar-gifts-block" style="display:none;">
+                            <div class="side-block-header"><span>🎁 Вітрина подарунків</span></div>
+                            <div class="gifts-list" id="avatar-gifts-grid" style="padding: 6px; display: flex; gap: 6px; overflow-x: auto; flex-wrap: wrap;"></div>
+                        </div>
+
                         <!-- БЛОК ДОСЯГНЕНЬ (БЕДЖІ АВТОРИТЕТУ) -->
                         <div class="side-block">
                             <div class="side-block-header"><span>🏆 Трофеї та беджі</span></div>
                             <div id="profile-badges-list" style="padding: 6px; display: flex; gap: 4px; flex-wrap: wrap; font-size: 14px;">
                                 🏆
                             </div>
-                        </div>
-
-                        <!-- ДЛЯ ВЛАСНОГО ПРОФІЛЮ -->
-                        <div id="profile-action-btns" style="display: none; gap: 4px; margin-top: 6px;">
-                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
-                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
                         </div>
 
                         <!-- КНОПКА ЗАВДАНЬ ДЛЯ ДРУЗІВ -->
@@ -1316,7 +1316,6 @@
                 }
             }
 
-            // ЩОДЕННИЙ БОНУС ТА АКТИВНІСТЬ
             const todayStr = new Date().toDateString();
             if (activeUser.lastLoginDay !== todayStr) {
                 activeUser.coins = (activeUser.coins || 100) + 10;
@@ -1724,7 +1723,6 @@
             partnerStatus = '';
         }
 
-        // НАГОРОДА ЗА ЗАПОВНЕННЯ АНКЕТИ (+15 монет та +5% рейтингу за заповнення міста/про себе/дати)
         let profileBonusCoins = 0;
         let profileBonusRating = 0;
         const filledCity = document.getElementById('edit-city').value.trim();
@@ -3462,42 +3460,6 @@
                 btn.onclick = () => playVintageTrack(tr.url, tr.artist, tr.title, btn, fill);
             });
         });
-    }
-
-    // ВІТРИНА ПОДАРУНКІВ ПІД АВАТАРОМ ТА ЇХ ЦІНИ
-    let pickedGiftIcon = '🌹';
-    let pickedGiftTitle = 'Троянда';
-    let pickedGiftPrice = 15;
-
-    function pickGift(emoji, title, price) {
-        pickedGiftIcon = emoji;
-        pickedGiftTitle = title;
-        pickedGiftPrice = price;
-        vkAlert('Подарунок', `Обрано: ${title} (${price} 🪙)`);
-    }
-
-    async function commitGiftSend() {
-        const comment = document.getElementById('gift-message-text').value.trim();
-        const targetUserId = viewingProfileId || activeUser.id; 
-
-        if (activeUser.id !== targetUserId) {
-            if ((activeUser.coins || 100) < pickedGiftPrice) {
-                return vkAlert('Подарунок', `Недостатньо монет! Потрібно ${pickedGiftPrice} 🪙, а у вас ${activeUser.coins || 0} 🪙.`);
-            }
-            activeUser.coins -= pickedGiftPrice;
-            await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
-            document.getElementById('profile-coins').innerText = activeUser.coins;
-        }
-
-        await db.collection('users').doc(targetUserId).collection('gifts').add({
-            emoji: pickedGiftIcon,
-            title: pickedGiftTitle,
-            sender: userFullName,
-            comment: comment,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        closeModal('modal-gift');
-        vkAlert('Подарунок', 'Подарунок успішно надіслано!');
     }
 
     // Графіті
