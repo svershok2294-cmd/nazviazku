@@ -376,6 +376,15 @@
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
                         </div>
 
+                        <!-- ПРОПОЗИЦІЯ СІМЕЙНОГО СТАНУ (БАНЕР) -->
+                        <div id="relationship-proposal-banner" style="display: none; background: #fffde7; border: 1px solid #fbc02d; padding: 6px; margin-top: 8px; border-radius: 2px; font-size: 10px;">
+                            <div id="relationship-proposal-text" style="font-weight: bold; margin-bottom: 4px; color: #f57f17;">Пропозиція сімейного стану</div>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn-vk" style="font-size: 9px; padding: 2px 6px;" onclick="acceptRelationshipProposal()">Прийняти</button>
+                                <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="rejectRelationshipProposal()">Відхилити</button>
+                            </div>
+                        </div>
+
                         <!-- ГОСТЬОВА КНИГА -->
                         <div class="side-block">
                             <div class="side-block-header"><span>👀 Хто заходив</span></div>
@@ -442,6 +451,10 @@
 
                         <!-- БАЗОВА АНКЕТА -->
                         <table class="info-table">
+                            <tr>
+                                <td class="info-label">День народження:</td>
+                                <td class="info-value" id="profile-birthday-display">не вказано</td>
+                            </tr>
                             <tr>
                                 <td class="info-label">Місто:</td>
                                 <td class="info-value" id="profile-city">не вказано</td>
@@ -771,11 +784,25 @@
         </div>
         <div class="vk-modal-body">
             <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Основні дані:</div>
+            <label style="font-size: 10px; color: var(--vk-subtext);">Дата народження:</label>
+            <input type="date" id="edit-birthdate" class="input-vk modal-input">
             <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто">
-            <input type="text" id="edit-relationship" class="input-vk modal-input" placeholder="Сімейний стан">
+            
+            <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Сімейний стан:</div>
+            <select id="edit-relationship-type" class="input-vk modal-input">
+                <option value="">Не вказано</option>
+                <option value="одружений з">Одружений / Одружена з</option>
+                <option value="закоханий в">Закоханий / Закохана в</option>
+                <option value="зустрічається з">Зустрічається з</option>
+                <option value="все складно">Все складно</option>
+            </select>
+            <label style="font-size: 10px; color: var(--vk-subtext);">Виберіть партнера серед друзів:</label>
+            <select id="edit-partner-select" class="input-vk modal-input">
+                <option value="">-- Не вибрано --</option>
+            </select>
+
             <input type="text" id="edit-phone" class="input-vk modal-input" placeholder="Номер телефону">
             <input type="text" id="edit-icq" class="input-vk modal-input" placeholder="Номер ICQ">
-            <input type="text" id="edit-birthday" class="input-vk modal-input" placeholder="День народження (напр. 15 жовтня)">
 
             <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Безпека та приватність:</div>
             <select id="edit-privacy-profile" class="input-vk modal-input">
@@ -1121,10 +1148,13 @@
         currentTrack: "",
         coins: 100,
         city: "Київ",
-        relationship: "все складно",
+        relationshipType: "",
+        partnerId: "",
+        partnerName: "",
+        partnerStatus: "", // 'pending' або 'accepted'
+        birthDate: "",
         phone: "+380 (XX) XXX-XX-XX",
         icq: "345-982-110",
-        birthday: "15 жовтня",
         privacyProfile: "all",
         privacyMessages: "all",
         blacklist: [],
@@ -1182,6 +1212,7 @@
             loadGlobalNewsFeed();
             checkBirthdaysWidget();
             initIncomingRequestsListener();
+            initRelationshipProposalListener();
             loadGlobalVideos();
             loadGlobalLeaderboard();
         } catch (e) {
@@ -1250,6 +1281,19 @@
         });
     }
 
+    // Обчислення віку за датою народження
+    function calculateAge(dateString) {
+        if (!dateString) return null;
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return isNaN(age) ? null : age;
+    }
+
     function renderProfileInfo(u, uName, isMe, userId) {
         document.getElementById('profile-avatar').src = u.photo_url || "https://vk.com/images/camera_200.png";
         
@@ -1264,7 +1308,6 @@
         document.getElementById('profile-rating-text').innerText = `${displayRating}%`;
         document.getElementById('profile-rating-fill').style.width = `${Math.min(displayRating, 100)}%`;
 
-        // ДИНАМІЧНИЙ КОЛІР РЕЙТИНГУ
         const fillEl = document.getElementById('profile-rating-fill');
         const containerEl = document.getElementById('profile-rating-container');
         let fillBg = "linear-gradient(180deg, #ffe169 0%, #ebb400 100%)";
@@ -1289,8 +1332,28 @@
         fillEl.style.color = textCol;
         containerEl.style.borderColor = borderCol;
 
+        // Дата народження та вік
+        const bDayDisplay = document.getElementById('profile-birthday-display');
+        if (u.birthDate) {
+            const age = calculateAge(u.birthDate);
+            bDayDisplay.innerText = `${u.birthDate} ${age !== null ? `(${age} років)` : ''}`;
+        } else {
+            bDayDisplay.innerText = 'не вказано';
+        }
+
         document.getElementById('profile-city').innerText = u.city || 'не вказано';
-        document.getElementById('profile-relationship').innerText = u.relationship || 'не вказано';
+
+        // Сімейний стан з партнером
+        let relText = u.relationshipType || 'не вказано';
+        if (u.relationshipType && u.partnerId) {
+            if (u.partnerStatus === 'accepted') {
+                relText = `${u.relationshipType} <a href="javascript:void(0)" onclick="openUserProfile('${u.partnerId}')" style="color:var(--vk-link); font-weight:bold;">${escapeText(u.partnerName || 'партнер')}</a>`;
+            } else if (u.partnerStatus === 'pending') {
+                relText = `${u.relationshipType} ${escapeText(u.partnerName || '')} (очікує підтвердження)`;
+            }
+        }
+        document.getElementById('profile-relationship').innerHTML = relText;
+
         document.getElementById('profile-phone').innerText = u.phone || 'не вказано';
         document.getElementById('profile-icq').innerText = u.icq || 'не вказано';
         document.getElementById('info-politics').innerText = u.politics || 'не вказано';
@@ -1395,11 +1458,11 @@
         if (viewingProfileId && viewingProfileId !== activeUser.id) {
             return vkAlert('Помилка', 'Ви можете редагувати лише власну сторінку!');
         }
+        document.getElementById('edit-birthdate').value = activeUser.birthDate || '';
         document.getElementById('edit-city').value = activeUser.city || '';
-        document.getElementById('edit-relationship').value = activeUser.relationship || '';
+        document.getElementById('edit-relationship-type').value = activeUser.relationshipType || '';
         document.getElementById('edit-phone').value = activeUser.phone || '';
         document.getElementById('edit-icq').value = activeUser.icq || '';
-        document.getElementById('edit-birthday').value = activeUser.birthday || '';
         document.getElementById('edit-privacy-profile').value = activeUser.privacyProfile || 'all';
         document.getElementById('edit-privacy-messages').value = activeUser.privacyMessages || 'all';
         document.getElementById('edit-blacklist').value = (activeUser.blacklist || []).join(', ');
@@ -1412,6 +1475,15 @@
         document.getElementById('edit-movies').value = activeUser.movies || '';
         document.getElementById('edit-quotes').value = activeUser.quotes || '';
         document.getElementById('edit-about').value = activeUser.about || '';
+
+        // Заповнюємо випадаючий список партнера списком друзів
+        const partnerSelect = document.getElementById('edit-partner-select');
+        partnerSelect.innerHTML = '<option value="">-- Не вибрано --</option>';
+        userFriendsMap.forEach((friend, fId) => {
+            const selected = activeUser.partnerId === fId ? 'selected' : '';
+            partnerSelect.innerHTML += `<option value="${fId}" ${selected}>${escapeText(friend.name)}</option>`;
+        });
+
         openModal('modal-edit-profile');
     }
 
@@ -1421,11 +1493,39 @@
         const blacklistRaw = document.getElementById('edit-blacklist').value;
         const blacklist = blacklistRaw.split(',').map(s => s.trim()).filter(Boolean);
 
+        const newBirthDate = document.getElementById('edit-birthdate').value;
+        const newRelType = document.getElementById('edit-relationship-type').value;
+        const newPartnerId = document.getElementById('edit-partner-select').value;
+
+        let partnerName = '';
+        let partnerStatus = activeUser.partnerStatus || '';
+        if (newPartnerId) {
+            if (userFriendsMap.has(newPartnerId)) {
+                partnerName = userFriendsMap.get(newPartnerId).name;
+            }
+            // Якщо змінили партнера або тип стосунків, надсилаємо пропозицію
+            if (newPartnerId !== activeUser.partnerId || newRelType !== activeUser.relationshipType) {
+                partnerStatus = 'pending';
+                // Надсилаємо пропозицію у колекцію партнера
+                await db.collection('users').doc(newPartnerId).collection('relationship_proposals').doc(activeUser.id).set({
+                    fromUserId: activeUser.id,
+                    fromUserName: userFullName,
+                    relationshipType: newRelType,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        } else {
+            partnerStatus = '';
+        }
+
+        activeUser.birthDate = newBirthDate;
         activeUser.city = document.getElementById('edit-city').value.trim();
-        activeUser.relationship = document.getElementById('edit-relationship').value.trim();
+        activeUser.relationshipType = newRelType;
+        activeUser.partnerId = newPartnerId;
+        activeUser.partnerName = partnerName;
+        activeUser.partnerStatus = partnerStatus;
         activeUser.phone = document.getElementById('edit-phone').value.trim();
         activeUser.icq = document.getElementById('edit-icq').value.trim();
-        activeUser.birthday = document.getElementById('edit-birthday').value.trim();
         activeUser.privacyProfile = document.getElementById('edit-privacy-profile').value;
         activeUser.privacyMessages = document.getElementById('edit-privacy-messages').value;
         activeUser.blacklist = blacklist;
@@ -1440,11 +1540,14 @@
         activeUser.about = document.getElementById('edit-about').value.trim();
 
         await db.collection('users').doc(activeUser.id).update({
+            birthDate: activeUser.birthDate,
             city: activeUser.city,
-            relationship: activeUser.relationship,
+            relationshipType: activeUser.relationshipType,
+            partnerId: activeUser.partnerId,
+            partnerName: activeUser.partnerName,
+            partnerStatus: activeUser.partnerStatus,
             phone: activeUser.phone,
             icq: activeUser.icq,
-            birthday: activeUser.birthday,
             privacyProfile: activeUser.privacyProfile,
             privacyMessages: activeUser.privacyMessages,
             blacklist: activeUser.blacklist,
@@ -1461,7 +1564,63 @@
 
         if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         closeModal('modal-edit-profile');
-        vkAlert('Успіх', 'Дані профілю та безпеку успішно збережено!');
+        vkAlert('Успіх', 'Дані профілю успішно збережено!');
+    }
+
+    // Слухач пропозицій сімейного стану
+    let pendingRelationshipProposal = null;
+    function initRelationshipProposalListener() {
+        db.collection('users').doc(activeUser.id).collection('relationship_proposals').onSnapshot(async snap => {
+            const banner = document.getElementById('relationship-proposal-banner');
+            const textEl = document.getElementById('relationship-proposal-text');
+            if (snap.empty) {
+                banner.style.display = 'none';
+                pendingRelationshipProposal = null;
+                return;
+            }
+            // Беремо першу пропозицію
+            const doc = snap.docs[0];
+            pendingRelationshipProposal = { id: doc.id, ...doc.data() };
+            textEl.innerText = `${pendingRelationshipProposal.fromUserName} пропонує встановити статус: «${pendingRelationshipProposal.relationshipType} з вами»`;
+            banner.style.display = 'block';
+        });
+    }
+
+    async function acceptRelationshipProposal() {
+        if (!pendingRelationshipProposal) return;
+        const prop = pendingRelationshipProposal;
+
+        // Оновлюємо себе
+        activeUser.relationshipType = prop.relationshipType;
+        activeUser.partnerId = prop.fromUserId;
+        activeUser.partnerName = prop.fromUserName;
+        activeUser.partnerStatus = 'accepted';
+        await db.collection('users').doc(activeUser.id).update({
+            relationshipType: prop.relationshipType,
+            partnerId: prop.fromUserId,
+            partnerName: prop.fromUserName,
+            partnerStatus: 'accepted'
+        });
+
+        // Також оновлюємо того, хто надіслав пропозицію, щоб у нього теж стало accepted
+        await db.collection('users').doc(prop.fromUserId).update({
+            partnerStatus: 'accepted',
+            partnerId: activeUser.id,
+            partnerName: userFullName
+        });
+
+        // Видаляємо пропозицію
+        await db.collection('users').doc(activeUser.id).collection('relationship_proposals').doc(prop.id).delete();
+        document.getElementById('relationship-proposal-banner').style.display = 'none';
+        renderProfileInfo(activeUser, userFullName, true, activeUser.id);
+        vkAlert('Вітаємо!', 'Ви успішно підтвердили сімейний стан!');
+    }
+
+    async function rejectRelationshipProposal() {
+        if (!pendingRelationshipProposal) return;
+        await db.collection('users').doc(activeUser.id).collection('relationship_proposals').doc(pendingRelationshipProposal.id).delete();
+        document.getElementById('relationship-proposal-banner').style.display = 'none';
+        vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
     }
 
     async function doRatingTask() {
@@ -1807,8 +1966,8 @@
         for (let [fId, friend] of userFriendsMap) {
             try {
                 const doc = await db.collection('users').doc(fId).get();
-                if (doc.exists && doc.data().birthday) {
-                    birthdayFriends.push({ name: friend.name, birthday: doc.data().birthday });
+                if (doc.exists && doc.data().birthDate) {
+                    birthdayFriends.push({ name: friend.name, birthday: doc.data().birthDate });
                 }
             } catch(e) {}
         }
@@ -1820,11 +1979,9 @@
         }
     }
 
-    // ФОРАТУВАННЯ ТЕКСТУ З ХЕШТЕГАМИ
     function formatTextWithHashtags(text) {
         if (!text) return '';
         const escaped = escapeText(text);
-        // Знаходимо хештеги на кшталт #word
         return escaped.replace(/#([а-яА-Яa-zA-Z0-9_]+)/g, '<span class="hashtag-link" onclick="filterByHashtag(\'#$1\')">#$1</span>');
     }
 
@@ -1930,7 +2087,6 @@
         });
     }
 
-    // ТУРНІРНА ТАБЛИЦЯ ЛІДЕРІВ ДЛЯ ІГОР
     async function loadGlobalLeaderboard() {
         const lbContainer = document.getElementById('global-leaderboard-list');
         if (!lbContainer) return;
@@ -1964,7 +2120,6 @@
         }
     }
 
-    // ВІДЕОЗАПИСИ
     async function commitAddVideo() {
         const title = document.getElementById('video-title-input').value.trim();
         const url = document.getElementById('video-url-input').value.trim();
