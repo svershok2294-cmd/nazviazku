@@ -3811,6 +3811,23 @@
                 console.log("Грає: " + trackName);
             }
         }
+        // Функція для пошуку музики
+function searchYouTubeMusic() {
+    const searchInput = document.getElementById('audio-search-input');
+    const query = searchInput ? searchInput.value : '';
+    if (!query) return;
+
+    const resultsContainer = document.getElementById('search-results-container');
+    if (resultsContainer) {
+        resultsContainer.innerHTML = `
+            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span>${query} (Знайдено з YouTube)</span>
+                <button onclick="playTrack('jfKfPfyJRdk', '${query}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️</button>
+            </div>
+        `;
+    }
+}
+
     </script>
 
 
