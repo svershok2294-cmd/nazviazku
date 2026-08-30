@@ -287,12 +287,12 @@
         </div>
     </header>
 
-    <!-- МОБІЛЬНІ ВКЛАДКИ (ВИПРАВЛЕНО: клік на "Сторінка" завжди повертає додому) -->
+    <!-- МОБІЛЬНІ ВКЛАДКИ -->
     <div class="nav-tabs mobile-only">
         <button class="tab-btn active" id="tab-btn-profile" onclick="goHome()">Сторінка</button>
         <button class="tab-btn" id="tab-btn-news" onclick="switchTab('news', event)">Новини</button>
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення <span id="msg-badge" class="badge-count" style="display:none;">0</span></button>
-        <button class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends', event)">Друзі</button>
+        <button class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends', event)">Друзі <span id="req-badge" class="badge-count" style="display:none;">0</span></button>
         <button class="tab-btn" id="tab-btn-photos" onclick="switchTab('photos', event)">Фото</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
         <button class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups', event)">Групи</button>
@@ -306,7 +306,7 @@
             <a href="javascript:void(0)" id="pc-link-profile" class="active" onclick="goHome()">Моя Сторінка</a>
             <a href="javascript:void(0)" id="pc-link-news" onclick="switchTab('news', event)">Стрічка Новин</a>
             <a href="javascript:void(0)" id="pc-link-chat" onclick="switchTab('chat', event)">Мої Повідомлення <span id="pc-msg-badge" class="badge-count" style="display:none;">0</span></a>
-            <a href="javascript:void(0)" id="pc-link-friends" onclick="switchTab('friends', event)">Мої Друзі</a>
+            <a href="javascript:void(0)" id="pc-link-friends" onclick="switchTab('friends', event)">Мої Друзі <span id="pc-req-badge" class="badge-count" style="display:none;">0</span></a>
             <a href="javascript:void(0)" id="pc-link-photos" onclick="switchTab('photos', event)">Мої Фотографії</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
             <a href="javascript:void(0)" id="pc-link-groups" onclick="switchTab('groups', event)">Спільноти (Групи)</a>
@@ -348,7 +348,7 @@
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
                         </div>
 
-                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ (ТІЛЬКИ ДЛЯ ТВОРЦЯ АБО АДМІНА) -->
+                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ -->
                         <div id="group-manage-btn-wrap" style="margin-top: 6px; display: none; flex-direction: column; gap: 4px;">
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #d32f2f;" onclick="openEditGroupModal()">⚙️ Керувати групою</button>
                         </div>
@@ -570,7 +570,7 @@
                 </div>
             </div>
 
-            <!-- 4. ДРУЗІ ТА ПОШУК -->
+            <!-- 4. ДРУЗІ ТА ПОШУК (З ЗАЯВКАМИ ТА ПІДПИСНИКАМИ) -->
             <div id="tab-friends" class="tab-content">
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
                     Мої Друзі (<span id="friends-total-counter">0</span>)
@@ -593,11 +593,23 @@
                     <button class="btn-vk" onclick="findUserByIdPrompt()">Знайти за ID</button>
                 </div>
 
-                <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-subtext);">Усі зареєстровані в системі:</div>
-                <div id="all-users-list" class="user-directory-list"></div>
+                <!-- ЗАЯВКИ В ДРУЗІ -->
+                <div id="incoming-requests-section" style="display: none; margin-bottom: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 6px; color: #d32f2f;">Заявки в друзі (<span id="requests-count">0</span>):</div>
+                    <div id="incoming-requests-list" class="user-directory-list"></div>
+                </div>
 
                 <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-subtext);">Список ваших друзів:</div>
                 <div id="my-friends-list" class="user-directory-list"></div>
+
+                <!-- ПІДПИСНИКИ -->
+                <div id="subscribers-section" style="display: none; margin-top: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-subtext);">Мої підписники (<span id="subscribers-count">0</span>):</div>
+                    <div id="subscribers-list" class="user-directory-list"></div>
+                </div>
+
+                <div style="font-weight: bold; margin-top: 15px; margin-bottom: 6px; color: var(--vk-subtext);">Усі зареєстровані в системі:</div>
+                <div id="all-users-list" class="user-directory-list"></div>
             </div>
 
             <!-- 5. ФОТОАЛЬБОМИ -->
@@ -671,7 +683,7 @@
 <div class="vk-modal" id="modal-edit-profile">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
-            <span>Редагувати анкету та приватність</span>
+            <span>Редагувати анкету та безпеку</span>
             <span style="cursor: pointer;" onclick="closeModal('modal-edit-profile')">✕</span>
         </div>
         <div class="vk-modal-body">
@@ -682,7 +694,7 @@
             <input type="text" id="edit-icq" class="input-vk modal-input" placeholder="Номер ICQ">
             <input type="text" id="edit-birthday" class="input-vk modal-input" placeholder="День народження (напр. 15 жовтня)">
 
-            <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Налаштування приватності:</div>
+            <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Безпека та приватність:</div>
             <select id="edit-privacy-profile" class="input-vk modal-input">
                 <option value="all">Сторінку бачать: Усі</option>
                 <option value="friends">Сторінку бачать: Тільки друзі</option>
@@ -691,6 +703,7 @@
                 <option value="all">Пишуть повідомлення: Усі</option>
                 <option value="friends">Пишуть повідомлення: Тільки друзі</option>
             </select>
+            <input type="text" id="edit-blacklist" class="input-vk modal-input" placeholder="Чорний список (ID через кому)">
 
             <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Особисті погляди:</div>
             <input type="text" id="edit-politics" class="input-vk modal-input" placeholder="Політичні погляди">
@@ -713,7 +726,7 @@
     </div>
 </div>
 
-<!-- РЕДАГУВАННЯ ГРУПИ ДЛЯ ВЛАСНИКА -->
+<!-- РЕДАГУВАННЯ ГРУПИ -->
 <div class="vk-modal" id="modal-edit-group">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -949,6 +962,7 @@
         birthday: "15 жовтня",
         privacyProfile: "all",
         privacyMessages: "all",
+        blacklist: [],
         politics: "помірні",
         worldview: "гуманізм",
         smoking: "нейтральне",
@@ -1002,6 +1016,7 @@
             initGlobalUnreadListeners();
             loadGlobalNewsFeed();
             checkBirthdaysWidget();
+            initIncomingRequestsListener();
         } catch (e) {
             console.error("Firestore init error:", e);
         }
@@ -1018,13 +1033,20 @@
 
     async function openUserProfile(targetId) {
         if (targetId === activeUser.id) return goHome();
+        
+        const doc = await db.collection('users').doc(targetId).get();
+        if (!doc.exists) return;
+        const uData = doc.data();
+        
+        // Перевірка чорного списку
+        if (uData.blacklist && uData.blacklist.includes(activeUser.id)) {
+            return vkAlert('Доступ обмежено', 'Цей користувач додав вас у чорний список.');
+        }
+
         viewingProfileId = targetId;
         viewingGroupId = null;
         currentGroupCreatorId = null;
 
-        const doc = await db.collection('users').doc(targetId).get();
-        if (!doc.exists) return;
-        const uData = doc.data();
         const uName = uData.name || "Користувач";
 
         if (uData.privacyProfile === 'friends' && !userFriendsMap.has(targetId) && !checkIsAdmin(activeUser.id)) {
@@ -1085,7 +1107,6 @@
             taskBtnWrap.style.display = 'none';
         }
 
-        // Кнопка керування групою (тільки якщо ми в групі і юзер — творець або адмін)
         const groupManageWrap = document.getElementById('group-manage-btn-wrap');
         if (viewingGroupId && (currentGroupCreatorId === activeUser.id || checkIsAdmin(activeUser.id))) {
             groupManageWrap.style.display = 'flex';
@@ -1159,6 +1180,7 @@
         document.getElementById('edit-birthday').value = activeUser.birthday || '';
         document.getElementById('edit-privacy-profile').value = activeUser.privacyProfile || 'all';
         document.getElementById('edit-privacy-messages').value = activeUser.privacyMessages || 'all';
+        document.getElementById('edit-blacklist').value = (activeUser.blacklist || []).join(', ');
         document.getElementById('edit-politics').value = activeUser.politics || '';
         document.getElementById('edit-worldview').value = activeUser.worldview || '';
         document.getElementById('edit-smoking').value = activeUser.smoking || '';
@@ -1174,6 +1196,9 @@
     async function saveProfileChanges() {
         if (viewingProfileId && viewingProfileId !== activeUser.id) return;
         
+        const blacklistRaw = document.getElementById('edit-blacklist').value;
+        const blacklist = blacklistRaw.split(',').map(s => s.trim()).filter(Boolean);
+
         activeUser.city = document.getElementById('edit-city').value.trim();
         activeUser.relationship = document.getElementById('edit-relationship').value.trim();
         activeUser.phone = document.getElementById('edit-phone').value.trim();
@@ -1181,6 +1206,7 @@
         activeUser.birthday = document.getElementById('edit-birthday').value.trim();
         activeUser.privacyProfile = document.getElementById('edit-privacy-profile').value;
         activeUser.privacyMessages = document.getElementById('edit-privacy-messages').value;
+        activeUser.blacklist = blacklist;
         activeUser.politics = document.getElementById('edit-politics').value.trim();
         activeUser.worldview = document.getElementById('edit-worldview').value.trim();
         activeUser.smoking = document.getElementById('edit-smoking').value.trim();
@@ -1199,6 +1225,7 @@
             birthday: activeUser.birthday,
             privacyProfile: activeUser.privacyProfile,
             privacyMessages: activeUser.privacyMessages,
+            blacklist: activeUser.blacklist,
             politics: activeUser.politics,
             worldview: activeUser.worldview,
             smoking: activeUser.smoking,
@@ -1212,7 +1239,7 @@
 
         if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         closeModal('modal-edit-profile');
-        vkAlert('Успіх', 'Дані профілю та приватність успішно збережено!');
+        vkAlert('Успіх', 'Дані профілю та безпеку успішно збережено!');
     }
 
     async function doRatingTask() {
@@ -1297,29 +1324,85 @@
         }
     }
 
+    // Заявки в друзі (тепер додавання надсилає заявку)
     async function addFriend(targetId, targetName, targetAvatar) {
         try {
-            const batch = db.batch();
-            const myFriendRef = db.collection('users').doc(activeUser.id).collection('friends').doc(targetId);
-            batch.set(myFriendRef, {
-                name: targetName,
-                avatar: targetAvatar || "https://vk.com/images/camera_200.png",
-                addedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            const theirFriendRef = db.collection('users').doc(targetId).collection('friends').doc(activeUser.id);
-            batch.set(theirFriendRef, {
+            await db.collection('users').doc(targetId).collection('incoming_requests').doc(activeUser.id).set({
                 name: userFullName,
                 avatar: activeUser.photo_url,
-                addedAt: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            await batch.commit();
-            vkAlert("Друзі", `${targetName} тепер у списку ваших друзів!`);
-            if (viewingProfileId === targetId) {
-                openUserProfile(targetId);
-            }
+            vkAlert("Заявка", `Заявку в друзі надіслано користувачу ${targetName}!`);
+            if (viewingProfileId === targetId) openUserProfile(targetId);
         } catch (err) {
             console.error(err);
         }
+    }
+
+    // Слухаємо вхідні заявки в друзі
+    function initIncomingRequestsListener() {
+        db.collection('users').doc(activeUser.id).collection('incoming_requests').onSnapshot(snap => {
+            const sec = document.getElementById('incoming-requests-section');
+            const list = document.getElementById('incoming-requests-list');
+            const countEl = document.getElementById('requests-count');
+            
+            if (snap.empty) {
+                sec.style.display = 'none';
+                return;
+            }
+
+            sec.style.display = 'block';
+            countEl.innerText = snap.size;
+            list.innerHTML = '';
+
+            snap.forEach(doc => {
+                const req = doc.data();
+                const reqId = doc.id;
+                list.innerHTML += `
+                    <div class="user-row-card">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="${req.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 32px; height: 32px; border: 1px solid var(--vk-border); object-fit: cover;">
+                            <div>
+                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(req.name)}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-vk" style="font-size: 10px;" onclick="acceptFriendRequest('${reqId}', '${escapeText(req.name)}', '${req.avatar}')">Прийняти</button>
+                            <button class="btn-vk-secondary" style="font-size: 10px;" onclick="rejectFriendRequest('${reqId}')">Відхилити</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    async function acceptFriendRequest(targetId, targetName, targetAvatar) {
+        const batch = db.batch();
+        // Додаємо один одного в друзі
+        batch.set(db.collection('users').doc(activeUser.id).collection('friends').doc(targetId), {
+            name: targetName,
+            avatar: targetAvatar,
+            addedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.set(db.collection('users').doc(targetId).collection('friends').doc(activeUser.id), {
+            name: userFullName,
+            avatar: activeUser.photo_url,
+            addedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        // Видаляємо із заявки
+        batch.delete(db.collection('users').doc(activeUser.id).collection('incoming_requests').doc(targetId));
+        await batch.commit();
+        vkAlert('Друзі', `Тепер ви з ${targetName} — друзі!`);
+    }
+
+    async function rejectFriendRequest(targetId) {
+        // Відхилена заявка переводить людину в підписники
+        const batch = db.batch();
+        batch.delete(db.collection('users').doc(activeUser.id).collection('incoming_requests').doc(targetId));
+        batch.set(db.collection('users').doc(activeUser.id).collection('subscribers').doc(targetId), {
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await batch.commit();
     }
 
     async function removeFriend(targetId) {
@@ -1327,8 +1410,12 @@
             const batch = db.batch();
             batch.delete(db.collection('users').doc(activeUser.id).collection('friends').doc(targetId));
             batch.delete(db.collection('users').doc(targetId).collection('friends').doc(activeUser.id));
+            // При видаленні з друзів, людина стає підписником вашої сторінки
+            batch.set(db.collection('users').doc(targetId).collection('subscribers').doc(activeUser.id), {
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
             await batch.commit();
-            vkAlert("Друзі", "Користувача видалено з друзів.");
+            vkAlert("Друзі", "Користувача видалено з друзів (переведено в підписники).");
             if (viewingProfileId === targetId) {
                 openUserProfile(targetId);
             }
@@ -1801,9 +1888,14 @@
 
     function openDirectMessage(targetId, targetName) {
         db.collection('users').doc(targetId).get().then(doc => {
-            if (doc.exists && doc.data().privacyMessages === 'friends' && !userFriendsMap.has(targetId) && !checkIsAdmin(activeUser.id)) {
-                vkAlert('Приватність', 'Користувач приймає повідомлення тільки від друзів.');
-                return;
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.blacklist && data.blacklist.includes(activeUser.id)) {
+                    return vkAlert('Повідомлення', 'Цей користувач додав вас у чорний список.');
+                }
+                if (data.privacyMessages === 'friends' && !userFriendsMap.has(targetId) && !checkIsAdmin(activeUser.id)) {
+                    return vkAlert('Приватність', 'Користувач приймає повідомлення тільки від друзів.');
+                }
             }
             switchTab('chat');
             openChatRoom('direct', targetName, targetId);
@@ -2066,7 +2158,6 @@
         } catch (e) {}
     }
 
-    // Фотоальбоми з лайками та коментарями
     let selectedPhotoId = null;
     let selectedPhotoData = null;
 
@@ -2278,6 +2369,7 @@
         input.value = '';
     }
 
+    // Модерація стіни (видалення записів власником сторінки або творцем групи)
     function loadWallPosts(targetId) {
         const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
@@ -2298,13 +2390,16 @@
                 const isLiked = p.likes && p.likes.includes(activeUser.id);
                 const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
 
+                // Права на видалення: автор поста, власник сторінки, творець групи або головний адмін
+                const canDelete = (p.authorId === activeUser.id) || (viewingProfileId === activeUser.id) || (viewingGroupId && currentGroupCreatorId === activeUser.id) || checkIsAdmin(activeUser.id);
+
                 let bodyHtml = p.type === 'graffiti'
                     ? `<img src="${p.imageUrl}" class="post-image" alt="Графіті">`
                     : `<div class="post-text">${escapeText(p.text)}</div>`;
 
                 cont.innerHTML += `
                     <div class="post-card">
-                        <img src="${p.authorAvatar}" class="post-author-pic" alt="Аватар">
+                        <img src="${p.authorAvatar || 'https://vk.com/images/camera_200.png'}" class="post-author-pic" alt="Аватар">
                         <div class="post-body">
                             <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
                             ${bodyHtml}
@@ -2314,6 +2409,7 @@
                                     ${isLiked ? 'Не подобається' : 'Мені подобається'} (${p.likes ? p.likes.length : 0})
                                 </span>
                                 <span class="post-action" onclick="toggleCommentsSection('${id}')">Коментувати</span>
+                                ${canDelete ? `<span class="post-action" style="color: #c62828;" onclick="deleteWallPost('${id}')">Видалити</span>` : ''}
                             </div>
                             <div id="comments-box-${id}" class="comments-container" style="display: none;">
                                 <div id="comments-list-${id}">Завантаження...</div>
@@ -2327,6 +2423,12 @@
                 `;
             });
         });
+    }
+
+    async function deleteWallPost(postId) {
+        if (!confirm('Видалити цей запис?')) return;
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+        await targetCollection.doc(postId).delete();
     }
 
     async function togglePostLike(id) {
