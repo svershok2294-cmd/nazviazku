@@ -231,7 +231,9 @@
                                 Сімейний стан: <b>Заміжня / Одружений</b>
                             </div>
 
-                            <button class="btn btn-sm" onclick="changeAvatar()">📷 Змінити фото</button>
+                            <!-- Приховане поле вибору файлу з галереї -->
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+                            <button class="btn btn-sm" onclick="document.getElementById('avatar-input').click()">📷 Змінити фото</button>
                         </div>
                     </div>
                 </div>
@@ -289,10 +291,15 @@
             }
         }
 
-        function changeAvatar() {
-            const url = prompt("Введіть посилання (URL) на нове фото:");
-            if (url) {
-                setAvatar(url);
+        // Завантаження фото з галереї пристрою
+        function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    setAvatar(e.target.result);
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -351,5 +358,6 @@
     </script>
 </body>
 </html>
+
 
 
