@@ -363,10 +363,10 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ДРУЗІВ 3x2 -->
+                        <!-- БЛОК ДРУЗІВ 3x2 (З КІЛЬКІСТЮ ТА ОНЛАЙНОМ) -->
                         <div class="side-block">
                             <div class="side-block-header">
-                                <span>Друзі (<span id="sidebar-friends-count">0</span>)</span>
+                                <span>Друзі (<span id="sidebar-friends-count">0</span>) <span style="font-weight: normal; color: #43a047;" id="sidebar-friends-online-wrap">• <span id="sidebar-friends-online">0</span> онлайн</span></span>
                                 <span style="font-weight: normal; color: var(--vk-link); cursor: pointer; text-decoration: underline;" onclick="switchTab('friends')">всі</span>
                             </div>
                             <div class="friends-grid" id="sidebar-friends-grid">
@@ -953,14 +953,24 @@
                 if (checkIsAdmin(activeUser.id)) {
                     activeUser.rating = 999;
                 }
-                await docRef.set({ ...activeUser, name: userFullName, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                await docRef.set({ ...activeUser, name: userFullName, lastSeen: firebase.firestore.FieldValue.serverTimestamp(), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             } else {
                 Object.assign(activeUser, doc.data());
                 if (checkIsAdmin(activeUser.id) && activeUser.rating < 999) {
                     activeUser.rating = 999;
-                    await docRef.update({ rating: 999 });
+                    await docRef.update({ rating: 999, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
+                } else {
+                    await docRef.update({ lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
                 }
             }
+
+            // Пінгуємо онлайн статус кожні 30 секунд
+            setInterval(() => {
+                db.collection('users').doc(activeUser.id).update({
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(e => {});
+            }, 30000);
+
             goHome();
             checkInviteDeepLink();
             initGlobalUnreadListeners();
@@ -1047,7 +1057,6 @@
             taskBtnWrap.style.display = 'none';
         }
 
-        // Керування кнопками під фото для друзів / чужих профілів
         const friendActionBtns = document.getElementById('friend-profile-action-btns');
         if (!isMe) {
             friendActionBtns.style.display = 'flex';
@@ -1292,7 +1301,8 @@
         }
     }
 
-    db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(snapshot => {
+    // Слухаємо друзів та перевіряємо їхній онлайн статус
+    db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(async snapshot => {
         userFriendsMap.clear();
         const sidebarGrid = document.getElementById('sidebar-friends-grid');
         const myFriendsList = document.getElementById('my-friends-list');
@@ -1306,22 +1316,37 @@
         if (snapshot.empty) {
             sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У вас ще немає друзів</span>';
             if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">У вас ще немає доданих друзів.</div>';
+            document.getElementById('sidebar-friends-online').innerText = '0';
             loadAllRegisteredUsers();
             renderDialogsList();
             checkBirthdaysWidget();
             return;
         }
 
+        let onlineCount = 0;
         let count = 0;
-        snapshot.forEach(docSnap => {
+
+        for (let docSnap of snapshot.docs) {
             const friend = docSnap.data();
             const friendId = docSnap.id;
             userFriendsMap.set(friendId, friend);
 
+            let isOnline = false;
+            try {
+                const uDoc = await db.collection('users').doc(friendId).get();
+                if (uDoc.exists && uDoc.data().lastSeen) {
+                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
+                    if (diffMs < 120000) { // активний за останні 2 хвилини
+                        isOnline = true;
+                        onlineCount++;
+                    }
+                }
+            } catch(e) {}
+
             if (count < 6) {
                 sidebarGrid.innerHTML += `
-                    <div class="friend-card" title="${escapeText(friend.name)}" onclick="openUserProfile('${friendId}')">
-                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар"><br>
+                    <div class="friend-card" title="${escapeText(friend.name)} ${isOnline ? '(online)' : ''}" onclick="openUserProfile('${friendId}')">
+                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
                         ${escapeText(friend.name.split(' ')[0])}
                     </div>
                 `;
@@ -1335,7 +1360,7 @@
                             <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
                             <div>
                                 <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
-                                <div style="font-size: 9px; color: var(--vk-subtext);">ID: ${friendId}</div>
+                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'} • ID: ${friendId}</div>
                             </div>
                         </div>
                         <div style="display: flex; gap: 4px;">
@@ -1345,7 +1370,10 @@
                     </div>
                 `;
             }
-        });
+        }
+
+        const onlineSpan = document.getElementById('sidebar-friends-online');
+        if (onlineSpan) onlineSpan.innerText = onlineCount;
 
         loadAllRegisteredUsers();
         renderDialogsList();
@@ -2424,7 +2452,7 @@
         });
     });
 
-    // Подарунки та рейтинг (Виправлено ціль для відправки: якщо переглядаємо чужу сторінку — відправляємо туди)
+    // Подарунки та рейтинг
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
@@ -2436,7 +2464,7 @@
 
     async function commitGiftSend() {
         const comment = document.getElementById('gift-message-text').value.trim();
-        const targetUserId = viewingProfileId || activeUser.id; // Відправляємо на поточну відкриту сторінку
+        const targetUserId = viewingProfileId || activeUser.id; 
         await db.collection('users').doc(targetUserId).collection('gifts').add({
             emoji: pickedGiftIcon,
             title: pickedGiftTitle,
@@ -2446,24 +2474,6 @@
         });
         closeModal('modal-gift');
         vkAlert('Подарунок', 'Подарунок надіслано!');
-    }
-
-    // Слухаємо подарунки поточного переглядуваного профілю
-    function listenToGifts(userId) {
-        db.collection('users').doc(userId).collection('gifts').onSnapshot(snap => {
-            const cont = document.getElementById('gifts-grid');
-            if (!cont) return;
-            document.getElementById('gifts-counter').innerText = snap.size;
-            if (snap.empty) {
-                cont.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
-                return;
-            }
-            cont.innerHTML = '';
-            snap.forEach(d => {
-                const g = d.data();
-                cont.innerHTML += `<div title="${escapeText(g.comment || '')} (від: ${escapeText(g.sender)})" style="text-align: center;"><span style="font-size: 20px;">${g.emoji}</span></div>`;
-            });
-        });
     }
 
     async function commitRatingBoost() {
