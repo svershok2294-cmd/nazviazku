@@ -72,7 +72,6 @@
             background: linear-gradient(to bottom, #7ca1c9 0%, #45688e 100%); 
             height: 100%; width: 0%; transition: width 0.5s ease;
         }
-        /* Золота шкала для Директора (+500%) */
         .rating-bar-fill.gold { 
             background: linear-gradient(to bottom, #ffe57f 0%, #ffb300 50%, #ff8f00 100%) !important; 
             box-shadow: 0 0 10px rgba(255, 193, 7, 0.9);
@@ -98,8 +97,8 @@
         }
 
         .friends-list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
-        .gifts-container { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; }
-        .gift-badge { background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px; padding: 4px; font-size: 16px; text-align: center; min-width: 32px; }
+        .gifts-container { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; padding-bottom: 4px; }
+        .gift-badge { background: #f0f4f8; border: 1px solid #d1d8e0; border-radius: 4px; padding: 4px 6px; font-size: 14px; text-align: center; min-width: 32px; display: flex; align-items: center; gap: 4px; }
 
         .btn { background: var(--primary-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-sm { padding: 4px 8px; font-size: 12px; }
@@ -110,7 +109,7 @@
 
         textarea, select, input[type="text"] { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); margin-bottom: 8px; font-size: 13px; }
         .post-actions { display: flex; gap: 12px; margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 6px; }
-        .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
+        .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; font-size: 11px; }
         .hidden { display: none !important; }
 
         .sc-container { margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
@@ -119,7 +118,10 @@
         .chat-msg.my { text-align: right; color: #2b587a; }
         .chat-msg .author { font-weight: bold; }
 
-        .vk-section-header { background: #dbe0ea; color: #36577c; font-weight: bold; padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px; display: flex; justify-content: space-between; }
+        .comments-box { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border-color); }
+        .comment-item { font-size: 11px; margin-bottom: 4px; background: rgba(0,0,0,0.02); padding: 4px 6px; border-radius: 4px; }
+
+        .vk-section-header { background: #dbe0ea; color: #36577c; font-weight: bold; padding: 4px 6px; font-size: 11px; margin-bottom: 6px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
         .vk-link { color: #2b587a; text-decoration: none; cursor: pointer; }
 
         /* ПК РЕЖИМ */
@@ -146,9 +148,10 @@
         <div style="font-weight: bold;">На Зв'язку</div>
         <div>
             <a href="#" onclick="switchTab('feed')">моя сторінка</a>
-            <a href="#" onclick="switchTab('audio')">музика</a>
             <a href="#" onclick="switchTab('friends')">друзі</a>
-            <a href="#" onclick="switchTab('guests')">гості</a>
+            <a href="#" onclick="switchTab('groups')">групи</a>
+            <a href="#" onclick="switchTab('audio')">музика</a>
+            <a href="#" onclick="switchTab('notifs')">сповіщення 🔔</a>
             <a href="#" onclick="switchTab('settings')">налаштування</a>
         </div>
     </div>
@@ -156,8 +159,9 @@
     <!-- Мобільна Шапка -->
     <div class="header mobile-header">
         <h3 style="margin:0;">На Зв'язку 🇺🇦</h3>
-        <div>
-            <button class="btn btn-sm" onclick="switchTab('settings')">⚙️</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 6px; border-radius:12px;">🪙 <b id="user-coins-count">100</b></span>
+            <button class="btn btn-sm" onclick="switchTab('notifs')">🔔</button>
             <button class="btn btn-sm" onclick="toggleTheme()">🌗</button>
         </div>
     </div>
@@ -169,8 +173,10 @@
             <ul>
                 <li><a href="#" onclick="switchTab('feed')">Моя сторінка</a></li>
                 <li><a href="#" onclick="switchTab('friends')">Мої друзі</a></li>
+                <li><a href="#" onclick="switchTab('groups')">Спільноти</a></li>
                 <li><a href="#" onclick="switchTab('audio')">Моя музика</a></li>
                 <li><a href="#" onclick="switchTab('guests')">Мої гості</a></li>
+                <li><a href="#" onclick="switchTab('notifs')">Сповіщення 🔔</a></li>
                 <li><a href="#" onclick="switchTab('settings')">Налаштування</a></li>
             </ul>
         </div>
@@ -180,9 +186,10 @@
             <div class="nav-tabs">
                 <div class="tab-btn active" id="tab-btn-feed" onclick="switchTab('feed')">📰 Стіна</div>
                 <div class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends')">👥 Друзі</div>
+                <div class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups')">👨‍👩‍👦 Групи</div>
                 <div class="tab-btn" id="tab-btn-audio" onclick="switchTab('audio')">🎵 Музика</div>
                 <div class="tab-btn" id="tab-btn-guests" onclick="switchTab('guests')">👁️ Гості</div>
-                <div class="tab-btn" id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Режим</div>
+                <div class="tab-btn" id="tab-btn-shop" onclick="switchTab('shop')">🎁 Лавка</div>
             </div>
 
             <!-- ВКЛАДКА ПРОФІЛЬ ТА СТІНА -->
@@ -207,12 +214,10 @@
                             <a style="font-size:11px; color:#3b6998; cursor:pointer; display:block; margin-bottom: 8px;" onclick="document.getElementById('avatar-input').click()">Змінити фото</a>
 
                             <div class="vk-section-header" style="font-size: 10px;">
-                                Подарунки <a class="vk-link" onclick="sendGift()" style="font-size: 9px;">[+ надіслати]</a>
+                                Подарунки <a class="vk-link" onclick="switchTab('shop')" style="font-size: 9px;">[+ Магазин]</a>
                             </div>
                             <div id="gifts-list" class="gifts-container">
                                 <div class="gift-badge">🎁</div>
-                                <div class="gift-badge">⭐</div>
-                                <div class="gift-badge">🏆</div>
                             </div>
 
                             <div class="vk-section-header" style="font-size: 10px; margin-top: 10px;">
@@ -246,6 +251,10 @@
                                 <tr>
                                     <td class="label">Посада:</td>
                                     <td><b id="user-role-text">Учасник</b></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Баланс:</td>
+                                    <td><b id="profile-coins-text">100 балів</b> <a class="vk-link" onclick="claimDailyBonus()" style="font-size:9px;">[+50 Бонус]</a></td>
                                 </tr>
                                 <tr>
                                     <td class="label">Місто:</td>
@@ -313,6 +322,53 @@
                 <button class="btn" style="width: 100%;" onclick="shareApp()">🔗 Запросити друзів у Telegram</button>
             </div>
 
+            <!-- ВКЛАДКА ГРУПИ / СПІЛЬНОТИ -->
+            <div id="tab-groups" class="card hidden">
+                <div class="vk-section-header">Спільноти та Групи</div>
+                <div style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+                    <b style="font-size:12px;">Створити нову спільноту:</b>
+                    <input type="text" id="group-name-input" placeholder="Назва спільноти..." style="margin-top:4px;">
+                    <textarea id="group-desc-input" rows="2" placeholder="Опис спільноти..."></textarea>
+                    <button class="btn btn-sm" style="width:100%;" onclick="createGroup()">➕ Створити Групу</button>
+                </div>
+                <div id="groups-list-container">
+                    <p style="font-size:12px; color:gray;">Завантаження списку груп...</p>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА МАГАЗИН ПОДАРУНКІВ -->
+            <div id="tab-shop" class="card hidden">
+                <div class="vk-section-header">Крамниця Подарунків 🎁</div>
+                <p style="font-size:11px; color:gray;">Обирайте подарунок та надісилайте його друзям за бали!</p>
+                
+                <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;" id="shop-items-grid">
+                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
+                        <span style="font-size:30px;">⭐</span>
+                        <div style="font-size:12px; font-weight:bold;">Зірочка</div>
+                        <div style="font-size:11px; color:orange;">20 балів</div>
+                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('⭐', 20)">Надіслати</button>
+                    </div>
+                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
+                        <span style="font-size:30px;">🏆</span>
+                        <div style="font-size:12px; font-weight:bold;">Кубок</div>
+                        <div style="font-size:11px; color:orange;">50 балів</div>
+                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('🏆', 50)">Надіслати</button>
+                    </div>
+                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
+                        <span style="font-size:30px;">👑</span>
+                        <div style="font-size:12px; font-weight:bold;">Корона</div>
+                        <div style="font-size:11px; color:orange;">100 балів</div>
+                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('👑', 100)">Надіслати</button>
+                    </div>
+                    <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; text-align:center;">
+                        <span style="font-size:30px;">🚀</span>
+                        <div style="font-size:12px; font-weight:bold;">Ракета</div>
+                        <div style="font-size:11px; color:orange;">150 балів</div>
+                        <button class="btn btn-sm" style="margin-top:4px;" onclick="buyGift('🚀', 150)">Надіслати</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- ВКЛАДКА ОСОБИСТИЙ ЧАТ -->
             <div id="tab-chat" class="card hidden">
                 <div class="vk-section-header" style="display:flex; justify-content:space-between;">
@@ -322,7 +378,16 @@
                 <div id="chat-messages-box" class="chat-box"></div>
                 <div style="display:flex; gap:6px;">
                     <input type="text" id="chat-input" placeholder="Напишіть повідомлення..." style="margin:0;">
+                    <button class="btn btn-sm" id="voice-rec-btn" onclick="toggleVoiceRecording()">🎤</button>
                     <button class="btn btn-sm" onclick="sendChatMessage()">Надіслати</button>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА СПОВІЩЕННЯ -->
+            <div id="tab-notifs" class="card hidden">
+                <div class="vk-section-header">Центр Сповіщень 🔔</div>
+                <div id="notifs-list">
+                    <p style="font-size:12px; color:gray;">Немає нових сповіщень.</p>
                 </div>
             </div>
 
@@ -388,6 +453,12 @@
         let activeChatUserId = null;
         let chatUnsubscribe = null;
         let isDirector = false;
+        let userCoins = 100;
+
+        // Голосові записи
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -401,7 +472,6 @@
             document.getElementById('user-avatar-placeholder').innerText = currentUserName[0] || 'V';
             if (currentUserAvatar) setAvatar(currentUserAvatar);
 
-            // 👑 ПЕРЕВІРКА ЗА ТВОРІМ TELEGRAM ID (325300795):
             if (currentUserId === ADMIN_TELEGRAM_ID) {
                 isDirector = true;
             }
@@ -410,52 +480,65 @@
                 const userRef = db.collection("users").doc(currentUserId);
                 const doc = await userRef.get();
 
-                if (doc.exists && doc.data().isDirector === true) {
-                    isDirector = true;
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.isDirector === true) isDirector = true;
+                    if (data.coins !== undefined) userCoins = data.coins;
                 } else if (isDirector) {
-                    await userRef.set({ isDirector: true }, { merge: true });
+                    await userRef.set({ isDirector: true, coins: 5000 }, { merge: true });
+                    userCoins = 5000;
                 }
 
                 await userRef.set({
                     name: currentUserName,
                     avatarUrl: currentUserAvatar,
+                    coins: userCoins,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
             } catch (e) { console.error("Помилка БД:", e); }
 
-            // Оновлюємо рейтинг
+            updateCoinsDisplay();
             calculateVkRating();
             listenToRealFriends();
             listenToGuests();
+            listenToGifts();
+            listenToNotifications();
+            listenToGroups();
         });
 
-        // СИСТЕМА ЗОЛОТОГО РЕЙТИНГУ (+500%)
+        function updateCoinsDisplay() {
+            document.getElementById('user-coins-count').innerText = userCoins;
+            document.getElementById('profile-coins-text').innerText = `${userCoins} балів`;
+        }
+
+        async function claimDailyBonus() {
+            userCoins += 50;
+            updateCoinsDisplay();
+            await db.collection("users").doc(currentUserId).update({ coins: userCoins });
+            alert("🎉 Ви отримали щоденний бонус: +50 балів!");
+        }
+
+        // РЕЙТИНГ
         function calculateVkRating() {
             const barFill = document.getElementById('rating-bar-fill');
             const ratingText = document.getElementById('rating-text');
             const directorBadge = document.getElementById('director-badge');
 
             if (isDirector) {
-                // 🏆 Золотий рейтинг Директора (+500%)
                 barFill.style.width = '100%';
                 barFill.classList.add('gold');
                 ratingText.innerText = '+500%';
                 directorBadge.classList.remove('hidden');
                 document.getElementById('user-role-text').innerText = "Генеральний Директор 👑";
             } else {
-                // Звичайний рейтинг від 0 до 100% для інших користувачів
                 let rating = 35;
                 if (currentUserAvatar) rating += 35;
                 if (document.getElementById('user-status').innerText !== '[встановити статус]') rating += 15;
                 if (document.getElementById('status-val').innerText !== 'Не вказано') rating += 15;
 
-                if (rating > 100) {
-                    rating = 100;
-                    barFill.classList.add('gold');
-                } else {
-                    barFill.classList.remove('gold');
-                }
+                if (rating > 100) { rating = 100; barFill.classList.add('gold'); }
+                else { barFill.classList.remove('gold'); }
                 
                 barFill.style.width = rating + '%';
                 ratingText.innerText = '+' + rating + '%';
@@ -463,7 +546,7 @@
             }
         }
 
-        // 2. ЧАТ
+        // ЧАТ ТА ГОЛОСОВІ
         function openChatWith(friendId, friendName) {
             activeChatUserId = friendId;
             document.getElementById('chat-partner-name').innerText = friendName;
@@ -480,66 +563,109 @@
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         const isMy = data.senderId === currentUserId;
+                        let bodyContent = data.text;
+                        if (data.isAudio) {
+                            bodyContent = `<audio controls src="${data.audioUrl}" style="max-width:200px; height:30px;"></audio>`;
+                        }
                         box.innerHTML += `
                             <div class="chat-msg ${isMy ? 'my' : ''}">
-                                <span class="author">${data.senderName}:</span> ${data.text}
+                                <span class="author">${data.senderName}:</span> ${bodyContent}
                             </div>
                         `;
                     });
                     box.scrollTop = box.scrollHeight;
                 });
 
-            // Відмітка в гостях
             db.collection("users").doc(friendId).collection("guests").doc(currentUserId).set({
                 name: currentUserName,
                 visitedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
 
-        async function sendChatMessage() {
+        async function sendChatMessage(audioDataUrl = null) {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if (!text || !activeChatUserId) return;
+            if (!text && !audioDataUrl) return;
 
             const chatId = [currentUserId, activeChatUserId].sort().join("_");
             await db.collection("chats").doc(chatId).collection("messages").add({
                 senderId: currentUserId,
                 senderName: currentUserName,
-                text: text,
+                text: audioDataUrl ? '' : text,
+                isAudio: !!audioDataUrl,
+                audioUrl: audioDataUrl || '',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             input.value = '';
         }
 
-        // 3. МУЗИКА (SOUNDCLOUD)
-        function loadCustomSoundCloud() {
-            const link = document.getElementById('sc-link-input').value.trim();
-            if (!link) return alert("Введіть посилання на SoundCloud!");
-            const encodedUrl = encodeURIComponent(link);
-            document.getElementById('sc-iframe').src = `https://w.soundcloud.com/player/?url=${encodedUrl}&color=%233b6998&auto_play=true`;
+        function toggleVoiceRecording() {
+            const btn = document.getElementById('voice-rec-btn');
+            if (!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {
+                            sendChatMessage(reader.result);
+                        };
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.innerText = "🛑";
+                    btn.style.background = "red";
+                }).catch(err => alert("Немає доступу до мікрофону"));
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.innerText = "🎤";
+                btn.style.background = "var(--primary-color)";
+            }
         }
 
-        // 4. ГОСТІ
-        function listenToGuests() {
-            db.collection("users").doc(currentUserId).collection("guests").onSnapshot((snapshot) => {
-                const box = document.getElementById('guests-list');
-                box.innerHTML = '';
-                if (snapshot.empty) {
-                    box.innerHTML = '<p style="font-size:12px; color:gray;">Поки ніхто не заходив.</p>';
-                    return;
-                }
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    box.innerHTML += `
-                        <div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">
-                            👁️ <b>${data.name}</b> заходив(ла) на вашу сторінку
-                        </div>
-                    `;
+        // КРАМНИЦЯ ПОДАРУНКІВ
+        async function buyGift(icon, price) {
+            if (userCoins < price) return alert("Недостатньо балів на балансі!");
+            const targetId = prompt("Введіть ID або Ім'я друга для подарунка (або залиште порожнім для себе):");
+            const recipientId = targetId || currentUserId;
+
+            userCoins -= price;
+            updateCoinsDisplay();
+
+            await db.collection("users").doc(currentUserId).update({ coins: userCoins });
+            await db.collection("users").doc(recipientId).collection("gifts").add({
+                icon: icon,
+                from: currentUserName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Сповіщення
+            if (recipientId !== currentUserId) {
+                await db.collection("users").doc(recipientId).collection("notifs").add({
+                    text: `🎁 ${currentUserName} надіслав(ла) вам подарунок ${icon}!`,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            alert("🎉 Подарунок успішно відправлено!");
+        }
+
+        function listenToGifts() {
+            db.collection("users").doc(currentUserId).collection("gifts").onSnapshot(snapshot => {
+                const container = document.getElementById('gifts-list');
+                container.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const gift = doc.data();
+                    container.innerHTML += `<div class="gift-badge" title="Від ${gift.from}">${gift.icon}</div>`;
                 });
             });
         }
 
-        // 5. СТІНА ТА ПОСТИ
+        // КОМЕНТАРІ ТА СТІНА
         async function createPost() {
             const text = document.getElementById('post-input').value.trim();
             const imageUrl = document.getElementById('post-image-input').value.trim();
@@ -568,15 +694,110 @@
                         ${imageHtml}
                         <div class="post-actions">
                             <button class="action-btn" onclick="likePost('${postId}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                            <button class="action-btn" onclick="toggleComments('${postId}')">💬 Коментарі</button>
+                        </div>
+                        <div id="comments-box-${postId}" class="comments-box hidden">
+                            <div id="comments-list-${postId}"></div>
+                            <div style="display:flex; gap:4px; margin-top:4px;">
+                                <input type="text" id="comment-input-${postId}" placeholder="Коментар..." style="font-size:11px; margin:0;">
+                                <button class="btn btn-sm" onclick="addComment('${postId}')">💬</button>
+                            </div>
                         </div>
                     </div>
                 `;
+                listenToComments(postId);
             });
         });
 
+        function toggleComments(postId) {
+            document.getElementById(`comments-box-${postId}`).classList.toggle('hidden');
+        }
+
+        async function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            await db.collection("posts").doc(postId).collection("comments").add({
+                author: currentUserName, text: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = '';
+        }
+
+        function listenToComments(postId) {
+            db.collection("posts").doc(postId).collection("comments").orderBy("createdAt", "asc").onSnapshot(snapshot => {
+                const box = document.getElementById(`comments-list-${postId}`);
+                if (!box) return;
+                box.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const c = doc.data();
+                    box.innerHTML += `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`;
+                });
+            });
+        }
+
         function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
 
-        // 6. СПИСОК ДРУЗІВ
+        // ГРУПИ / СПІЛЬНОТИ
+        async function createGroup() {
+            const name = document.getElementById('group-name-input').value.trim();
+            const desc = document.getElementById('group-desc-input').value.trim();
+            if (!name) return alert("Введіть назву спільноти!");
+
+            await db.collection("groups").add({
+                name: name, desc: desc, creator: currentUserName,
+                membersCount: 1, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('group-name-input').value = '';
+            document.getElementById('group-desc-input').value = '';
+            alert("Спільноту успішно створено!");
+        }
+
+        function listenToGroups() {
+            db.collection("groups").onSnapshot(snapshot => {
+                const box = document.getElementById('groups-list-container');
+                box.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const g = doc.data();
+                    box.innerHTML += `
+                        <div style="border-bottom:1px solid var(--border-color); padding:8px 0; font-size:12px;">
+                            <b style="color:#3b6998;">${g.name}</b>
+                            <p style="margin:2px 0; font-size:11px; color:gray;">${g.desc || 'Немає опису'}</p>
+                            <button class="btn btn-sm" onclick="alert('Ви підписалися на спільноту!')">➕ Підписатися</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // СПОВІЩЕННЯ
+        function listenToNotifications() {
+            db.collection("users").doc(currentUserId).collection("notifs").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                const box = document.getElementById('notifs-list');
+                box.innerHTML = '';
+                if (snapshot.empty) return box.innerHTML = '<p style="font-size:12px; color:gray;">Немає нових сповіщень.</p>';
+                snapshot.forEach(doc => {
+                    const n = doc.data();
+                    box.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">${n.text}</div>`;
+                });
+            });
+        }
+
+        // ГОСТІ
+        function listenToGuests() {
+            db.collection("users").doc(currentUserId).collection("guests").onSnapshot((snapshot) => {
+                const box = document.getElementById('guests-list');
+                box.innerHTML = '';
+                if (snapshot.empty) return box.innerHTML = '<p style="font-size:12px; color:gray;">Поки ніхто не заходив.</p>';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    box.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid var(--border-color); font-size:12px;">👁️ <b>${data.name}</b> заходив(ла) на вашу сторінку</div>`;
+                });
+            });
+        }
+
+        // СПИСАК ДРУЗІВ
         function listenToRealFriends() {
             db.collection("users").onSnapshot((snapshot) => {
                 const grid = document.getElementById('profile-friends-grid');
@@ -617,8 +838,9 @@
             });
         }
 
+        // ДОПОМІЖНІ ФУНКЦІЇ
         function switchTab(tab) {
-            ['feed', 'friends', 'chat', 'audio', 'guests', 'settings'].forEach(t => {
+            ['feed', 'friends', 'groups', 'shop', 'chat', 'notifs', 'audio', 'guests', 'settings'].forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 if (el) el.classList.add('hidden');
             });
@@ -628,6 +850,13 @@
             if (target) target.classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-btn-${tab}`);
             if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function loadCustomSoundCloud() {
+            const link = document.getElementById('sc-link-input').value.trim();
+            if (!link) return alert("Введіть посилання на SoundCloud!");
+            const encodedUrl = encodeURIComponent(link);
+            document.getElementById('sc-iframe').src = `https://w.soundcloud.com/player/?url=${encodedUrl}&color=%233b6998&auto_play=true`;
         }
 
         function toggleStatusInput() { document.getElementById('status-input-box').classList.toggle('hidden'); }
@@ -640,7 +869,6 @@
         function toggleMoreInfo() { document.getElementById('more-info-box').classList.toggle('hidden'); }
         function toggleStatusEdit() { document.getElementById('status-edit-box').classList.toggle('hidden'); }
         function saveRelationshipStatus(v) { document.getElementById('status-val').innerText = v; toggleStatusEdit(); calculateVkRating(); }
-        function sendGift() { alert("Подарунок відправлено!"); }
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
         function changeViewMode(m) { document.body.className = `mode-${m}`; }
         function setAvatar(url) {
