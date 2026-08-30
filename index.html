@@ -164,8 +164,8 @@
         /* ПРОФІЛЬ */
         .avatar-wrap { border: 1px solid var(--vk-border); background: #f7f7f7; padding: 3px; text-align: center; }
         .avatar { width: 100%; max-width: 144px; height: 144px; object-fit: cover; display: inline-block; }
-        .rating-bar-container { border: 1px solid #d0ab26; background: #fff; padding: 1px; border-radius: 2px; margin-top: 5px; }
-        .rating-bar-fill { background: linear-gradient(180deg, #ffe169 0%, #ebb400 100%); height: 13px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #4a3600; }
+        .rating-bar-container { border: 1px solid #d0ab26; background: #fff; padding: 1px; border-radius: 2px; margin-top: 5px; transition: border-color 0.3s; }
+        .rating-bar-fill { height: 13px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #fff; transition: background 0.3s; }
 
         .side-block { border: 1px solid var(--vk-border); margin-top: 10px; background: #ffffff; }
         .side-block-header { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 4px 6px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between; }
@@ -336,9 +336,9 @@
                             <button id="avatar-change-btn" class="btn-vk-secondary" style="width: 100%; font-size: 10px; margin-top: 4px; display: none;" onclick="document.getElementById('avatar-file-input').click()">Змінити фото</button>
                         </div>
 
-                        <div class="rating-bar-container" title="Рейтинг профілю">
+                        <div class="rating-bar-container" id="profile-rating-container" title="Рейтинг профілю">
                             <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
-                                <span id="profile-rating-text">100%</span>
+                                <span id="profile-rating-text" style="color: #4a3600; text-shadow: 0 1px 0 rgba(255,255,255,0.4);">100%</span>
                             </div>
                         </div>
 
@@ -365,7 +365,7 @@
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
                         </div>
 
-                        <!-- ГОСТЬОВА КНИГА (ОСТАННІ ВІДВІДУВАЧІ) -->
+                        <!-- ГОСТЬОВА КНИГА -->
                         <div class="side-block">
                             <div class="side-block-header"><span>👀 Хто заходив</span></div>
                             <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="profile-visitors-list">
@@ -645,7 +645,7 @@
 
             <!-- 5. ФОТОАЛЬБОМИ -->
             <div id="tab-photos" class="tab-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: gap; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Мої Фотографії</span>
                     <div style="display: flex; gap: 4px;">
                         <select id="photo-album-select" class="input-vk" style="font-size: 10px;">
@@ -660,7 +660,7 @@
                 <div id="photos-grid-full" class="photos-grid-layout"></div>
             </div>
 
-            <!-- 6. АУДІОЗАПИСИ (З МОЖЛИВІСТЮ ЗБЕРЕЖЕННЯ В СВОЇ АУДІО) -->
+            <!-- 6. АУДІОЗАПИСИ -->
             <div id="tab-music" class="tab-content">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
@@ -1098,7 +1098,6 @@
             return;
         }
 
-        // Записуємо візит у гостьову книгу власника профілю
         await db.collection('users').doc(targetId).collection('visitors').doc(activeUser.id).set({
             name: userFullName,
             avatar: activeUser.photo_url,
@@ -1111,7 +1110,6 @@
         switchTab('profile');
     }
 
-    // Завантаження відвідувачів профілю (Гостьова книга)
     function loadProfileVisitors(userId) {
         const vList = document.getElementById('profile-visitors-list');
         if (!vList) return;
@@ -1142,6 +1140,31 @@
 
         document.getElementById('profile-rating-text').innerText = `${displayRating}%`;
         document.getElementById('profile-rating-fill').style.width = `${Math.min(displayRating, 100)}%`;
+
+        // ДИНАМІЧНИЙ КОЛІР ТА ДИЗАЙН РЕЙТИНГУ ЯК У РАННЬОМУ ВК
+        const fillEl = document.getElementById('profile-rating-fill');
+        const containerEl = document.getElementById('profile-rating-container');
+        let fillBg = "linear-gradient(180deg, #ffe169 0%, #ebb400 100%)"; // Золото (до 300%)
+        let borderCol = "#d0ab26";
+        let textCol = "#4a3600";
+
+        if (displayRating >= 300 && displayRating < 600) {
+            fillBg = "linear-gradient(180deg, #aed581 0%, #689f38 100%)"; // Зелений (300-600%)
+            borderCol = "#558b2f";
+            textCol = "#ffffff";
+        } else if (displayRating >= 600 && displayRating < 1000) {
+            fillBg = "linear-gradient(180deg, #64b5f6 0%, #1976d2 100%)"; // Синій (600-1000%)
+            borderCol = "#1565c0";
+            textCol = "#ffffff";
+        } else if (displayRating >= 1000 || userIsAdmin) {
+            fillBg = "linear-gradient(180deg, #ba68c8 0%, #7b1fa2 100%)"; // Пурпуровий елітний (1000%+)
+            borderCol = "#6a1b9a";
+            textCol = "#ffffff";
+        }
+
+        fillEl.style.background = fillBg;
+        fillEl.style.color = textCol;
+        containerEl.style.borderColor = borderCol;
 
         document.getElementById('profile-city').innerText = u.city || 'не вказано';
         document.getElementById('profile-relationship').innerText = u.relationship || 'не вказано';
@@ -2373,7 +2396,6 @@
         input.value = '';
     }
 
-    // Збереження аудіозаписів у свій плейлист
     async function saveTrackToMyMusic(artist, title, url, duration) {
         await db.collection('users').doc(activeUser.id).collection('my_music').add({
             artist: artist,
