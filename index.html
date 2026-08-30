@@ -1687,7 +1687,7 @@
         partnerSelect.innerHTML = '<option value="">-- Не вибрано --</option>';
         userFriendsMap.forEach((friend, fId) => {
             const selected = activeUser.partnerId === fId ? 'selected' : '';
-            partnerSelect.innerHTML += `<option value="${fId}" ${selected}>${escapeText(friend.name)}</option>`;
+            partnerSelect.innerHTML += `<option value="${fId}" ${selected}>${escapeText(friend.name || 'Друг')}</option>`;
         });
 
         openModal('modal-edit-profile');
@@ -1707,7 +1707,7 @@
         let partnerStatus = activeUser.partnerStatus || '';
         if (newPartnerId) {
             if (userFriendsMap.has(newPartnerId)) {
-                partnerName = userFriendsMap.get(newPartnerId).name;
+                partnerName = userFriendsMap.get(newPartnerId).name || 'Партнер';
             }
             if (newPartnerId !== activeUser.partnerId || newRelType !== activeUser.relationshipType) {
                 partnerStatus = 'pending';
@@ -1835,6 +1835,136 @@
         await db.collection('users').doc(activeUser.id).collection('relationship_proposals').doc(pendingRelationshipProposal.id).delete();
         document.getElementById('relationship-proposal-banner').style.display = 'none';
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
+    }
+
+    // ДРУЗІ: ВИПРАВЛЕНИЙ СЛУХАЧ ДЛЯ БЕЗПЕЧНОГО РЕНДЕРУ
+    db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(async snapshot => {
+        userFriendsMap.clear();
+        const sidebarGrid = document.getElementById('sidebar-friends-grid');
+        const myFriendsList = document.getElementById('my-friends-list');
+
+        if (sidebarGrid) sidebarGrid.innerHTML = '';
+        if (myFriendsList) myFriendsList.innerHTML = '';
+
+        document.getElementById('friends-total-counter').innerText = snapshot.size;
+        document.getElementById('sidebar-friends-count').innerText = snapshot.size;
+
+        if (snapshot.empty) {
+            if (sidebarGrid) sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У вас ще немає друзів</span>';
+            if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">У вас ще немає доданих друзів.</div>';
+            document.getElementById('sidebar-friends-online').innerText = '0';
+            loadAllRegisteredUsers();
+            renderDialogsList();
+            checkBirthdaysWidget();
+            return;
+        }
+
+        let onlineCount = 0;
+        let count = 0;
+
+        for (let docSnap of snapshot.docs) {
+            const friend = docSnap.data() || {};
+            const friendId = docSnap.id;
+            userFriendsMap.set(friendId, friend);
+
+            let isOnline = false;
+            try {
+                const uDoc = await db.collection('users').doc(friendId).get();
+                if (uDoc.exists && uDoc.data().lastSeen) {
+                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
+                    if (diffMs < 120000) { 
+                        isOnline = true;
+                        onlineCount++;
+                    }
+                }
+            } catch(e) {}
+
+            const fName = friend.name || 'Користувач';
+            const fAvatar = friend.avatar || 'https://vk.com/images/camera_200.png';
+
+            if (sidebarGrid && count < 6) {
+                sidebarGrid.innerHTML += `
+                    <div class="friend-card" title="${escapeText(fName)} ${isOnline ? '(online)' : ''}" onclick="openUserProfile('${friendId}')">
+                        <img src="${fAvatar}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
+                        ${escapeText(fName.split(' ')[0])}
+                    </div>
+                `;
+                count++;
+            }
+
+            if (myFriendsList) {
+                myFriendsList.innerHTML += `
+                    <div class="user-row-card">
+                        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
+                            <img src="${fAvatar}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
+                            <div>
+                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(fName)}</span>
+                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'} • ID: ${friendId}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-vk" style="font-size: 10px;" onclick="openDirectMessage('${friendId}', '${escapeText(fName)}')">Написати</button>
+                            <button class="btn-vk-secondary" style="font-size: 10px;" onclick="removeFriend('${friendId}')">Видалити</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        const onlineSpan = document.getElementById('sidebar-friends-online');
+        if (onlineSpan) onlineSpan.innerText = onlineCount;
+
+        loadAllRegisteredUsers();
+        renderDialogsList();
+        checkBirthdaysWidget();
+    });
+
+    async function loadAllRegisteredUsers() {
+        try {
+            const snap = await db.collection('users').limit(50).get();
+            cachedUsers = [];
+            snap.forEach(doc => {
+                if (doc.id !== activeUser.id) cachedUsers.push({ id: doc.id, ...doc.data() });
+            });
+            renderUsersDirectory(cachedUsers);
+            renderDialogsList();
+            loadGlobalLeaderboard();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderUsersDirectory(users) {
+        const container = document.getElementById('all-users-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (users.length === 0) {
+            container.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Інших користувачів не знайдено.</div>';
+            return;
+        }
+
+        users.forEach(u => {
+            const isFriend = userFriendsMap.has(u.id);
+            container.innerHTML += `
+                <div class="user-row-card">
+                    <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${u.id}')">
+                        <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}" style="width: 32px; height: 32px; border: 1px solid var(--vk-border); object-fit: cover;">
+                        <div>
+                            <div style="font-weight: bold; color: var(--vk-link);">${escapeText(u.name || 'Користувач')}</div>
+                            <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(u.city || '')} (ID: ${u.id})</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-vk-secondary" style="font-size: 10px;" onclick="openDirectMessage('${u.id}', '${escapeText(u.name || 'Користувач')}')">ЛС</button>
+                        ${isFriend 
+                            ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; line-height: 24px;">✓</span>' 
+                            : `<button class="btn-vk" style="font-size: 10px;" onclick="addFriend('${u.id}', '${escapeText(u.name || 'Користувач')}', '${u.photo_url || ''}')">+ Додати</button>`
+                        }
+                    </div>
+                </div>
+            `;
+        });
     }
 
     async function commitAddAppToLibrary() {
@@ -2276,557 +2406,234 @@
         }
     }
 
-    db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(async snapshot => {
-        userFriendsMap.clear();
-        const sidebarGrid = document.getElementById('sidebar-friends-grid');
-        const myFriendsList = document.getElementById('my-friends-list');
+    // Графіті
+    const canvas = document.getElementById('graffiti-canvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let currentColor = '#000000';
+    let currentLineWidth = 2;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        sidebarGrid.innerHTML = '';
-        if (myFriendsList) myFriendsList.innerHTML = '';
-
-        document.getElementById('friends-total-counter').innerText = snapshot.size;
-        document.getElementById('sidebar-friends-count').innerText = snapshot.size;
-
-        if (snapshot.empty) {
-            sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У вас ще немає друзів</span>';
-            if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">У вас ще немає доданих друзів.</div>';
-            document.getElementById('sidebar-friends-online').innerText = '0';
-            loadAllRegisteredUsers();
-            renderDialogsList();
-            checkBirthdaysWidget();
-            return;
-        }
-
-        let onlineCount = 0;
-        let count = 0;
-
-        for (let docSnap of snapshot.docs) {
-            const friend = docSnap.data();
-            const friendId = docSnap.id;
-            userFriendsMap.set(friendId, friend);
-
-            let isOnline = false;
-            try {
-                const uDoc = await db.collection('users').doc(friendId).get();
-                if (uDoc.exists && uDoc.data().lastSeen) {
-                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
-                    if (diffMs < 120000) { 
-                        isOnline = true;
-                        onlineCount++;
-                    }
-                }
-            } catch(e) {}
-
-            if (count < 6) {
-                sidebarGrid.innerHTML += `
-                    <div class="friend-card" title="${escapeText(friend.name)} ${isOnline ? '(online)' : ''}" onclick="openUserProfile('${friendId}')">
-                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
-                        ${escapeText(friend.name.split(' ')[0])}
-                    </div>
-                `;
-                count++;
-            }
-
-            if (myFriendsList) {
-                myFriendsList.innerHTML += `
-                    <div class="user-row-card">
-                        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
-                            <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
-                            <div>
-                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
-                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'} • ID: ${friendId}</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 4px;">
-                            <button class="btn-vk" style="font-size: 10px;" onclick="openDirectMessage('${friendId}', '${escapeText(friend.name)}')">Написати</button>
-                            <button class="btn-vk-secondary" style="font-size: 10px;" onclick="removeFriend('${friendId}')">Видалити</button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        const onlineSpan = document.getElementById('sidebar-friends-online');
-        if (onlineSpan) onlineSpan.innerText = onlineCount;
-
-        loadAllRegisteredUsers();
-        renderDialogsList();
-        checkBirthdaysWidget();
-    });
-
-    async function loadAllRegisteredUsers() {
-        try {
-            const snap = await db.collection('users').limit(50).get();
-            cachedUsers = [];
-            snap.forEach(doc => {
-                if (doc.id !== activeUser.id) cachedUsers.push({ id: doc.id, ...doc.data() });
-            });
-            renderUsersDirectory(cachedUsers);
-            renderDialogsList();
-            loadGlobalLeaderboard();
-        } catch (e) {
-            console.error(e);
-        }
+    function getCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: (clientX - rect.left) * (canvas.width / rect.width),
+            y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
     }
 
-    function renderUsersDirectory(users) {
-        const container = document.getElementById('all-users-list');
-        if (!container) return;
-        container.innerHTML = '';
-
-        if (users.length === 0) {
-            container.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Інших користувачів не знайдено.</div>';
-            return;
-        }
-
-        users.forEach(u => {
-            const isFriend = userFriendsMap.has(u.id);
-            container.innerHTML += `
-                <div class="user-row-card">
-                    <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${u.id}')">
-                        <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}" style="width: 32px; height: 32px; border: 1px solid var(--vk-border); object-fit: cover;">
-                        <div>
-                            <div style="font-weight: bold; color: var(--vk-link);">${escapeText(u.name || 'Користувач')}</div>
-                            <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(u.city || '')} (ID: ${u.id})</div>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 4px;">
-                        <button class="btn-vk-secondary" style="font-size: 10px;" onclick="openDirectMessage('${u.id}', '${escapeText(u.name || 'Користувач')}')">ЛС</button>
-                        ${isFriend 
-                            ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; line-height: 24px;">✓</span>' 
-                            : `<button class="btn-vk" style="font-size: 10px;" onclick="addFriend('${u.id}', '${escapeText(u.name || 'Користувач')}', '${u.photo_url || ''}')">+ Додати</button>`
-                        }
-                    </div>
-                </div>
-            `;
-        });
+    function startDraw(e) {
+        isDrawing = true;
+        const { x, y } = getCoords(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        e.preventDefault();
     }
 
-    function filterUsersList() {
-        const nameQuery = document.getElementById('friend-search-input').value.toLowerCase().trim();
-        const cityQuery = document.getElementById('city-filter-input').value.toLowerCase().trim();
-        
-        const filtered = cachedUsers.filter(u => {
-            const matchesName = (u.name || '').toLowerCase().includes(nameQuery) || String(u.id).toLowerCase().includes(nameQuery);
-            const matchesCity = cityQuery === '' || (u.city || '').toLowerCase().includes(cityQuery);
-            return matchesName && matchesCity;
-        });
-        renderUsersDirectory(filtered);
+    function draw(e) {
+        if (!isDrawing) return;
+        const { x, y } = getCoords(e);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentLineWidth;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        e.preventDefault();
     }
 
-    async function findUserByIdPrompt() {
-        const targetId = prompt("Введіть точний ID користувача:");
-        if (!targetId || targetId.trim() === "") return;
-        const cleanId = targetId.trim();
-        if (cleanId === activeUser.id) return vkAlert("Помилка", "Ви не можете додати себе.");
+    function stopDraw() { isDrawing = false; }
 
-        const doc = await db.collection('users').doc(cleanId).get();
-        if (doc.exists) {
-            const u = doc.data();
-            addFriend(cleanId, u.name || "Користувач", u.photo_url || "");
-        } else {
-            vkAlert("Не знайдено", "Користувача з таким ID не існує в базі.");
-        }
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    function setCanvasColor(col) { currentColor = col; }
+    function setCanvasSize(sz) { currentLineWidth = sz; }
+    function clearCanvas() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    async function checkBirthdaysWidget() {
-        const widgetEl = document.getElementById('birthdays-widget-content');
-        if (!widgetEl) return;
-        
-        let birthdayFriends = [];
-        for (let [fId, friend] of userFriendsMap) {
-            try {
-                const doc = await db.collection('users').doc(fId).get();
-                if (doc.exists && doc.data().birthDate) {
-                    birthdayFriends.push({ name: friend.name, birthday: doc.data().birthDate });
-                }
-            } catch(e) {}
-        }
-
-        if (birthdayFriends.length > 0) {
-            widgetEl.innerHTML = birthdayFriends.map(bf => `<div>🎉 <b>${escapeText(bf.name)}</b> (${escapeText(bf.birthday)})</div>`).join('');
-        } else {
-            widgetEl.innerHTML = 'Сьогодні немає днів народжень у друзів.';
-        }
+    function setWallMode(mode) {
+        document.getElementById('wall-text-block').style.display = mode === 'text' ? 'block' : 'none';
+        document.getElementById('graffiti-palette').style.display = mode === 'graffiti' ? 'block' : 'none';
     }
 
-    function formatTextWithHashtags(text) {
-        if (!text) return '';
-        const escaped = escapeText(text);
-        return escaped.replace(/#([а-яА-Яa-zA-Z0-9_]+)/g, '<span class="hashtag-link" onclick="filterByHashtag(\'#$1\')">#$1</span>');
-    }
+    async function publishGraffiti() {
+        const graffitiDataUrl = canvas.toDataURL("image/png");
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
 
-    function filterByHashtag(tag) {
-        const feedContainer = document.getElementById('global-news-feed-list');
-        document.getElementById('news-header-title').innerText = `Стрічка за хештегом: ${tag}`;
-        document.getElementById('news-filter-reset').style.display = 'inline';
-        switchTab('news');
-
-        feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Фільтрація новин...</div>';
-
-        db.collection('users').limit(15).get().then(userSnap => {
-            let matchedPosts = [];
-            let fetchedCount = 0;
-            if (userSnap.empty) {
-                feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Нічого не знайдено за цим хештегом.</div>';
-                return;
-            }
-
-            userSnap.forEach(userDoc => {
-                userDoc.ref.collection('wall').orderBy('timestamp', 'desc').limit(10).get().then(wallSnap => {
-                    wallSnap.forEach(postDoc => {
-                        const p = postDoc.data();
-                        if (p.text && p.text.toLowerCase().includes(tag.toLowerCase())) {
-                            matchedPosts.push({ id: postDoc.id, ...p });
-                        }
-                    });
-                    fetchedCount++;
-                    if (fetchedCount === userSnap.size) {
-                        matchedPosts.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-                        renderNewsFeedHtml(matchedPosts, feedContainer);
-                    }
-                }).catch(() => {
-                    fetchedCount++;
-                    if (fetchedCount === userSnap.size && matchedPosts.length === 0) {
-                        feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Нічого не знайдено за цим хештегом.</div>';
-                    }
-                });
-            });
-        });
-    }
-
-    function loadGlobalNewsFeed() {
-        document.getElementById('news-header-title').innerText = 'Стрічка Новин мережі';
-        document.getElementById('news-filter-reset').style.display = 'none';
-        const feedContainer = document.getElementById('global-news-feed-list');
-        if (!feedContainer) return;
-        feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Завантаження новин...</div>';
-
-        db.collection('users').limit(15).get().then(userSnap => {
-            let allPosts = [];
-            let fetchedCount = 0;
-            if (userSnap.empty) {
-                feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">У стрічці поки немає новин.</div>';
-                return;
-            }
-
-            userSnap.forEach(userDoc => {
-                userDoc.ref.collection('wall').orderBy('timestamp', 'desc').limit(5).get().then(wallSnap => {
-                    wallSnap.forEach(postDoc => {
-                        allPosts.push({ id: postDoc.id, ...postDoc.data() });
-                    });
-                    fetchedCount++;
-                    if (fetchedCount === userSnap.size) {
-                        allPosts.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-                        renderNewsFeedHtml(allPosts, feedContainer);
-                    }
-                }).catch(() => {
-                    fetchedCount++;
-                    if (fetchedCount === userSnap.size && allPosts.length === 0) {
-                        feedContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">У стрічці поки немає новин.</div>';
-                    }
-                });
-            });
-        });
-    }
-
-    function renderNewsFeedHtml(posts, container) {
-        container.innerHTML = '';
-        if (posts.length === 0) {
-            container.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">У стрічці поки немає новин.</div>';
-            return;
-        }
-
-        posts.forEach(p => {
-            const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
-            let bodyHtml = p.type === 'graffiti'
-                ? `<img src="${p.imageUrl}" class="post-image" alt="Графіті">`
-                : `<div class="post-text">${formatTextWithHashtags(p.text)}</div>`;
-
-            container.innerHTML += `
-                <div class="post-card">
-                    <img src="${p.authorAvatar || 'https://vk.com/images/camera_200.png'}" class="post-author-pic" alt="Аватар">
-                    <div class="post-body">
-                        <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
-                        ${bodyHtml}
-                        <div class="post-footer">
-                            <span>${dateStr}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    async function loadGlobalLeaderboard() {
-        const lbContainer = document.getElementById('global-leaderboard-list');
-        if (!lbContainer) return;
-        try {
-            const snap = await db.collection('users').orderBy('rating', 'desc').limit(10).get();
-            lbContainer.innerHTML = '';
-            if (snap.empty) {
-                lbContainer.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">Лідерів поки немає.</div>';
-                return;
-            }
-            let rank = 1;
-            snap.forEach(doc => {
-                const u = doc.data();
-                lbContainer.innerHTML += `
-                    <div class="user-row-card">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <b style="width: 18px; text-align: center; color: var(--vk-link);">#${rank}</b>
-                            <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}" style="width: 32px; height: 32px; border: 1px solid var(--vk-border); object-fit: cover;">
-                            <div>
-                                <div style="font-weight: bold; color: var(--vk-link);">${escapeText(u.name || 'Користувач')}</div>
-                                <div style="font-size: 9px; color: var(--vk-subtext);">Авторитет: ${u.rating || 100}%</div>
-                            </div>
-                        </div>
-                        <span style="font-weight: bold; color: #d32f2f;">${u.coins || 100} 🪙</span>
-                    </div>
-                `;
-                rank++;
-            });
-        } catch(e) {
-            lbContainer.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">Помилка завантаження рейтингу.</div>';
-        }
-    }
-
-    async function commitAddVideo() {
-        const title = document.getElementById('video-title-input').value.trim();
-        const url = document.getElementById('video-url-input').value.trim();
-        const desc = document.getElementById('video-desc-input').value.trim();
-        if (!title || !url) return vkAlert('Помилка', 'Введіть назву та посилання на відео.');
-
-        await db.collection('videos').add({
-            title: title,
-            url: url,
-            description: desc,
+        await targetCollection.add({
             authorId: activeUser.id,
             authorName: userFullName,
-            ratings: {},
+            authorAvatar: activeUser.photo_url,
+            type: 'graffiti',
+            imageUrl: graffitiDataUrl,
+            likes: [],
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        closeModal('modal-video');
-        document.getElementById('video-title-input').value = '';
-        document.getElementById('video-url-input').value = '';
-        document.getElementById('video-desc-input').value = '';
-        vkAlert('Відео', 'Відеозапис успішно додано!');
+        clearCanvas();
+        setWallMode('text');
+        vkAlert('Графіті', 'Графіті опубліковано!');
     }
 
-    function loadGlobalVideos() {
-        const grid = document.getElementById('videos-grid-full');
-        if (!grid) return;
-
-        db.collection('videos').orderBy('timestamp', 'desc').onSnapshot(snap => {
-            grid.innerHTML = '';
-            if (snap.empty) {
-                grid.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">Відеозаписів поки немає.</div>';
-                return;
-            }
-            snap.forEach(doc => {
-                const v = doc.data();
-                const vId = doc.id;
-                grid.innerHTML += `
-                    <div class="video-card-item" onclick="openVideoModal('${vId}', '${escapeText(v.title)}', '${escapeText(v.url)}', '${escapeText(v.description || '')}')">
-                        <div class="video-card-thumb">▶</div>
-                        <div style="font-weight: bold; color: var(--vk-link); margin-top: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${escapeText(v.title)}</div>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    let selectedVideoId = null;
-    let selectedVideoData = null;
-
-    async function openVideoModal(vId, title, url, desc) {
-        selectedVideoId = vId;
-        document.getElementById('modal-video-header-title').innerText = title;
-        document.getElementById('modal-video-desc').innerText = desc || 'Без опису';
-        
-        let embedHtml = `<a href="${url}" target="_blank" class="btn-vk">Відкрити відео у новому вікні ↗</a>`;
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            let ytId = '';
-            if (url.includes('youtu.be/')) ytId = url.split('youtu.be/')[1].split('?')[0];
-            else if (url.includes('watch?v=')) ytId = url.split('watch?v=')[1].split('&')[0];
-            if (ytId) {
-                embedHtml = `<iframe width="100%" height="220" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
-            }
-        } else if (url.endsWith('.mp4') || url.startsWith('data:video')) {
-            embedHtml = `<video controls src="${url}" style="max-width: 100%; max-height: 220px;"></video>`;
-        }
-        document.getElementById('modal-video-player-wrap').innerHTML = embedHtml;
-        openModal('modal-video-view');
-        listenToVideoDetails(vId);
-    }
-
-    function listenToVideoDetails(vId) {
-        const vRef = db.collection('videos').doc(vId);
-        vRef.onSnapshot(doc => {
-            if (!doc.exists) return;
-            selectedVideoData = doc.data();
-            const ratings = selectedVideoData.ratings || {};
-            const userRating = ratings[activeUser.id] || 0;
-
-            const stars = document.querySelectorAll('#video-star-container span');
-            stars.forEach((star, idx) => {
-                if (idx < userRating) star.classList.add('active');
-                else star.classList.remove('active');
-            });
-
-            let sum = 0, count = 0;
-            for (let uid in ratings) {
-                sum += ratings[uid];
-                count++;
-            }
-            const avg = count > 0 ? (sum / count).toFixed(1) : '0.0';
-            document.getElementById('video-avg-rating-text').innerText = `Середня оцінка: ${avg} (оцінок: ${count})`;
-        });
-
-        vRef.collection('comments').orderBy('timestamp', 'asc').onSnapshot(snap => {
-            const list = document.getElementById('video-comments-list');
-            list.innerHTML = '';
-            if (snap.empty) {
-                list.innerHTML = '<span style="color: var(--vk-subtext);">Коментарів немає</span>';
-                return;
-            }
-            snap.forEach(cDoc => {
-                const c = cDoc.data();
-                list.innerHTML += `<div class="comment-item"><span class="comment-author">${escapeText(c.authorName)}:</span> <span>${escapeText(c.text)}</span></div>`;
-            });
-        });
-    }
-
-    async function rateVideo(starsCount) {
-        if (!selectedVideoId) return;
-        const vRef = db.collection('videos').doc(selectedVideoId);
-        let ratings = selectedVideoData.ratings || {};
-        ratings[activeUser.id] = starsCount;
-        await vRef.update({ ratings });
-    }
-
-    async function sendVideoComment() {
-        const input = document.getElementById('video-comment-input');
+    async function publishWallPost() {
+        const input = document.getElementById('new-post-content');
         const text = input.value.trim();
-        if (!text || !selectedVideoId) return;
+        if (!text) return vkAlert('Помилка', 'Введіть текст повідомлення.');
 
-        await db.collection('videos').doc(selectedVideoId).collection('comments').add({
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+
+        await targetCollection.add({
             authorId: activeUser.id,
             authorName: userFullName,
+            authorAvatar: activeUser.photo_url,
+            type: 'text',
             text: text,
+            likes: [],
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         input.value = '';
     }
 
-    async function commitCreateGroup() {
-        const name = document.getElementById('group-name-input').value.trim();
-        const desc = document.getElementById('group-desc-input').value.trim();
-        if (!name) return vkAlert('Помилка', 'Введіть назву групи.');
+    function loadWallPosts(targetId) {
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
-        await db.collection('groups').add({
-            name: name,
-            description: desc,
-            creatorId: activeUser.id,
-            creatorName: userFullName,
-            avatar: "https://vk.com/images/community_200.png",
+        db.collection('users').doc(targetId).get().then(userDoc => {
+            if (userDoc.exists && !viewingGroupId) {
+                const uData = userDoc.data();
+                const isMe = (targetId === activeUser.id);
+                const isFriend = userFriendsMap.has(targetId);
+                const canSeeWall = isMe || checkIsAdmin(activeUser.id) || uData.privacyWall === 'all' || (uData.privacyWall === 'friends' && isFriend) || (uData.privacyWall === 'nobody' && isMe);
+
+                const cont = document.getElementById('wall-posts-list');
+                if (!cont) return;
+
+                if (!canSeeWall) {
+                    cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">Користувач обмежив доступ до своєї стіни.</div>';
+                    document.getElementById('wall-counter').innerText = '0 записів';
+                    return;
+                }
+            }
+
+            targetCollection.orderBy('timestamp', 'desc').onSnapshot(snap => {
+                const cont = document.getElementById('wall-posts-list');
+                if (!cont) return;
+                cont.innerHTML = '';
+                document.getElementById('wall-counter').innerText = `${snap.size} записів`;
+
+                if (snap.empty) {
+                    cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">На стіні поки немає записів.</div>';
+                    return;
+                }
+
+                snap.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const id = docSnap.id;
+                    const isLiked = p.likes && p.likes.includes(activeUser.id);
+                    const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
+
+                    const canDelete = (p.authorId === activeUser.id) || (viewingProfileId === activeUser.id) || (viewingGroupId && currentGroupCreatorId === activeUser.id) || checkIsAdmin(activeUser.id);
+
+                    let bodyHtml = p.type === 'graffiti'
+                        ? `<img src="${p.imageUrl}" class="post-image" alt="Графіті">`
+                        : `<div class="post-text">${formatTextWithHashtags(p.text)}</div>`;
+
+                    cont.innerHTML += `
+                        <div class="post-card">
+                            <img src="${p.authorAvatar}" class="post-author-pic" alt="Аватар">
+                            <div class="post-body">
+                                <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
+                                ${bodyHtml}
+                                <div class="post-footer">
+                                    <span>${dateStr}</span>
+                                    <span class="post-action" onclick="togglePostLike('${id}')">
+                                        ${isLiked ? 'Не подобається' : 'Мені подобається'} (${p.likes ? p.likes.length : 0})
+                                    </span>
+                                    <span class="post-action" onclick="toggleCommentsSection('${id}')">Коментувати</span>
+                                    ${canDelete ? `<span class="post-action" style="color: #c62828;" onclick="deleteWallPost('${id}')">Видалити</span>` : ''}
+                                </div>
+                                <div id="comments-box-${id}" class="comments-container" style="display: none;">
+                                    <div id="comments-list-${id}">Завантаження...</div>
+                                    <div class="comment-input-row">
+                                        <input type="text" id="comment-input-${id}" class="input-vk" style="flex: 1;" placeholder="Написати коментар..." onkeypress="if(event.key==='Enter') sendPostComment('${id}')">
+                                        <button class="btn-vk" onclick="sendPostComment('${id}')">ОК</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        });
+    }
+
+    async function deleteWallPost(postId) {
+        if (!confirm('Видалити цей запис?')) return;
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+        await targetCollection.doc(postId).delete();
+    }
+
+    async function togglePostLike(id) {
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+        const ref = targetCollection.doc(id);
+        const doc = await ref.get();
+        if (!doc.exists) return;
+        let likes = doc.data().likes || [];
+        likes = likes.includes(activeUser.id) ? likes.filter(uid => uid !== activeUser.id) : [...likes, activeUser.id];
+        await ref.update({ likes });
+    }
+
+    function toggleCommentsSection(postId) {
+        const box = document.getElementById(`comments-box-${postId}`);
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            listenToComments(postId);
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    function listenToComments(postId) {
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+        targetCollection.doc(postId).collection('comments').orderBy('timestamp', 'asc').onSnapshot(snap => {
+            const wrap = document.getElementById(`comments-list-${postId}`);
+            if (!wrap) return;
+            wrap.innerHTML = '';
+            if (snap.empty) {
+                wrap.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px;">Коментарів поки немає.</span>';
+                return;
+            }
+            snap.forEach(cDoc => {
+                const c = cDoc.data();
+                wrap.innerHTML += `
+                    <div class="comment-item">
+                        <span class="comment-author">${escapeText(c.authorName)}:</span>
+                        <span>${escapeText(c.text)}</span>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    async function sendPostComment(postId) {
+        const field = document.getElementById(`comment-input-${postId}`);
+        const text = field.value.trim();
+        if (!text) return;
+        const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(viewingProfileId || activeUser.id).collection('wall');
+        await targetCollection.doc(postId).collection('comments').add({
+            authorId: activeUser.id,
+            authorName: userFullName,
+            text: text,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        closeModal('modal-group');
-        document.getElementById('group-name-input').value = '';
-        document.getElementById('group-desc-input').value = '';
-        vkAlert('Групи', 'Спільноту успішно створено!');
-    }
-
-    db.collection('groups').orderBy('timestamp', 'desc').onSnapshot(snap => {
-        const cont = document.getElementById('groups-list-container');
-        if (!cont) return;
-        cont.innerHTML = '';
-        if (snap.empty) {
-            cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Спільнот поки немає. Створіть першу!</div>';
-            return;
-        }
-        snap.forEach(docSnap => {
-            const g = docSnap.data();
-            const gId = docSnap.id;
-            cont.innerHTML += `
-                <div class="user-row-card">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="${g.avatar}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
-                        <div>
-                            <div style="font-weight: bold; color: var(--vk-link);">${escapeText(g.name)}</div>
-                            <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(g.description || '')}</div>
-                        </div>
-                    </div>
-                    <button class="btn-vk" style="font-size: 10px;" onclick="openGroupWall('${gId}', '${escapeText(g.name)}', '${g.creatorId || ''}', '${escapeText(g.description || '')}')">Стіна групи</button>
-                </div>
-            `;
-        });
-    });
-
-    function openGroupWall(gId, gName, creatorId, gDesc) {
-        viewingProfileId = null;
-        viewingGroupId = gId;
-        currentGroupCreatorId = creatorId;
-
-        renderProfileInfo({
-            photo_url: "https://vk.com/images/community_200.png",
-            status: "офіційна спільнота",
-            city: "Інтернет",
-            relationship: "відкрита група",
-            phone: "—",
-            icq: "—",
-            activity: gDesc || "спілкування за інтересами",
-            politics: "—",
-            worldview: "—",
-            smoking: "—",
-            alcohol: "—",
-            music: "—",
-            movies: "—",
-            quotes: "—",
-            about: gDesc || "Ласкаво просимо до спільноти!"
-        }, gName, false, null);
-
-        document.getElementById('wall-header-title').innerText = `Стіна спільноти «${gName}»`;
-        loadWallPosts(gId);
-        switchTab('profile');
-    }
-
-    function openEditGroupModal() {
-        if (!viewingGroupId) return;
-        db.collection('groups').doc(viewingGroupId).get().then(doc => {
-            if (doc.exists) {
-                const g = doc.data();
-                document.getElementById('edit-group-name').value = g.name || '';
-                document.getElementById('edit-group-desc').value = g.description || '';
-                openModal('modal-edit-group');
-            }
-        });
-    }
-
-    async function saveGroupChanges() {
-        if (!viewingGroupId) return;
-        const newName = document.getElementById('edit-group-name').value.trim();
-        const newDesc = document.getElementById('edit-group-desc').value.trim();
-        if (!newName) return vkAlert('Помилка', 'Введіть назву групи.');
-
-        await db.collection('groups').doc(viewingGroupId).update({
-            name: newName,
-            description: newDesc
-        });
-        closeModal('modal-edit-group');
-        vkAlert('Успіх', 'Дані групи оновлено!');
-        openGroupWall(viewingGroupId, newName, currentGroupCreatorId, newDesc);
-    }
-
-    async function deleteCurrentGroup() {
-        if (!viewingGroupId) return;
-        if (!confirm('Ви дійсно хочете видалити цю спільноту?')) return;
-
-        await db.collection('groups').doc(viewingGroupId).delete();
-        closeModal('modal-edit-group');
-        vkAlert('Видалено', 'Спільноту успішно видалено.');
-        goHome();
+        field.value = '';
     }
 </script>
 
