@@ -239,15 +239,8 @@
         .btn-voice.recording { background: #e53935; color: #fff; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* АНІМАЦІЇ ДЛЯ ФЕРМИ ТА СТІКЕРІВ */
-        @keyframes plantGrow {
-            0% { transform: scale(0.3); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes floatAnim {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
+        @keyframes plantGrow { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
         .plot-anim { animation: plantGrow 0.4s ease-out forwards; }
         .ready-anim { animation: floatAnim 1s infinite ease-in-out; }
 
@@ -276,9 +269,10 @@
         .audio-progress-fill { height: 100%; background: #45688e; width: 0%; }
         .audio-duration-text { font-size: 9px; color: var(--vk-subtext); width: 32px; text-align: right; }
 
-        /* ВІДЕО КАРТКИ */
+        /* ВІДЕО ТА ДОДАТКИ */
         .video-card-item { border: 1px solid var(--vk-border); padding: 4px; background: #ffffff; text-align: center; cursor: pointer; }
         .video-card-thumb { width: 100%; height: 100px; background: #222; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; border-radius: 2px; }
+        .app-store-card { border: 1px solid var(--vk-border); background: #fff; padding: 8px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 
         /* СПИСКИ ТА ФОТО */
         .user-directory-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
@@ -328,7 +322,7 @@
         <button class="tab-btn" id="tab-btn-videos" onclick="switchTab('videos', event)">Відео</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
         <button class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups', event)">Групи</button>
-        <button class="tab-btn" id="tab-btn-games" onclick="switchTab('games', event)">Ферма 🏡</button>
+        <button class="tab-btn" id="tab-btn-store" onclick="switchTab('store', event)">Ігри 🎮</button>
         <button class="tab-btn" id="tab-btn-notes" onclick="switchTab('notes', event)">Нотатки</button>
         <button class="tab-btn" id="tab-btn-thoughts" onclick="switchTab('thoughts', event)">Секрети</button>
     </div>
@@ -344,7 +338,7 @@
             <a href="javascript:void(0)" id="pc-link-videos" onclick="switchTab('videos', event)">Мої Відеозаписи</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
             <a href="javascript:void(0)" id="pc-link-groups" onclick="switchTab('groups', event)">Спільноти (Групи)</a>
-            <a href="javascript:void(0)" id="pc-link-games" onclick="switchTab('games', event)">Ретро-Ферма 🏡</a>
+            <a href="javascript:void(0)" id="pc-link-store" onclick="switchTab('store', event)">Архів додатків 🎮</a>
             <a href="javascript:void(0)" id="pc-link-notes" onclick="switchTab('notes', event)">Мої Нотатки</a>
             <a href="javascript:void(0)" id="pc-link-thoughts" onclick="switchTab('thoughts', event)">Думки та Секрети</a>
             <div class="sidebar-divider"></div>
@@ -401,6 +395,17 @@
                             <div style="display: flex; gap: 4px;">
                                 <button class="btn-vk" style="font-size: 9px; padding: 2px 6px;" onclick="acceptRelationshipProposal()">Прийняти</button>
                                 <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="rejectRelationshipProposal()">Відхилити</button>
+                            </div>
+                        </div>
+
+                        <!-- БЛОК МОЇХ ДОДАТКІВ (ТАКОЖ У САМОМУ НИЗУ ЛІВОЇ КОЛОНКИ) -->
+                        <div class="side-block">
+                            <div class="side-block-header">
+                                <span>Мої Додатки 🎮</span>
+                                <span style="font-weight: normal; color: var(--vk-link); cursor: pointer; text-decoration: underline;" onclick="switchTab('store')">каталог</span>
+                            </div>
+                            <div id="profile-installed-apps-list" style="padding: 6px; font-size: 10px; color: var(--vk-subtext);">
+                                Немає доданих ігор.
                             </div>
                         </div>
 
@@ -741,41 +746,15 @@
                 <div id="groups-list-container" class="user-directory-list"></div>
             </div>
 
-            <!-- 9. РЕТРО-ФЕРМА ТА СКЛАД -->
-            <div id="tab-games" class="tab-content">
-                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
-                    🏡 Ретро-Ферма («Щаслива ферма»)
+            <!-- 9. КАТАЛОГ ДОДАТКІВ ТА ІГОР -->
+            <div id="tab-store" class="tab-content">
+                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Каталог додатків та ігор 🎮</span>
+                    <button id="admin-upload-app-btn" class="btn-vk" style="display: none; font-size: 10px;" onclick="openModal('modal-add-app')">+ Завантажити гру (Адмін)</button>
                 </div>
-
-                <!-- ХАТА / СКЛАД РЕСУРСІВ -->
-                <div class="farm-house-card">
-                    <div style="font-weight: bold; color: #4e342e; margin-bottom: 4px; font-size: 12px;">🏠 Ваша Хата (Склад)</div>
-                    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-                        <span>🌾 Пшениця: <b id="storage-wheat">0</b></span>
-                        <span>🥚 Яйця: <b id="storage-eggs">0</b></span>
-                        <span>🥛 Молоко: <b id="storage-milk">0</b></span>
-                        <span>🪙 Монети: <b id="storage-coins">100</b></span>
-                    </div>
-                </div>
-
-                <!-- ГРЯДКИ ДЛЯ ВРОЖАЮ -->
-                <div style="background: #ffffff; border: 1px solid var(--vk-border); padding: 10px; margin-bottom: 10px; border-radius: 2px;">
-                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 4px;">🌱 Грядки для врожаю</div>
-                    <div id="farm-plots-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;"></div>
-                </div>
-
-                <!-- ТВАРИНИ НА ПОДВІР'Ї -->
-                <div style="background: #ffffff; border: 1px solid var(--vk-border); padding: 10px; margin-bottom: 12px; border-radius: 2px;">
-                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                        <span>🐄 Тварини на подвір'ї</span>
-                        <div style="display: flex; gap: 4px;">
-                            <button class="btn-vk" style="font-size: 9px;" onclick="buyAnimal('chicken')">+ Курка (30 🪙)</button>
-                            <button class="btn-vk" style="font-size: 9px;" onclick="buyAnimal('cow')">+ Корова (70 🪙)</button>
-                        </div>
-                    </div>
-                    <div id="farm-animals-container">
-                        <div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>
-                    </div>
+                <div style="color: var(--vk-subtext); margin-bottom: 10px;">Додавайте улюблені ретро-ігри та флеш-додатки на свою сторінку!</div>
+                <div id="global-apps-catalog-list">
+                    <div style="color: var(--vk-subtext); padding: 10px;">Завантаження бібліотеки ігор...</div>
                 </div>
             </div>
 
@@ -817,6 +796,40 @@
 </div>
 
 <!-- МОДАЛЬНІ ВІКНА -->
+<!-- АДМІН: ЗАВАНТАЖЕННЯ ГРИ -->
+<div class="vk-modal" id="modal-add-app">
+    <div class="vk-modal-box">
+        <div class="vk-modal-header">
+            <span>Додати гру до загальної бібліотеки</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-add-app')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <input type="text" id="app-title-input" class="input-vk modal-input" placeholder="Назва гри (напр. Ретро-Ферма / Тетріс)">
+            <input type="text" id="app-url-input" class="input-vk modal-input" placeholder="Посилання на гру (URL або iframe/embed)">
+            <textarea id="app-desc-input" class="wall-textarea" style="height: 70px;" placeholder="Короткий опис гри..."></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 8px;">
+                <button class="btn-vk-secondary" onclick="closeModal('modal-add-app')">Скасувати</button>
+                <button class="btn-vk" onclick="commitAddAppToLibrary()">Опублікувати в архів</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ІГРОВИЙ ПЛЕЄР МОДАЛКА -->
+<div class="vk-modal" id="modal-play-game">
+    <div class="vk-modal-box" style="max-width: 520px; width: 96%;">
+        <div class="vk-modal-header">
+            <span id="play-game-modal-title">Гра</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-play-game')">✕</span>
+        </div>
+        <div class="vk-modal-body" style="text-align: center; padding: 0; background: #000;">
+            <div id="play-game-container" style="width: 100%; height: 380px; display: flex; align-items: center; justify-content: center; color: #fff;">
+                Запуск гри...
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="vk-modal" id="modal-edit-profile">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -1258,7 +1271,8 @@
             initIncomingRequestsListener();
             initRelationshipProposalListener();
             loadGlobalVideos();
-            loadGlobalLeaderboard();
+            loadGlobalAppsCatalog();
+            loadMyInstalledApps();
             loadFarmData();
         } catch (e) {
             console.error("Firestore init error:", e);
@@ -1272,6 +1286,7 @@
         renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         loadWallPosts(activeUser.id);
         loadProfileVisitors(activeUser.id);
+        loadMyInstalledApps();
         switchTab('profile');
     }
 
@@ -1306,6 +1321,7 @@
         renderProfileInfo(uData, uName, false, targetId);
         loadWallPosts(targetId);
         loadProfileVisitors(targetId);
+        loadUserInstalledApps(targetId);
         switchTab('profile');
     }
 
@@ -1482,9 +1498,8 @@
             loadSavedMusic();
         } else if (tabId === 'videos') {
             loadGlobalVideos();
-        } else if (tabId === 'games') {
-            loadGlobalLeaderboard();
-            loadFarmData();
+        } else if (tabId === 'store') {
+            loadGlobalAppsCatalog();
         }
     }
 
@@ -1661,19 +1676,130 @@
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
     }
 
-    // ЛОГІКА РЕТРО-ФЕРМИ (Анімовані грядки + Хата + Тварини)
+    // КАТАЛОГ ТА ІГРОВИЙ АРХІВ ДОДАТКІВ
+    async function commitAddAppToLibrary() {
+        const title = document.getElementById('app-title-input').value.trim();
+        const url = document.getElementById('app-url-input').value.trim();
+        const desc = document.getElementById('app-desc-input').value.trim();
+        if (!title || !url) return vkAlert('Помилка', 'Введіть назву та посилання на гру.');
+
+        await db.collection('global_apps').add({
+            title: title,
+            url: url,
+            description: desc,
+            creatorName: userFullName,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal('modal-add-app');
+        document.getElementById('app-title-input').value = '';
+        document.getElementById('app-url-input').value = '';
+        document.getElementById('app-desc-input').value = '';
+        vkAlert('Архів', 'Гру успішно завантажено до загальної бібліотеки!');
+    }
+
+    function loadGlobalAppsCatalog() {
+        const catalogList = document.getElementById('global-apps-catalog-list');
+        const adminBtn = document.getElementById('admin-upload-app-btn');
+        if (!catalogList) return;
+
+        if (checkIsAdmin(activeUser.id)) {
+            adminBtn.style.display = 'inline-block';
+        }
+
+        db.collection('global_apps').orderBy('timestamp', 'desc').onSnapshot(snap => {
+            catalogList.innerHTML = '';
+            if (snap.empty) {
+                catalogList.innerHTML = '<div style="color: var(--vk-subtext); padding: 10px;">У бібліотеці поки немає додатків.</div>';
+                return;
+            }
+            snap.forEach(doc => {
+                const app = doc.data();
+                const appId = doc.id;
+                catalogList.innerHTML += `
+                    <div class="app-store-card">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 32px; height: 32px; background: #45688e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; border-radius: 2px;">🕹️</div>
+                            <div>
+                                <div style="font-weight: bold; color: var(--vk-link);">${escapeText(app.title)}</div>
+                                <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(app.description || 'Без опису')}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-vk-secondary" style="font-size: 10px;" onclick="launchGame('${escapeText(app.url)}', '${escapeText(app.title)}')">Грати</button>
+                            <button class="btn-vk" style="font-size: 10px;" onclick="installAppToMyProfile('${appId}', '${escapeText(app.title)}', '${escapeText(app.url)}')">+ На сторінку</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    async function installAppToMyProfile(appId, title, url) {
+        await db.collection('users').doc(activeUser.id).collection('installed_apps').doc(appId).set({
+            title: title,
+            url: url,
+            installedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        vkAlert('Додатки', `Гра «${title}» успішно додана на вашу сторінку!`);
+        loadMyInstalledApps();
+    }
+
+    function loadMyInstalledApps() {
+        const container = document.getElementById('profile-installed-apps-list');
+        if (!container) return;
+
+        db.collection('users').doc(activeUser.id).collection('installed_apps').onSnapshot(snap => {
+            if (snap.empty) {
+                container.innerHTML = 'Немає доданих ігор.';
+                return;
+            }
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const app = doc.data();
+                container.innerHTML += `<div style="margin-bottom: 3px; cursor: pointer; color: var(--vk-link); text-decoration: underline;" onclick="launchGame('${escapeText(app.url)}', '${escapeText(app.title)}')">🎮 ${escapeText(app.title)}</div>`;
+            });
+        });
+    }
+
+    function loadUserInstalledApps(userId) {
+        const container = document.getElementById('profile-installed-apps-list');
+        if (!container) return;
+
+        db.collection('users').doc(userId).collection('installed_apps').onSnapshot(snap => {
+            if (snap.empty) {
+                container.innerHTML = 'Немає доданих ігор.';
+                return;
+            }
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const app = doc.data();
+                container.innerHTML += `<div style="margin-bottom: 3px; cursor: pointer; color: var(--vk-link); text-decoration: underline;" onclick="launchGame('${escapeText(app.url)}', '${escapeText(app.title)}')">🎮 ${escapeText(app.title)}</div>`;
+            });
+        });
+    }
+
+    function launchGame(url, title) {
+        document.getElementById('play-game-modal-title').innerText = title;
+        const cont = document.getElementById('play-game-container');
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            cont.innerHTML = `<iframe src="${url}" width="100%" height="380" frameborder="0" allowfullscreen></iframe>`;
+        } else {
+            cont.innerHTML = `<div style="padding: 20px; text-align: center;">${url}</div>`;
+        }
+        openModal('modal-play-game');
+    }
+
+    // ЛОГІКА РЕТРО-ФЕРМИ
     function loadFarmData() {
         const farmContainer = document.getElementById('farm-plots-container');
         const animalsContainer = document.getElementById('farm-animals-container');
         if (!farmContainer || !animalsContainer) return;
 
-        // Оновлюємо склад у хаті
         document.getElementById('storage-wheat').innerText = activeUser.wheat || 0;
         document.getElementById('storage-eggs').innerText = activeUser.eggs || 0;
         document.getElementById('storage-milk').innerText = activeUser.milk || 0;
         document.getElementById('storage-coins').innerText = activeUser.coins || 100;
 
-        // Грядки
         db.collection('users').doc(activeUser.id).collection('farm_plots').orderBy('plotIndex').onSnapshot(snap => {
             let plots = {};
             snap.forEach(doc => { plots[doc.data().plotIndex] = { id: doc.id, ...doc.data() }; });
@@ -1687,7 +1813,7 @@
                 if (plot) {
                     const now = new Date().getTime();
                     const plantedTime = plot.plantedAt?.toMillis() || now;
-                    const growTime = 10000; // 10 секунд
+                    const growTime = 10000;
                     const elapsed = now - plantedTime;
 
                     if (elapsed >= growTime) {
@@ -1707,7 +1833,6 @@
             }
         });
 
-        // Тварини
         db.collection('users').doc(activeUser.id).collection('farm_animals').onSnapshot(snap => {
             if (snap.empty) {
                 animalsContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>';
@@ -1724,7 +1849,7 @@
 
                 const now = new Date().getTime();
                 const fedTime = a.fedAt?.toMillis() || 0;
-                const readyTime = 12000; // 12 секунд
+                const readyTime = 12000;
                 const isReady = fedTime && (now - fedTime >= readyTime);
 
                 let statusHtml = '';
