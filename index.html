@@ -78,10 +78,35 @@
             flex-shrink: 0;
         }
 
-        .rating-container { margin: 6px 0; width: 100%; }
-        .rating-title { font-size: 11px; font-weight: bold; }
-        .rating-bar-bg { background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 2px; }
-        .rating-bar-fill { background: #ffa726; height: 100%; width: 100%; }
+        /* --- КЛАСИЧНИЙ РЕЙТИНГ VK (2006-2010) --- */
+        .rating-container { margin: 8px 0; width: 100%; }
+        .rating-title { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 3px; }
+        .rating-bar-bg { 
+            background: #d0d7de; 
+            height: 14px; 
+            border-radius: 2px; 
+            overflow: hidden; 
+            position: relative;
+            border: 1px solid #b3beca;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .rating-bar-fill { 
+            background: linear-gradient(to bottom, #fcae39 0%, #ee8700 100%); 
+            height: 100%; 
+            width: 0%; 
+            transition: width 0.4s ease;
+        }
+        .rating-text {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+        }
 
         .btn {
             background: var(--primary-color);
@@ -118,7 +143,7 @@
         .action-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
 
-        /* --- ПРИМУСОВИЙ РЕЖИМ ПК (VK 2006) --- */
+        /* --- ПРИМУСОВИЙ РЕЖИМ ПК --- */
         body.mode-pc {
             background-color: #ffffff !important;
             font-family: tahoma, arial, verdana, sans-serif !important;
@@ -163,12 +188,12 @@
 
     <!-- ПК Шапка -->
     <div class="desktop-header">
-        <div style="font-weight: bold;">Вконтакте / На Зв'язку</div>
+        <div style="font-weight: bold;">На Зв'язку</div>
         <div>
-            <a href="#" onclick="comingSoon('Новости')">новости</a>
+            <a href="#" onclick="comingSoon('Новини')">новини</a>
             <a href="#" onclick="comingSoon('Люди')">люди</a>
-            <a href="#" onclick="switchTab('friends')">пригласить</a>
-            <a href="#" onclick="switchTab('settings')">настройки</a>
+            <a href="#" onclick="switchTab('friends')">запросити</a>
+            <a href="#" onclick="switchTab('settings')">налаштування</a>
         </div>
     </div>
 
@@ -184,14 +209,14 @@
     <div class="main-wrapper">
         <!-- Ліве меню ПК -->
         <div class="desktop-nav">
-            <input type="text" placeholder="🔍 Поиск" style="width:100%; margin-bottom: 5px; font-size:11px;" onfocus="comingSoon('Поиск')">
+            <input type="text" placeholder="🔍 Пошук" style="width:100%; margin-bottom: 5px; font-size:11px;" onfocus="comingSoon('Пошук')">
             <ul>
-                <li><a href="#" onclick="switchTab('feed')">Моя Страница</a></li>
-                <li><a href="#" onclick="switchTab('friends')">Мои Друзья</a></li>
-                <li><a href="#" onclick="comingSoon('Мои Фотографии')">Мои Фотографии</a></li>
-                <li><a href="#" onclick="comingSoon('Мои Аудиозаписи')">Мои Аудиозаписи</a></li>
-                <li><a href="#" onclick="comingSoon('Мои Игры')">Мои Игры</a></li>
-                <li><a href="#" onclick="switchTab('settings')">Мои Настройки</a></li>
+                <li><a href="#" onclick="switchTab('feed')">Моя сторінка</a></li>
+                <li><a href="#" onclick="switchTab('friends')">Мої друзі</a></li>
+                <li><a href="#" onclick="comingSoon('Мої Фотографії')">Мої фотографії</a></li>
+                <li><a href="#" onclick="comingSoon('Мої Аудіозаписи')">Мої аудіозаписи</a></li>
+                <li><a href="#" onclick="comingSoon('Мої Ігри')">Мої ігри</a></li>
+                <li><a href="#" onclick="switchTab('settings')">Мої налаштування</a></li>
             </ul>
         </div>
 
@@ -212,9 +237,12 @@
                                 <div id="user-avatar-placeholder" class="avatar">V</div>
                             </div>
                             
+                            <!-- Класична шкала рейтингу VK -->
                             <div class="rating-container">
-                                <div class="rating-title">Рейтинг: <span style="color: #f57c00;">100%</span></div>
-                                <div class="rating-bar-bg"><div class="rating-bar-fill"></div></div>
+                                <div class="rating-bar-bg">
+                                    <div id="rating-bar-fill" class="rating-bar-fill"></div>
+                                    <div id="rating-text" class="rating-text">+0%</div>
+                                </div>
                             </div>
 
                             <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
@@ -226,8 +254,35 @@
                             <p style="margin:0 0 8px 0; font-size: 11px; color: gray;">Online</p>
 
                             <table class="vk-table" style="font-size: 11px; width: 100%;">
-                                <tr><td class="label">Стать:</td><td>чоловіча</td></tr>
-                                <tr><td class="label">Місто:</td><td>Україна</td></tr>
+                                <tr>
+                                    <td class="label">Стать:</td>
+                                    <td><span id="gender-val">чоловіча</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Місто:</td>
+                                    <td><span id="city-val">Україна</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Сімейний стан:</td>
+                                    <td>
+                                        <span id="status-val">Одружений</span> 
+                                        <a class="vk-link" style="font-size: 10px; margin-left: 5px;" onclick="toggleStatusEdit()">[ред.]</a>
+                                        
+                                        <!-- Випадаючий список редагування сімейного стану -->
+                                        <div id="status-edit-box" class="hidden" style="margin-top: 4px;">
+                                            <select id="status-select" onchange="saveRelationshipStatus(this.value)" style="font-size: 11px; padding: 2px;">
+                                                <option value="Не вказано">Не вказано</option>
+                                                <option value="Неодружений / Незаміжня">Неодружений / Незаміжня</option>
+                                                <option value="Закоханий / Закохана">Закоханий / Закохана</option>
+                                                <option value="Заручений / Заручена">Заручений / Заручена</option>
+                                                <option value="Одружений / Заміжня">Одружений / Заміжня</option>
+                                                <option value="У цивільному шлюбі">У цивільному шлюбі</option>
+                                                <option value="Все складно">Все складно</option>
+                                                <option value="У активному пошуку">У активному пошуку</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -280,16 +335,54 @@
         tg.expand();
 
         let currentUserName = "Користувач";
+        let hasCustomAvatar = false;
 
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
-            document.getElementById('user-name').innerText = currentUserName;
-            document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
+        // Ініціалізація даних при завантаженні
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedStatus = localStorage.getItem('user_relationship_status') || 'Одружений';
+            document.getElementById('status-val').innerText = savedStatus;
+            document.getElementById('status-select').value = savedStatus;
 
-            if (user.photo_url) {
-                setAvatar(user.photo_url);
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                currentUserName = `${user.first_name} ${user.last_name || ''}`.trim();
+                document.getElementById('user-name').innerText = currentUserName;
+                document.getElementById('user-avatar-placeholder').innerText = user.first_name[0];
+
+                if (user.photo_url) {
+                    setAvatar(user.photo_url);
+                }
             }
+            updateRating();
+        });
+
+        // Динамічний підрахунок рейтингу за заповненість
+        function updateRating() {
+            let rating = 25; // Базові бали за ім'я
+
+            if (hasCustomAvatar) rating += 35; // Фото додає найбільше
+            if (document.getElementById('gender-val').innerText.trim() !== '') rating += 10;
+            if (document.getElementById('city-val').innerText.trim() !== '') rating += 15;
+            
+            const relStatus = document.getElementById('status-val').innerText.trim();
+            if (relStatus !== '' && relStatus !== 'Не вказано') rating += 15;
+
+            if (rating > 100) rating = 100;
+
+            document.getElementById('rating-bar-fill').style.width = rating + '%';
+            document.getElementById('rating-text').innerText = '+' + rating + '%';
+        }
+
+        function toggleStatusEdit() {
+            const box = document.getElementById('status-edit-box');
+            box.classList.toggle('hidden');
+        }
+
+        function saveRelationshipStatus(val) {
+            document.getElementById('status-val').innerText = val;
+            localStorage.setItem('user_relationship_status', val);
+            toggleStatusEdit();
+            updateRating();
         }
 
         function comingSoon(featureName) {
@@ -313,6 +406,8 @@
             img.src = url;
             img.classList.remove('hidden');
             placeholder.classList.add('hidden');
+            hasCustomAvatar = true;
+            updateRating();
         }
 
         function toggleTheme() {
@@ -393,3 +488,4 @@
     </script>
 </body>
 </html>
+
