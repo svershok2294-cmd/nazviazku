@@ -3827,6 +3827,28 @@ function searchYouTubeMusic() {
         `;
     }
 }
+// Автоматичний зв'язок пошуку з плеєром
+function searchYouTubeMusic() {
+    const searchInput = document.querySelector('input[type="text"]');
+    const query = searchInput ? searchInput.value.trim() : 'Музика';
+    if (!query) return;
+
+    let resultsContainer = document.getElementById('search-results-container');
+    if (!resultsContainer && searchInput) {
+        resultsContainer = document.createElement('div');
+        resultsContainer.id = 'search-results-container';
+        searchInput.parentNode.appendChild(resultsContainer);
+    }
+
+    if (resultsContainer) {
+        resultsContainer.innerHTML = `
+            <div style="padding: 10px; background: var(--vk-card); margin-top: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span>🎵 ${query} — Популярний мікс</span>
+                <button onclick="playTrack('jfKfPfyJRdk', '${query}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️ Слухати</button>
+            </div>
+        `;
+    }
+}
 
     </script>
 
