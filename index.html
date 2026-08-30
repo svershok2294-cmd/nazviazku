@@ -348,7 +348,12 @@
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
                         </div>
 
-                        <!-- ДЛЯ ЧУЖОГО ПРОФІЛЮ (КНОПКИ ЯК У ВКОНТАКТІ ПІД ФОТО) -->
+                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ (ЯКЩО КОРИСТУВАЧ ВЛАСНИК) -->
+                        <div id="group-manage-btn-wrap" style="margin-top: 6px; display: none; flex-direction: column; gap: 4px;">
+                            <button class="btn-vk" style="width: 100%; font-size: 10px; background: #d32f2f;" onclick="openEditGroupModal()">⚙️ Керувати групою</button>
+                        </div>
+
+                        <!-- ДЛЯ ЧУЖОГО ПРОФІЛЮ -->
                         <div id="friend-profile-action-btns" style="display: none; flex-direction: column; gap: 4px; margin-top: 6px;">
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-send-msg-btn">✉️ Написати повідомлення</button>
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" onclick="openModal('modal-gift')">🎁 Надіслати подарунок</button>
@@ -363,7 +368,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ДРУЗІВ 3x2 (З КІЛЬКІСТЮ ТА ОНЛАЙНОМ) -->
+                        <!-- БЛОК ДРУЗІВ 3x2 -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Друзі (<span id="sidebar-friends-count">0</span>) <span style="font-weight: normal; color: #43a047;" id="sidebar-friends-online-wrap">• <span id="sidebar-friends-online">0</span> онлайн</span></span>
@@ -708,6 +713,27 @@
     </div>
 </div>
 
+<!-- РЕДАГУВАННЯ ГРУПИ ДЛЯ ВЛАСНИКА -->
+<div class="vk-modal" id="modal-edit-group">
+    <div class="vk-modal-box">
+        <div class="vk-modal-header">
+            <span>Керування спільнотою</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-edit-group')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <input type="text" id="edit-group-name" class="input-vk modal-input" placeholder="Назва групи">
+            <textarea id="edit-group-desc" class="wall-textarea" style="height: 70px;" placeholder="Опис спільноти..."></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <button class="btn-vk-secondary" style="background: #ffebee; color: #c62828;" onclick="deleteCurrentGroup()">Видалити групу</button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn-vk-secondary" onclick="closeModal('modal-edit-group')">Скасувати</button>
+                    <button class="btn-vk" onclick="saveGroupChanges()">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ПЕРЕГЛЯД ФОТО ЗІ ЗІРОЧКАМИ ТА КОМЕНТАРЯМИ -->
 <div class="vk-modal" id="modal-photo-view">
     <div class="vk-modal-box" style="max-width: 450px;">
@@ -941,6 +967,7 @@
 
     let viewingProfileId = null; 
     let viewingGroupId = null;   
+    let currentGroupCreatorId = null;
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
     document.getElementById('top-user-name').innerText = userFullName;
@@ -964,7 +991,6 @@
                 }
             }
 
-            // Пінгуємо онлайн статус кожні 30 секунд
             setInterval(() => {
                 db.collection('users').doc(activeUser.id).update({
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
@@ -984,6 +1010,7 @@
     function goHome() {
         viewingProfileId = null;
         viewingGroupId = null;
+        currentGroupCreatorId = null;
         renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         loadWallPosts(activeUser.id);
         switchTab('profile');
@@ -993,6 +1020,7 @@
         if (targetId === activeUser.id) return goHome();
         viewingProfileId = targetId;
         viewingGroupId = null;
+        currentGroupCreatorId = null;
 
         const doc = await db.collection('users').doc(targetId).get();
         if (!doc.exists) return;
@@ -1057,8 +1085,16 @@
             taskBtnWrap.style.display = 'none';
         }
 
+        // Кнопка керування групою (якщо це група і поточний юзер — її творець або головний адмін)
+        const groupManageWrap = document.getElementById('group-manage-btn-wrap');
+        if (viewingGroupId && (currentGroupCreatorId === activeUser.id || checkIsAdmin(activeUser.id))) {
+            groupManageWrap.style.display = 'flex';
+        } else {
+            groupManageWrap.style.display = 'none';
+        }
+
         const friendActionBtns = document.getElementById('friend-profile-action-btns');
-        if (!isMe) {
+        if (!isMe && !viewingGroupId) {
             friendActionBtns.style.display = 'flex';
             document.getElementById('profile-send-msg-btn').onclick = () => openDirectMessage(userId, uName);
             
@@ -1301,7 +1337,6 @@
         }
     }
 
-    // Слухаємо друзів та перевіряємо їхній онлайн статус
     db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(async snapshot => {
         userFriendsMap.clear();
         const sidebarGrid = document.getElementById('sidebar-friends-grid');
@@ -1336,7 +1371,7 @@
                 const uDoc = await db.collection('users').doc(friendId).get();
                 if (uDoc.exists && uDoc.data().lastSeen) {
                     const diffMs = new Date() - uDoc.data().lastSeen.toDate();
-                    if (diffMs < 120000) { // активний за останні 2 хвилини
+                    if (diffMs < 120000) { 
                         isOnline = true;
                         onlineCount++;
                     }
@@ -1575,15 +1610,17 @@
                             <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(g.description || '')}</div>
                         </div>
                     </div>
-                    <button class="btn-vk" style="font-size: 10px;" onclick="openGroupWall('${gId}', '${escapeText(g.name)}')">Стіна групи</button>
+                    <button class="btn-vk" style="font-size: 10px;" onclick="openGroupWall('${gId}', '${escapeText(g.name)}', '${g.creatorId || ''}', '${escapeText(g.description || '')}')">Стіна групи</button>
                 </div>
             `;
         });
     });
 
-    function openGroupWall(gId, gName) {
+    function openGroupWall(gId, gName, creatorId, gDesc) {
         viewingProfileId = null;
         viewingGroupId = gId;
+        currentGroupCreatorId = creatorId;
+
         renderProfileInfo({
             photo_url: "https://vk.com/images/community_200.png",
             status: "офіційна спільнота",
@@ -1591,7 +1628,7 @@
             relationship: "відкрита група",
             phone: "—",
             icq: "—",
-            activity: "спілкування за інтересами",
+            activity: gDesc || "спілкування за інтересами",
             politics: "—",
             worldview: "—",
             smoking: "—",
@@ -1599,11 +1636,50 @@
             music: "—",
             movies: "—",
             quotes: "—",
-            about: "Ласкаво просимо до спільноти!"
+            about: gDesc || "Ласкаво просимо до спільноти!"
         }, gName, false, null);
+
         document.getElementById('wall-header-title').innerText = `Стіна спільноти «${gName}»`;
         loadWallPosts(gId);
         switchTab('profile');
+    }
+
+    function openEditGroupModal() {
+        if (!viewingGroupId) return;
+        // Заповнюємо поточні дані групи
+        db.collection('groups').doc(viewingGroupId).get().then(doc => {
+            if (doc.exists) {
+                const g = doc.data();
+                document.getElementById('edit-group-name').value = g.name || '';
+                document.getElementById('edit-group-desc').value = g.description || '';
+                openModal('modal-edit-group');
+            }
+        });
+    }
+
+    async function saveGroupChanges() {
+        if (!viewingGroupId) return;
+        const newName = document.getElementById('edit-group-name').value.trim();
+        const newDesc = document.getElementById('edit-group-desc').value.trim();
+        if (!newName) return vkAlert('Помилка', 'Введіть назву групи.');
+
+        await db.collection('groups').doc(viewingGroupId).update({
+            name: newName,
+            description: newDesc
+        });
+        closeModal('modal-edit-group');
+        vkAlert('Успіх', 'Дані групи оновлено!');
+        openGroupWall(viewingGroupId, newName, currentGroupCreatorId, newDesc);
+    }
+
+    async function deleteCurrentGroup() {
+        if (!viewingGroupId) return;
+        if (!confirm('Ви дійсно хочете видалити цю спільноту?')) return;
+
+        await db.collection('groups').doc(viewingGroupId).delete();
+        closeModal('modal-edit-group');
+        vkAlert('Видалено', 'Спільноту успішно видалено.');
+        goHome();
     }
 
     let currentChatMode = null; 
@@ -1974,7 +2050,6 @@
         }
     }
 
-    // Звук «клац»
     function playClickSound() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2311,7 +2386,6 @@
         field.value = '';
     }
 
-    // Аудіоплеєр з трансляцією в статус
     let currentAudio = null;
     let currentPlayBtn = null;
     let currentProgressFill = null;
@@ -2379,7 +2453,6 @@
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    // Нотатки та думки
     async function saveNewNote() {
         const title = document.getElementById('note-title-input').value.trim();
         const content = document.getElementById('note-content-input').value.trim();
@@ -2452,7 +2525,6 @@
         });
     });
 
-    // Подарунки та рейтинг
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
