@@ -227,7 +227,7 @@
         .message-bubble { max-width: 85%; padding: 6px 10px; font-size: 11px; border-radius: 2px; word-break: break-word; }
         .message-bubble.mine { align-self: flex-end; background: #eef2f6; border: 1px solid #c9d5e0; }
         .message-bubble.theirs { align-self: flex-start; background: #ffffff; border: 1px solid var(--vk-border); }
-        .chat-input-bar { border-top: 1px solid var(--vk-border); padding: 6px; display: flex; gap: 4px; background: #ffffff; align-items: center; }
+        .chat-input-bar { border-top: 1px solid var(--vk-border); padding: 6px; display: flex; gap: 4px; background: #ffffff; align-items: center; flex-wrap: wrap; }
 
         .dialog-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid var(--vk-border-subtle); cursor: pointer; }
         .dialog-item:hover { background: #f5f7fa; }
@@ -235,6 +235,11 @@
         .btn-voice { background: var(--vk-btn-secondary); border: 1px solid var(--vk-border); border-radius: 2px; width: 28px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .btn-voice.recording { background: #e53935; color: #fff; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* ПАНЕЛЬ СТІКЕРІВ */
+        .stickers-popup { display: none; position: absolute; bottom: 45px; left: 6px; background: #fff; border: 1px solid var(--vk-border); padding: 6px; border-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 200; display: flex; gap: 4px; flex-wrap: wrap; max-width: 220px; }
+        .sticker-item { font-size: 20px; cursor: pointer; padding: 2px; }
+        .sticker-item:hover { transform: scale(1.15); }
 
         .ttt-board { display: grid; grid-template-columns: repeat(3, 36px); grid-template-rows: repeat(3, 36px); gap: 3px; background: #ccc; padding: 3px; border-radius: 2px; margin: 4px 0; }
         .ttt-cell { background: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; cursor: pointer; user-select: none; }
@@ -358,6 +363,14 @@
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-send-msg-btn">✉️ Написати повідомлення</button>
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" onclick="openModal('modal-gift')">🎁 Надіслати подарунок</button>
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
+                        </div>
+
+                        <!-- ГОСТЬОВА КНИГА (ОСТАННІ ВІДВІДУВАЧІ) -->
+                        <div class="side-block">
+                            <div class="side-block-header"><span>👀 Хто заходив</span></div>
+                            <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="profile-visitors-list">
+                                Немає відвідувачів.
+                            </div>
                         </div>
 
                         <!-- БЛОК ДНІВ НАРОДЖЕННЯ -->
@@ -558,19 +571,37 @@
                     </div>
 
                     <!-- ВІКНО ПЕРЕПИСКИ -->
-                    <div id="active-chat-view" style="display: none;">
+                    <div id="active-chat-view" style="display: none; position: relative;">
                         <div class="chat-stream" id="chat-stream"></div>
+                        
+                        <!-- ПАНЕЛЬ СТІКЕРІВ -->
+                        <div id="stickers-popup" class="stickers-popup" style="display: none;">
+                            <span class="sticker-item" onclick="sendSticker('😀')">😀</span>
+                            <span class="sticker-item" onclick="sendSticker('😎')">😎</span>
+                            <span class="sticker-item" onclick="sendSticker('🤡')">🤡</span>
+                            <span class="sticker-item" onclick="sendSticker('🍺')">🍺</span>
+                            <span class="sticker-item" onclick="sendSticker('☕')">☕</span>
+                            <span class="sticker-item" onclick="sendSticker('🔥')">🔥</span>
+                            <span class="sticker-item" onclick="sendSticker('🎉')">🎉</span>
+                            <span class="sticker-item" onclick="sendSticker('👍')">👍</span>
+                            <span class="sticker-item" onclick="sendSticker('❤️')">❤️</span>
+                            <span class="sticker-item" onclick="sendSticker('💩')">💩</span>
+                            <span class="sticker-item" onclick="sendSticker('😜')">😜</span>
+                            <span class="sticker-item" onclick="sendSticker('🌹')">🌹</span>
+                        </div>
+
                         <div class="chat-input-bar">
+                            <button class="btn-voice" onclick="toggleStickersPopup()" title="Стікери">😊</button>
                             <button id="voice-rec-btn" class="btn-voice" onclick="toggleVoiceRecord()" title="Голосове повідомлення">🎤</button>
                             <button class="btn-voice" onclick="sendTicTacToeGame()" title="Зіграти у хрестики-нулики">🎮</button>
-                            <input type="text" id="chat-message-input" class="input-vk" style="flex: 1;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                            <input type="text" id="chat-message-input" class="input-vk" style="flex: 1; min-width: 100px;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                             <button class="btn-vk" onclick="sendChatMessage()">Надіслати</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. ДРУЗІ ТА ПОШУК (З ЗАЯВКАМИ ТА ПІДПИСНИКАМИ) -->
+            <!-- 4. ДРУЗІ ТА ПОШУК -->
             <div id="tab-friends" class="tab-content">
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
                     Мої Друзі (<span id="friends-total-counter">0</span>)
@@ -614,20 +645,32 @@
 
             <!-- 5. ФОТОАЛЬБОМИ -->
             <div id="tab-photos" class="tab-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: gap; gap: 6px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Мої Фотографії</span>
-                    <button id="photo-upload-main-btn" class="btn-vk" onclick="document.getElementById('photo-upload-input').click()">+ Завантажити світлину</button>
+                    <div style="display: flex; gap: 4px;">
+                        <select id="photo-album-select" class="input-vk" style="font-size: 10px;">
+                            <option value="Мої фото">Альбом: Мої фото</option>
+                            <option value="Подорожі">Альбом: Подорожі</option>
+                            <option value="Вечірки">Альбом: Вечірки</option>
+                        </select>
+                        <button id="photo-upload-main-btn" class="btn-vk" style="font-size: 10px;" onclick="document.getElementById('photo-upload-input').click()">+ Завантажити</button>
+                    </div>
                     <input type="file" id="photo-upload-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
                 </div>
                 <div id="photos-grid-full" class="photos-grid-layout"></div>
             </div>
 
-            <!-- 6. АУДІОЗАПИСИ -->
+            <!-- 6. АУДІОЗАПИСИ (З МОЖЛИВІСТЮ ЗБЕРЕЖЕННЯ В СВОЇ АУДІО) -->
             <div id="tab-music" class="tab-content">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
                     <button class="btn-vk" onclick="performAudioSearch()">Шукати</button>
                 </div>
+                <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Мої збережені аудіозаписи:</div>
+                <div id="my-saved-music-container" class="vintage-player-box" style="margin-bottom: 15px;">
+                    <div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>
+                </div>
+                <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Результати пошуку:</div>
                 <div id="vintage-player-container" class="vintage-player-box">
                     <div style="padding: 8px; color: var(--vk-subtext);">Введіть назву пісні для пошуку...</div>
                 </div>
@@ -756,6 +799,7 @@
         </div>
         <div class="vk-modal-body" style="text-align: center;">
             <img id="modal-photo-img" src="" style="max-width: 100%; max-height: 260px; object-fit: contain; border: 1px solid var(--vk-border); margin-bottom: 6px;">
+            <div id="photo-album-label" style="font-size: 10px; color: var(--vk-subtext); margin-bottom: 4px;">Альбом: Мої фото</div>
             
             <div style="margin-bottom: 8px;">
                 <div style="font-size: 10px; color: var(--vk-subtext); margin-bottom: 2px;">Оцініть фотографію:</div>
@@ -1028,6 +1072,7 @@
         currentGroupCreatorId = null;
         renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         loadWallPosts(activeUser.id);
+        loadProfileVisitors(activeUser.id);
         switchTab('profile');
     }
 
@@ -1038,7 +1083,6 @@
         if (!doc.exists) return;
         const uData = doc.data();
         
-        // Перевірка чорного списку
         if (uData.blacklist && uData.blacklist.includes(activeUser.id)) {
             return vkAlert('Доступ обмежено', 'Цей користувач додав вас у чорний список.');
         }
@@ -1054,9 +1098,35 @@
             return;
         }
 
+        // Записуємо візит у гостьову книгу власника профілю
+        await db.collection('users').doc(targetId).collection('visitors').doc(activeUser.id).set({
+            name: userFullName,
+            avatar: activeUser.photo_url,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(e => {});
+
         renderProfileInfo(uData, uName, false, targetId);
         loadWallPosts(targetId);
+        loadProfileVisitors(targetId);
         switchTab('profile');
+    }
+
+    // Завантаження відвідувачів профілю (Гостьова книга)
+    function loadProfileVisitors(userId) {
+        const vList = document.getElementById('profile-visitors-list');
+        if (!vList) return;
+        
+        db.collection('users').doc(userId).collection('visitors').orderBy('timestamp', 'desc').limit(5).onSnapshot(snap => {
+            if (snap.empty) {
+                vList.innerHTML = 'Немає відвідувачів.';
+                return;
+            }
+            vList.innerHTML = '';
+            snap.forEach(doc => {
+                const v = doc.data();
+                vList.innerHTML += `<div style="margin-bottom: 2px;">👁️ <b>${escapeText(v.name)}</b></div>`;
+            });
+        });
     }
 
     function renderProfileInfo(u, uName, isMe, userId) {
@@ -1154,6 +1224,8 @@
             renderDialogsList();
         } else if (tabId === 'news') {
             loadGlobalNewsFeed();
+        } else if (tabId === 'music') {
+            loadSavedMusic();
         }
     }
 
@@ -1324,7 +1396,6 @@
         }
     }
 
-    // Заявки в друзі (тепер додавання надсилає заявку)
     async function addFriend(targetId, targetName, targetAvatar) {
         try {
             await db.collection('users').doc(targetId).collection('incoming_requests').doc(activeUser.id).set({
@@ -1339,22 +1410,27 @@
         }
     }
 
-    // Слухаємо вхідні заявки в друзі
     function initIncomingRequestsListener() {
         db.collection('users').doc(activeUser.id).collection('incoming_requests').onSnapshot(snap => {
             const sec = document.getElementById('incoming-requests-section');
             const list = document.getElementById('incoming-requests-list');
             const countEl = document.getElementById('requests-count');
+            const reqBadge = document.getElementById('req-badge');
+            const pcReqBadge = document.getElementById('pc-req-badge');
             
             if (snap.empty) {
                 sec.style.display = 'none';
+                if (reqBadge) reqBadge.style.display = 'none';
+                if (pcReqBadge) pcReqBadge.style.display = 'none';
                 return;
             }
 
             sec.style.display = 'block';
             countEl.innerText = snap.size;
+            if (reqBadge) { reqBadge.innerText = snap.size; reqBadge.style.display = 'inline-block'; }
+            if (pcReqBadge) { pcReqBadge.innerText = snap.size; pcReqBadge.style.display = 'inline-block'; }
+            
             list.innerHTML = '';
-
             snap.forEach(doc => {
                 const req = doc.data();
                 const reqId = doc.id;
@@ -1378,7 +1454,6 @@
 
     async function acceptFriendRequest(targetId, targetName, targetAvatar) {
         const batch = db.batch();
-        // Додаємо один одного в друзі
         batch.set(db.collection('users').doc(activeUser.id).collection('friends').doc(targetId), {
             name: targetName,
             avatar: targetAvatar,
@@ -1389,14 +1464,12 @@
             avatar: activeUser.photo_url,
             addedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        // Видаляємо із заявки
         batch.delete(db.collection('users').doc(activeUser.id).collection('incoming_requests').doc(targetId));
         await batch.commit();
         vkAlert('Друзі', `Тепер ви з ${targetName} — друзі!`);
     }
 
     async function rejectFriendRequest(targetId) {
-        // Відхилена заявка переводить людину в підписники
         const batch = db.batch();
         batch.delete(db.collection('users').doc(activeUser.id).collection('incoming_requests').doc(targetId));
         batch.set(db.collection('users').doc(activeUser.id).collection('subscribers').doc(targetId), {
@@ -1410,7 +1483,6 @@
             const batch = db.batch();
             batch.delete(db.collection('users').doc(activeUser.id).collection('friends').doc(targetId));
             batch.delete(db.collection('users').doc(targetId).collection('friends').doc(activeUser.id));
-            // При видаленні з друзів, людина стає підписником вашої сторінки
             batch.set(db.collection('users').doc(targetId).collection('subscribers').doc(activeUser.id), {
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -1956,6 +2028,30 @@
         renderDialogsList();
     }
 
+    function toggleStickersPopup() {
+        const popup = document.getElementById('stickers-popup');
+        popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    async function sendSticker(emoji) {
+        document.getElementById('stickers-popup').style.display = 'none';
+        const payload = {
+            senderId: activeUser.id,
+            senderName: userFullName,
+            type: 'text',
+            text: `[Стікер: ${emoji}]`,
+            readBy: [activeUser.id],
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (currentChatMode === 'public') {
+            await db.collection('messages').add(payload);
+        } else {
+            const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
+            await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
+        }
+    }
+
     function listenToMessages() {
         if (chatUnsubscribe) { chatUnsubscribe(); chatUnsubscribe = null; }
 
@@ -2165,13 +2261,15 @@
         if (viewingProfileId && viewingProfileId !== activeUser.id) return;
         const file = e.target.files[0];
         if (!file) return;
+        const albumName = document.getElementById('photo-album-select').value;
         compressImageFile(file, 600, 0.75, async function(base64Photo) {
             await db.collection('users').doc(activeUser.id).collection('photos').add({
                 url: base64Photo,
+                album: albumName,
                 ratings: {},
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            vkAlert('Світлини', 'Фото додано до альбому!');
+            vkAlert('Світлини', `Фото додано до альбому «${albumName}»!`);
         });
     }
 
@@ -2199,17 +2297,19 @@
             }
             if (fullGrid) {
                 fullGrid.innerHTML += `
-                    <div class="photo-item-card" onclick="openPhotoModal('${pId}', '${photo.url}')">
+                    <div class="photo-item-card" onclick="openPhotoModal('${pId}', '${photo.url}', '${escapeText(photo.album || 'Мої фото')}')">
                         <img src="${photo.url}" alt="Фото">
+                        <div style="font-size:9px; color:var(--vk-subtext); margin-top:2px;">${escapeText(photo.album || 'Мої фото')}</div>
                     </div>
                 `;
             }
         });
     });
 
-    async function openPhotoModal(pId, pUrl) {
+    async function openPhotoModal(pId, pUrl, albumName) {
         selectedPhotoId = pId;
         document.getElementById('modal-photo-img').src = pUrl;
+        document.getElementById('photo-album-label').innerText = `Альбом: ${albumName}`;
         openModal('modal-photo-view');
         listenToPhotoDetails(pId);
     }
@@ -2271,6 +2371,51 @@
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         input.value = '';
+    }
+
+    // Збереження аудіозаписів у свій плейлист
+    async function saveTrackToMyMusic(artist, title, url, duration) {
+        await db.collection('users').doc(activeUser.id).collection('my_music').add({
+            artist: artist,
+            title: title,
+            url: url,
+            duration: duration,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        vkAlert('Аудіо', 'Трек успішно додано до ваших аудіозаписів!');
+        loadSavedMusic();
+    }
+
+    function loadSavedMusic() {
+        const savedCont = document.getElementById('my-saved-music-container');
+        if (!savedCont) return;
+
+        db.collection('users').doc(activeUser.id).collection('my_music').orderBy('timestamp', 'desc').onSnapshot(snap => {
+            if (snap.empty) {
+                savedCont.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>';
+                return;
+            }
+            savedCont.innerHTML = '';
+            snap.forEach(doc => {
+                const tr = doc.data();
+                const row = document.createElement('div');
+                row.className = 'vintage-audio-row';
+                row.innerHTML = `
+                    <button class="vintage-play-btn" id="btn-save-play-${doc.id}">▶</button>
+                    <div class="audio-track-info">
+                        <b>${escapeText(tr.artist)}</b> — <span>${escapeText(tr.title)}</span>
+                    </div>
+                    <div class="audio-progress-bar" id="bar-save-${doc.id}">
+                        <div class="audio-progress-fill" id="fill-save-${doc.id}"></div>
+                    </div>
+                    <span class="audio-duration-text" id="dur-save-${doc.id}">${formatTime(tr.duration || 180)}</span>
+                `;
+                savedCont.appendChild(row);
+                const btn = row.querySelector(`#btn-save-play-${doc.id}`);
+                const fill = row.querySelector(`#fill-save-${doc.id}`);
+                btn.onclick = () => playVintageTrack(tr.url, tr.artist, tr.title, btn, fill);
+            });
+        });
     }
 
     // Графіті
@@ -2369,7 +2514,6 @@
         input.value = '';
     }
 
-    // Модерація стіни (видалення записів власником сторінки або творцем групи)
     function loadWallPosts(targetId) {
         const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
@@ -2390,7 +2534,6 @@
                 const isLiked = p.likes && p.likes.includes(activeUser.id);
                 const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
 
-                // Права на видалення: автор поста, власник сторінки, творець групи або головний адмін
                 const canDelete = (p.authorId === activeUser.id) || (viewingProfileId === activeUser.id) || (viewingGroupId && currentGroupCreatorId === activeUser.id) || checkIsAdmin(activeUser.id);
 
                 let bodyHtml = p.type === 'graffiti'
@@ -2399,7 +2542,7 @@
 
                 cont.innerHTML += `
                     <div class="post-card">
-                        <img src="${p.authorAvatar || 'https://vk.com/images/camera_200.png'}" class="post-author-pic" alt="Аватар">
+                        <img src="${p.authorAvatar}" class="post-author-pic" alt="Аватар">
                         <div class="post-body">
                             <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
                             ${bodyHtml}
@@ -2506,6 +2649,7 @@
             row.className = 'vintage-audio-row';
             row.innerHTML = `
                 <button class="vintage-play-btn" id="btn-play-${tr.id}">▶</button>
+                <button class="btn-vk-secondary" style="font-size:9px; padding:1px 4px;" onclick="saveTrackToMyMusic('${escapeText(tr.artist_name)}', '${escapeText(tr.name)}', '${tr.audio}', ${tr.duration})">+ Мої</button>
                 <div class="audio-track-info">
                     <b>${escapeText(tr.artist_name)}</b> — <span>${escapeText(tr.name)}</span>
                 </div>
