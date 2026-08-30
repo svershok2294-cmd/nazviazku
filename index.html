@@ -287,9 +287,9 @@
         </div>
     </header>
 
-    <!-- МОБІЛЬНІ ВКЛАДКИ -->
+    <!-- МОБІЛЬНІ ВКЛАДКИ (ВИПРАВЛЕНО: клік на "Сторінка" завжди повертає додому) -->
     <div class="nav-tabs mobile-only">
-        <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile', event)">Сторінка</button>
+        <button class="tab-btn active" id="tab-btn-profile" onclick="goHome()">Сторінка</button>
         <button class="tab-btn" id="tab-btn-news" onclick="switchTab('news', event)">Новини</button>
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення <span id="msg-badge" class="badge-count" style="display:none;">0</span></button>
         <button class="tab-btn" id="tab-btn-friends" onclick="switchTab('friends', event)">Друзі</button>
@@ -348,7 +348,7 @@
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
                         </div>
 
-                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ (ЯКЩО КОРИСТУВАЧ ВЛАСНИК) -->
+                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ (ТІЛЬКИ ДЛЯ ТВОРЦЯ АБО АДМІНА) -->
                         <div id="group-manage-btn-wrap" style="margin-top: 6px; display: none; flex-direction: column; gap: 4px;">
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #d32f2f;" onclick="openEditGroupModal()">⚙️ Керувати групою</button>
                         </div>
@@ -1085,7 +1085,7 @@
             taskBtnWrap.style.display = 'none';
         }
 
-        // Кнопка керування групою (якщо це група і поточний юзер — її творець або головний адмін)
+        // Кнопка керування групою (тільки якщо ми в групі і юзер — творець або адмін)
         const groupManageWrap = document.getElementById('group-manage-btn-wrap');
         if (viewingGroupId && (currentGroupCreatorId === activeUser.id || checkIsAdmin(activeUser.id))) {
             groupManageWrap.style.display = 'flex';
@@ -1646,7 +1646,6 @@
 
     function openEditGroupModal() {
         if (!viewingGroupId) return;
-        // Заповнюємо поточні дані групи
         db.collection('groups').doc(viewingGroupId).get().then(doc => {
             if (doc.exists) {
                 const g = doc.data();
