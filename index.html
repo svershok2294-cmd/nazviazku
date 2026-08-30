@@ -8,10 +8,9 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Firebase SDKs (v9 Compat) -->
+    <!-- Firebase SDKs (Тільки безкоштовна база даних, без платного Storage) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -183,7 +182,7 @@
         .comment-author { font-weight: bold; color: var(--vk-link); margin-right: 4px; }
         .comment-input-row { display: flex; gap: 4px; margin-top: 6px; }
 
-        /* ПОВІДОМЛЕННЯ (ДІАЛОГИ ТА ЧАТ) */
+        /* ПОВІДОМЛЕННЯ (ДІАЛОГИ ТА ЛС) */
         .chat-container { border: 1px solid var(--vk-border); background: #ffffff; display: flex; flex-direction: column; }
         .chat-top-bar { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 6px 10px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between; align-items: center; }
         .chat-stream { height: 360px; overflow-y: auto; padding: 10px; background: #fbfbfb; display: flex; flex-direction: column; gap: 8px; }
@@ -443,7 +442,7 @@
                 </div>
             </div>
 
-            <!-- 2. МОЇ ПОВІДОМЛЕННЯ (ДІАЛОГИ ТА ОСОБИСТІ ПОВІДОМЛЕННЯ 1-НА-1) -->
+            <!-- 2. МОЇ ПОВІДОМЛЕННЯ (ДІАЛОГИ ТА ЛС) -->
             <div id="tab-chat" class="tab-content">
                 <div class="chat-container">
                     <div class="chat-top-bar">
@@ -454,7 +453,7 @@
                         <span style="font-size: 10px; font-weight: normal; color: var(--vk-subtext);">Звук: 🔔</span>
                     </div>
 
-                    <!-- ВИГЛЯД 1: СПИСОК ДІАЛОГІВ -->
+                    <!-- СПИСОК ДІАЛОГІВ -->
                     <div id="dialogs-directory-view">
                         <div class="dialog-item" style="background: #f0f4f8; font-weight: bold;" onclick="openChatRoom('public', 'Загальний стіл (чат спільноти)')">
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -474,7 +473,7 @@
                         </div>
                     </div>
 
-                    <!-- ВИГЛЯД 2: АКТИВНИЙ СТРІМ ПОВІДОМЛЕНЬ -->
+                    <!-- ВІКНО ПЕРЕПИСКИ -->
                     <div id="active-chat-view" style="display: none;">
                         <div class="chat-stream" id="chat-stream"></div>
                         <div class="chat-input-bar">
@@ -716,9 +715,9 @@
     syncLayout();
 
     // ==========================================================
-    // 2. FIREBASE ІНІЦІАЛІЗАЦІЯ
+    // 2. БЕЗКОШТОВНИЙ FIREBASE (ТІЛЬКИ FIRESTORE)
     // ==========================================================
-    // ЗАМІНІТЬ ЦІ ЗНАЧЕННЯ НА ДАНІ ВАШОГО FIREBASE-ПРОЄКТУ:
+    // ЗАМІНІТЬ ЦІ ЗНАЧЕННЯ НА ДАНІ З ВАШОЇ FIREBASE CONSOLE:
     const firebaseConfig = {
         apiKey: "AIzaSyYOUR_API_KEY_HERE",
         authDomain: "your-app.firebaseapp.com",
@@ -730,7 +729,30 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
+
+    // Допоміжна функція швидкого стискання картинок перед записом у Firestore
+    function compressImageFile(file, maxWidth, quality, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                let w = img.width;
+                let h = img.height;
+                if (w > maxWidth) {
+                    h = Math.round((h * maxWidth) / w);
+                    w = maxWidth;
+                }
+                const c = document.createElement('canvas');
+                c.width = w;
+                c.height = h;
+                const cctx = c.getContext('2d');
+                cctx.drawImage(img, 0, 0, w, h);
+                callback(c.toDataURL('image/jpeg', quality));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 
     // ==========================================================
     // 3. TELEGRAM ТА КОРИСТУВАЧ
@@ -814,7 +836,7 @@
     }
 
     // ==========================================================
-    // 5. РЕДАГУВАННЯ ПРОФІЛЮ ТА АВАТАРА
+    // 5. РЕДАГУВАННЯ ПРОФІЛЮ ТА АВАТАРКИ (БЕЗ STORAGE)
     // ==========================================================
     function toggleDetailedInfo() {
         const block = document.getElementById('detailed-info-block');
@@ -866,23 +888,16 @@
         vkAlert('Успіх', 'Дані профілю збережено!');
     }
 
-    async function handleAvatarUpload(e) {
+    function handleAvatarUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        try {
-            const fileRef = storage.ref().child(`avatars/${activeUser.id}_${Date.now()}.jpg`);
-            await fileRef.put(file);
-            const downloadUrl = await fileRef.getDownloadURL();
-
-            activeUser.photo_url = downloadUrl;
-            await db.collection('users').doc(activeUser.id).update({ photo_url: downloadUrl });
-            document.getElementById('profile-avatar').src = downloadUrl;
+        compressImageFile(file, 250, 0.75, async function(base64Image) {
+            activeUser.photo_url = base64Image;
+            await db.collection('users').doc(activeUser.id).update({ photo_url: base64Image });
+            document.getElementById('profile-avatar').src = base64Image;
             vkAlert('Світлина', 'Головне фото оновлено!');
-        } catch (err) {
-            console.error(err);
-            vkAlert('Помилка', 'Не вдалося завантажити світлину.');
-        }
+        });
     }
 
     // ==========================================================
@@ -1106,7 +1121,7 @@
     // ==========================================================
     // 7. ОСОБИСТІ ПОВІДОМЛЕННЯ (ЛС) ТА ЧАТ
     // ==========================================================
-    let currentChatMode = 'public'; // 'public' або 'direct'
+    let currentChatMode = 'public';
     let activeChatTargetId = null;
     let chatUnsubscribe = null;
 
@@ -1120,11 +1135,10 @@
         container.innerHTML = '';
 
         if (userFriendsMap.size === 0 && cachedUsers.length === 0) {
-            container.innerHTML = '<div style="padding: 10px; color: var(--vk-subtext);">Діалогів ще немає. Додайте друга, щоб почати приватне спілкування!</div>';
+            container.innerHTML = '<div style="padding: 10px; color: var(--vk-subtext);">Діалогів ще немає. Додайте друга, щоб почати спілкування!</div>';
             return;
         }
 
-        // Відображаємо друзів як контакти для швидкого листування
         userFriendsMap.forEach((friend, fId) => {
             container.innerHTML += `
                 <div class="dialog-item" onclick="openDirectMessage('${fId}', '${escapeText(friend.name)}')">
@@ -1236,6 +1250,7 @@
         input.value = '';
     }
 
+    // Запис аудіо з конвертацією у Base64 (без використання Google Storage)
     let voiceRecorder = null;
     let voiceChunks = [];
     let isVoiceRecording = false;
@@ -1251,25 +1266,27 @@
 
                 voiceRecorder.ondataavailable = e => voiceChunks.push(e.data);
                 voiceRecorder.onstop = async () => {
-                    const audioBlob = new Blob(voiceChunks, { type: 'audio/mp3' });
-                    const fileRef = storage.ref().child(`voices/${activeUser.id}_${Date.now()}.mp3`);
-                    await fileRef.put(audioBlob);
-                    const audioUrl = await fileRef.getDownloadURL();
+                    const audioBlob = new Blob(voiceChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = async () => {
+                        const base64Audio = reader.result;
 
-                    const payload = {
-                        senderId: activeUser.id,
-                        senderName: userFullName,
-                        type: 'voice',
-                        audioUrl: audioUrl,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        const payload = {
+                            senderId: activeUser.id,
+                            senderName: userFullName,
+                            type: 'voice',
+                            audioUrl: base64Audio,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        if (currentChatMode === 'public') {
+                            await db.collection('messages').add(payload);
+                        } else {
+                            const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
+                            await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
+                        }
                     };
-
-                    if (currentChatMode === 'public') {
-                        await db.collection('messages').add(payload);
-                    } else {
-                        const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
-                        await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
-                    }
+                    reader.readAsDataURL(audioBlob);
                 };
 
                 voiceRecorder.start();
@@ -1278,7 +1295,7 @@
                 btn.innerText = '⏹️';
             } catch (err) {
                 console.error(err);
-                vkAlert('Мікрофон', 'Не вдалося отримати доступ до запису аудіо.');
+                vkAlert('Мікрофон', 'Не вдалося отримати доступ до мікрофона.');
             }
         } else {
             voiceRecorder.stop();
@@ -1304,27 +1321,19 @@
     }
 
     // ==========================================================
-    // 8. ФОТОАЛЬБОМИ (FIREBASE STORAGE)
+    // 8. ФОТОАЛЬБОМИ (ЗБЕРЕЖЕННЯ БЕЗПОСЕРЕДНЬО У FIRESTORE)
     // ==========================================================
-    async function handlePhotoUpload(e) {
+    function handlePhotoUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        try {
-            const fileRef = storage.ref().child(`photos/${activeUser.id}_${Date.now()}.jpg`);
-            await fileRef.put(file);
-            const url = await fileRef.getDownloadURL();
-
+        compressImageFile(file, 600, 0.75, async function(base64Photo) {
             await db.collection('users').doc(activeUser.id).collection('photos').add({
-                url: url,
+                url: base64Photo,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-
-            vkAlert('Світлини', 'Фото додано до вашого альбому!');
-        } catch (err) {
-            console.error(err);
-            vkAlert('Помилка', 'Не вдалося завантажити фото.');
-        }
+            vkAlert('Світлини', 'Фото додано до альбому!');
+        });
     }
 
     db.collection('users').doc(activeUser.id).collection('photos').orderBy('timestamp', 'desc').onSnapshot(snap => {
@@ -1558,7 +1567,7 @@
     }
 
     // ==========================================================
-    // 11. ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 (JAMENDO API)
+    // 11. ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 (JAMENDO)
     // ==========================================================
     let currentAudio = null;
     let currentPlayBtn = null;
