@@ -28,7 +28,6 @@
             --vk-btn-hover: #4e6f92;
             --vk-btn-secondary: #eef2f5;
             --vk-light-blue: #dae2e8;
-            --vk-rating-gold: #ffc600;
         }
 
         * {
@@ -49,7 +48,6 @@
             overflow-x: hidden;
         }
 
-        /* --- БАЗОВИЙ КОНТЕЙНЕР ІЗ ПЛАВНИМ ПІДЛАШТУВАННЯМ --- */
         .app-container {
             width: 100%;
             background: var(--vk-card);
@@ -59,68 +57,31 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.06);
             border-left: 1px solid var(--vk-border);
             border-right: 1px solid var(--vk-border);
-            transition: max-width 0.2s ease;
+            transition: max-width 0.15s ease;
         }
 
-        /* --- ВАРІАНТ 1: МОБІЛЬНИЙ РЕЖИМ (< 768px або примусово) --- */
-        body.mode-mobile .app-container {
-            max-width: 620px;
-        }
-        body.mode-mobile .pc-only {
-            display: none !important;
-        }
-        body.mode-mobile .mobile-only {
-            display: flex !important;
-        }
-        body.mode-mobile .main-layout {
-            display: block;
-        }
-        body.mode-mobile .content-area {
-            padding: 10px 12px;
-        }
+        /* МОБІЛЬНИЙ ТА ПК РЕЖИМИ */
+        body.mode-mobile .app-container { max-width: 640px; }
+        body.mode-mobile .pc-only { display: none !important; }
+        body.mode-mobile .mobile-only { display: flex !important; }
+        body.mode-mobile .main-layout { display: block; }
+        body.mode-mobile .content-area { padding: 10px; }
+        body.mode-mobile .profile-container { flex-direction: column; gap: 10px; }
+        body.mode-mobile .profile-left-col { width: 100%; }
 
-        /* --- ВАРІАНТ 2: ПК РЕЖИМ (>= 768px або примусово) --- */
-        body.mode-pc .app-container {
-            max-width: 880px;
-            width: 100%;
-        }
-        body.mode-pc .mobile-only {
-            display: none !important;
-        }
-        body.mode-pc .pc-only {
-            display: block !important;
-        }
-        body.mode-pc .main-layout {
-            display: flex;
-            gap: 15px;
-            padding: 14px 15px;
-            background: #ffffff;
-            flex: 1;
-        }
-        body.mode-pc .content-area {
-            flex: 1;
-            min-width: 0; /* Запобігає розпиранню флекс-елементів */
-            padding: 0;
-        }
+        body.mode-pc .app-container { max-width: 900px; }
+        body.mode-pc .mobile-only { display: none !important; }
+        body.mode-pc .pc-only { display: block !important; }
+        body.mode-pc .main-layout { display: flex; gap: 15px; padding: 14px 15px; flex: 1; }
+        body.mode-pc .content-area { flex: 1; min-width: 0; padding: 0; }
+        body.mode-pc .profile-container { display: flex; gap: 15px; }
+        body.mode-pc .profile-left-col { width: 150px; flex-shrink: 0; }
 
-        /* Якщо ПК-режим увімкнено на дуже вузькому смартфоні — вмикається акуратний скрол */
-        @media (max-width: 500px) {
-            body.mode-pc {
-                overflow-x: auto;
-            }
-            body.mode-pc .app-container {
-                min-width: 580px;
-            }
-        }
-
-        /* ЛІВЕ МЕНЮ ПК */
-        .pc-sidebar {
-            width: 130px;
-            flex-shrink: 0;
-        }
+        /* ЛІВЕ МЕНЮ (ПК) */
+        .pc-sidebar { width: 135px; flex-shrink: 0; }
         .pc-sidebar a {
             display: block;
-            padding: 5px 6px;
+            padding: 4px 6px;
             color: var(--vk-link);
             text-decoration: none;
             font-size: 11px;
@@ -128,19 +89,9 @@
             border-radius: 2px;
             margin-bottom: 2px;
         }
-        .pc-sidebar a:hover {
-            background: #e1e7ec;
-            text-decoration: underline;
-        }
-        .pc-sidebar a.active {
-            background: #dae2e8;
-            color: #1c3b52;
-        }
-        .sidebar-divider {
-            height: 1px;
-            background: var(--vk-border-subtle);
-            margin: 6px 0;
-        }
+        .pc-sidebar a:hover { background: #e1e7ec; text-decoration: underline; }
+        .pc-sidebar a.active { background: #dae2e8; color: #1c3b52; }
+        .sidebar-divider { height: 1px; background: var(--vk-border-subtle); margin: 6px 0; }
 
         /* ШАПКА */
         header {
@@ -157,597 +108,132 @@
             height: 42px;
         }
 
-        header .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        header .logo-box {
-            background: #ffffff;
-            color: #45688e;
-            font-weight: bold;
-            font-size: 13px;
-            padding: 2px 7px;
-            border-radius: 2px;
-            letter-spacing: -0.5px;
-        }
-
-        header .logo-title {
-            font-weight: bold;
-            font-size: 14px;
-            color: #ffffff;
-            letter-spacing: -0.3px;
-        }
-
-        header .user-info {
-            font-size: 11px;
-            opacity: 0.95;
-            color: #dae2e8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* НАВІГАЦІЯ ДЛЯ МОБІЛЬНИХ */
-        .nav-tabs {
-            display: flex;
-            background: #eef2f5;
-            border-bottom: 1px solid var(--vk-border);
-            position: sticky;
-            top: 42px;
-            z-index: 90;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 8px 4px;
-            text-align: center;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--vk-link);
-            border-bottom: 3px solid transparent;
-            transition: all 0.1s;
-        }
-
-        .tab-btn:hover {
-            background: #e3e8ed;
-        }
-
-        .tab-btn.active {
-            border-bottom-color: #45688e;
-            background: #ffffff;
-            color: #000000;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* КНОПКИ ТА ПОЛЯ ВВОДУ */
-        .btn-vk {
-            background: var(--vk-btn);
-            color: #ffffff;
-            border: 1px solid #4a6f94;
-            padding: 4px 12px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .btn-vk:hover {
-            background: var(--vk-btn-hover);
-        }
-
-        .btn-vk-secondary {
-            background: var(--vk-btn-secondary);
-            color: var(--vk-link);
-            border: 1px solid var(--vk-border);
-            padding: 4px 10px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .btn-vk-secondary:hover {
-            background: #e1e7ec;
-        }
-
-        .input-vk {
-            padding: 4px 6px;
-            border: 1px solid #c0cad5;
-            border-radius: 2px;
-            font-size: 11px;
-            outline: none;
-            background: #ffffff;
-        }
-
-        .input-vk:focus {
-            border-color: #597da3;
-        }
-
-        /* ПРОФІЛЬ */
-        .profile-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 12px;
-        }
-
-        .profile-left-col {
-            width: 130px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .avatar-wrap {
-            width: 130px;
-            border: 1px solid var(--vk-border);
-            background: #f7f7f7;
-            padding: 3px;
-        }
-
-        .avatar {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .rating-bar-container {
-            border: 1px solid #d0ab26;
-            background: #fff;
-            padding: 1px;
-            border-radius: 2px;
-        }
-
-        .rating-bar-fill {
-            background: linear-gradient(180deg, #ffe169 0%, #ebb400 100%);
-            height: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            font-weight: bold;
-            color: #4a3600;
-        }
-
-        .profile-right-col {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .profile-name-row {
-            border-bottom: 1px solid var(--vk-border);
-            padding-bottom: 5px;
-            margin-bottom: 8px;
-        }
-
-        .profile-title {
-            font-size: 15px;
-            font-weight: bold;
-            color: var(--vk-link);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .profile-status-box {
-            font-size: 11px;
-            color: #555555;
-            margin-top: 3px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .status-edit-link {
-            font-size: 10px;
-            color: var(--vk-link);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        .info-table td {
-            padding: 3px 0;
-            vertical-align: top;
-            font-size: 11px;
-        }
-
-        .info-label {
-            color: var(--vk-subtext);
-            width: 100px;
-        }
-
-        .info-value {
-            color: #000000;
-        }
-
-        .info-block-header {
-            background: #f7f7f7;
-            border-bottom: 1px solid var(--vk-border);
-            padding: 4px 6px;
-            font-weight: bold;
-            color: var(--vk-link);
-            font-size: 11px;
-            margin: 8px 0 4px 0;
-        }
-
-        /* ПОДАРУНКИ */
-        .gifts-card {
-            border: 1px solid var(--vk-border);
-            margin-bottom: 12px;
-            background: #ffffff;
-        }
-
-        .gifts-header {
-            background: #f7f7f7;
-            border-bottom: 1px solid var(--vk-border);
-            padding: 4px 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            color: var(--vk-link);
-        }
-
-        .gifts-list {
-            padding: 8px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-        }
-
-        .gift-badge {
-            text-align: center;
-            min-width: 60px;
-        }
-
-        .gift-emoji {
-            font-size: 24px;
-        }
-
-        .gift-from {
-            font-size: 10px;
-            color: var(--vk-subtext);
-            margin-top: 2px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 65px;
-        }
-
-        /* СТІНА */
-        .wall-header-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--vk-link);
-            border-bottom: 1px solid var(--vk-border);
-            padding-bottom: 4px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .wall-input-box {
-            background: #f7f7f7;
-            border: 1px solid var(--vk-border);
-            padding: 8px;
-            margin-bottom: 12px;
-        }
-
-        .wall-textarea {
-            width: 100%;
-            height: 46px;
-            border: 1px solid #c0cad5;
-            padding: 6px;
-            font-size: 11px;
-            resize: vertical;
-            outline: none;
-            margin-bottom: 6px;
-            background: #ffffff;
-        }
-
-        .wall-textarea:focus {
-            border-color: #597da3;
-        }
-
-        .post-card {
-            border-bottom: 1px solid var(--vk-border);
-            padding: 10px 0;
-            display: flex;
-            gap: 10px;
-        }
-
-        .post-left {
-            width: 40px;
-            flex-shrink: 0;
-        }
-
-        .post-author-pic {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--vk-border);
-            object-fit: cover;
-        }
-
-        .post-body {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .post-author-name {
-            font-weight: bold;
-            color: var(--vk-link);
-            text-decoration: none;
-            margin-bottom: 2px;
-        }
-
-        .post-text {
-            font-size: 11px;
-            line-height: 1.4;
-            color: #000;
-            margin: 4px 0 6px 0;
-            word-break: break-word;
-        }
-
-        .post-footer {
-            font-size: 10px;
-            color: var(--vk-subtext);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .post-action {
-            color: var(--vk-link);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .post-action:hover {
-            text-decoration: none;
-        }
-
-        .comments-box {
-            background: #f7f7f7;
-            border-top: 1px solid var(--vk-border-subtle);
-            margin-top: 6px;
-            padding: 6px;
-            border-radius: 2px;
-        }
-
-        .comment-row {
-            margin-bottom: 4px;
-            font-size: 11px;
-        }
-
-        .comment-author {
-            font-weight: bold;
-            color: var(--vk-link);
-        }
-
-        /* ЧАТ */
-        .chat-container {
-            border: 1px solid var(--vk-border);
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-        }
-
-        .chat-header {
-            background: #f7f7f7;
-            border-bottom: 1px solid var(--vk-border);
-            padding: 6px 10px;
-            font-weight: bold;
-            color: var(--vk-link);
-        }
-
-        .chat-stream {
-            height: 360px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #fbfbfb;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .message-bubble {
-            max-width: 82%;
-            padding: 6px 10px;
-            font-size: 11px;
-            border-radius: 2px;
-            line-height: 1.35;
-            word-break: break-word;
-        }
-
-        .message-bubble.mine {
-            align-self: flex-end;
-            background: #eef2f6;
-            border: 1px solid #c9d5e0;
-        }
-
-        .message-bubble.theirs {
-            align-self: flex-start;
-            background: #ffffff;
-            border: 1px solid var(--vk-border);
-        }
-
-        .message-author {
-            font-weight: bold;
-            color: var(--vk-link);
-            margin-bottom: 2px;
-            font-size: 10px;
-        }
-
-        .message-time {
-            font-size: 9px;
-            color: var(--vk-subtext);
-            text-align: right;
-            margin-top: 3px;
-        }
-
-        .chat-bar {
-            border-top: 1px solid var(--vk-border);
-            padding: 6px;
-            display: flex;
-            gap: 5px;
-            background: #ffffff;
-        }
-
-        /* АУДІОЗАПИСИ */
-        .audio-item {
-            display: flex;
-            align-items: center;
-            padding: 6px;
-            border-bottom: 1px solid var(--vk-border-subtle);
-        }
-
-        .audio-item:hover {
-            background: #f7f9fb;
-        }
-
-        .audio-details {
-            flex: 1;
-            margin-left: 8px;
-            overflow: hidden;
-            margin-right: 8px;
-        }
-
-        .audio-artist {
-            font-weight: bold;
-            color: var(--vk-link);
-            font-size: 11px;
-        }
-
-        .audio-title {
-            color: #333333;
-            font-size: 11px;
-        }
-
-        audio {
-            height: 26px;
-            max-width: 160px;
-        }
-
-        /* ПІДВАЛ З КЕРУВАННЯМ РЕЖИМАМИ */
-        footer {
-            border-top: 1px solid var(--vk-border);
-            background: #f7f7f7;
-            padding: 10px;
-            text-align: center;
-            font-size: 11px;
-            color: var(--vk-subtext);
-            margin-top: auto;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .footer-btn {
-            color: var(--vk-link);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        /* МОДАЛЬНІ ВІКНА */
-        .vk-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .vk-modal.show {
-            display: flex;
-        }
-
-        .vk-modal-box {
-            background: #ffffff;
-            width: 90%;
-            max-width: 380px;
-            border: 1px solid #365c85;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .vk-modal-header {
-            background: linear-gradient(180deg, #4b729f 0%, #3a5f8a 100%);
-            color: #fff;
-            padding: 6px 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .vk-modal-body {
-            padding: 12px;
-        }
+        header .logo { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        header .logo-box { background: #ffffff; color: #45688e; font-weight: bold; font-size: 13px; padding: 2px 7px; border-radius: 2px; }
+        header .logo-title { font-weight: bold; font-size: 14px; color: #ffffff; }
+
+        /* МОБІЛЬНЕ МЕНЮ */
+        .nav-tabs { display: flex; background: #eef2f5; border-bottom: 1px solid var(--vk-border); position: sticky; top: 42px; z-index: 90; overflow-x: auto; }
+        .tab-btn { flex: 1; min-width: 65px; padding: 8px 4px; text-align: center; background: none; border: none; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--vk-link); border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab-btn.active { border-bottom-color: #45688e; background: #ffffff; color: #000000; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ЗАГАЛЬНІ КНОПКИ ТА ПОЛЯ */
+        .btn-vk { background: var(--vk-btn); color: #ffffff; border: 1px solid #4a6f94; padding: 4px 10px; border-radius: 2px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-vk:hover { background: var(--vk-btn-hover); }
+        .btn-vk-secondary { background: var(--vk-btn-secondary); color: var(--vk-link); border: 1px solid var(--vk-border); padding: 4px 8px; border-radius: 2px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-vk-secondary:hover { background: #e1e7ec; }
+        .input-vk { padding: 4px 6px; border: 1px solid #c0cad5; border-radius: 2px; font-size: 11px; outline: none; background: #ffffff; }
+        .input-vk:focus { border-color: #597da3; }
+
+        /* ЛІВА КОЛОНКА ПРОФІЛЮ */
+        .avatar-wrap { border: 1px solid var(--vk-border); background: #f7f7f7; padding: 3px; text-align: center; }
+        .avatar { width: 100%; max-width: 144px; height: 144px; object-fit: cover; display: inline-block; }
+        .rating-bar-container { border: 1px solid #d0ab26; background: #fff; padding: 1px; border-radius: 2px; margin-top: 5px; }
+        .rating-bar-fill { background: linear-gradient(180deg, #ffe169 0%, #ebb400 100%); height: 13px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #4a3600; }
+
+        .side-block { border: 1px solid var(--vk-border); margin-top: 10px; background: #ffffff; }
+        .side-block-header { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 4px 6px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between; }
+        .friends-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; }
+        .friend-card { text-align: center; font-size: 10px; }
+        .friend-card img { width: 38px; height: 38px; object-fit: cover; border: 1px solid var(--vk-border); border-radius: 2px; }
+        .photos-preview-strip { display: flex; gap: 4px; padding: 6px; overflow-x: auto; }
+        .photos-preview-strip img { width: 42px; height: 42px; object-fit: cover; border: 1px solid var(--vk-border); }
+
+        /* ПРАВА КОЛОНКА ПРОФІЛЮ */
+        .profile-right-col { flex: 1; min-width: 0; }
+        .profile-name-row { border-bottom: 1px solid var(--vk-border); padding-bottom: 5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .profile-title { font-size: 15px; font-weight: bold; color: var(--vk-link); }
+        .profile-status-box { font-size: 11px; color: #555555; margin-top: 3px; }
+        .status-edit-link { font-size: 10px; color: var(--vk-link); cursor: pointer; text-decoration: underline; margin-left: 4px; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .info-table td { padding: 3px 0; vertical-align: top; font-size: 11px; }
+        .info-label { color: var(--vk-subtext); width: 125px; }
+        .info-value { color: #000000; }
+        .info-block-header { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 4px 6px; font-weight: bold; color: var(--vk-link); font-size: 11px; margin: 8px 0 4px 0; }
+        .spoiler-toggle { color: var(--vk-link); cursor: pointer; text-decoration: underline; font-weight: bold; display: inline-block; margin-bottom: 8px; }
+
+        /* СТІНА ТА ГРАФІТІ */
+        .wall-controls { background: #f7f7f7; border: 1px solid var(--vk-border); padding: 8px; margin-bottom: 12px; }
+        .wall-tab-bar { display: flex; gap: 8px; margin-bottom: 6px; }
+        .wall-tab-link { color: var(--vk-link); cursor: pointer; text-decoration: underline; font-weight: bold; font-size: 11px; }
+        .wall-textarea { width: 100%; height: 44px; border: 1px solid #c0cad5; padding: 5px; font-size: 11px; resize: vertical; outline: none; margin-bottom: 6px; background: #ffffff; }
+
+        /* ПОЛОТНО ДЛЯ МАЛЮВАННЯ ГРАФІТІ */
+        #graffiti-palette { display: none; margin-bottom: 8px; padding: 6px; background: #fff; border: 1px dashed var(--vk-border); }
+        #canvas-wrapper { border: 1px solid #999; display: inline-block; background: #ffffff; touch-action: none; }
+        .graffiti-tools { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+        .color-dot { width: 16px; height: 16px; border-radius: 2px; cursor: pointer; border: 1px solid #777; display: inline-block; }
+
+        .post-card { border-bottom: 1px solid var(--vk-border); padding: 10px 0; display: flex; gap: 10px; }
+        .post-author-pic { width: 40px; height: 40px; border: 1px solid var(--vk-border); object-fit: cover; }
+        .post-body { flex: 1; min-width: 0; }
+        .post-author-name { font-weight: bold; color: var(--vk-link); text-decoration: none; }
+        .post-text { font-size: 11px; line-height: 1.4; color: #000; margin: 4px 0 6px 0; word-break: break-word; }
+        .post-image { max-width: 100%; border: 1px solid var(--vk-border); border-radius: 2px; margin-bottom: 6px; display: block; }
+        .post-footer { font-size: 10px; color: var(--vk-subtext); display: flex; gap: 12px; }
+        .post-action { color: var(--vk-link); cursor: pointer; text-decoration: underline; }
+
+        /* ЧАТ ТА ПОВІДОМЛЕННЯ */
+        .chat-container { border: 1px solid var(--vk-border); background: #ffffff; display: flex; flex-direction: column; }
+        .chat-stream { height: 380px; overflow-y: auto; padding: 10px; background: #fbfbfb; display: flex; flex-direction: column; gap: 8px; }
+        .message-bubble { max-width: 80%; padding: 6px 10px; font-size: 11px; border-radius: 2px; word-break: break-word; }
+        .message-bubble.mine { align-self: flex-end; background: #eef2f6; border: 1px solid #c9d5e0; }
+        .message-bubble.theirs { align-self: flex-start; background: #ffffff; border: 1px solid var(--vk-border); }
+
+        /* ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 */
+        .vintage-audio-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--vk-border-subtle); }
+        .vintage-play-btn { width: 20px; height: 20px; background: #597da3; color: #ffffff; border: 1px solid #4a6f94; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; flex-shrink: 0; }
+        .audio-track-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .audio-progress-bar { width: 80px; height: 5px; background: #d7e0e8; border-radius: 1px; cursor: pointer; position: relative; }
+        .audio-progress-fill { height: 100%; background: #45688e; width: 0%; }
+        .audio-duration-text { font-size: 9px; color: var(--vk-subtext); width: 32px; text-align: right; }
+
+        /* ДІАЛОГИ ТА МОДАЛЬНІ ВІКНА */
+        .vk-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 300; justify-content: center; align-items: center; }
+        .vk-modal.show { display: flex; }
+        .vk-modal-box { background: #ffffff; width: 92%; max-width: 420px; border: 1px solid #365c85; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .vk-modal-header { background: linear-gradient(180deg, #4b729f 0%, #3a5f8a 100%); color: #fff; padding: 6px 10px; font-weight: bold; display: flex; justify-content: space-between; }
+        .vk-modal-body { padding: 12px; max-height: 80vh; overflow-y: auto; }
+
+        footer { border-top: 1px solid var(--vk-border); background: #f7f7f7; padding: 10px; text-align: center; font-size: 11px; color: var(--vk-subtext); margin-top: auto; }
+        .footer-btn { color: var(--vk-link); cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body class="mode-mobile">
 
 <div class="app-container">
-    <!-- ГОЛОВНА ШАПКА -->
+    <!-- ШАПКА -->
     <header>
         <div class="logo" onclick="switchTab('profile')">
             <span class="logo-box">зв'язок</span>
             <span class="logo-title">На зв'язку</span>
         </div>
-        <div class="user-info">
+        <div style="font-size: 11px; color: #dae2e8;">
             <span id="top-user-name">Завантаження...</span>
         </div>
     </header>
 
     <!-- МОБІЛЬНІ ВКЛАДКИ -->
     <div class="nav-tabs mobile-only">
-        <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile', event)">Моя Сторінка</button>
+        <button class="tab-btn active" id="tab-btn-profile" onclick="switchTab('profile', event)">Сторінка</button>
         <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat', event)">Повідомлення</button>
-        <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіозаписи</button>
+        <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
+        <button class="tab-btn" id="tab-btn-notes" onclick="switchTab('notes', event)">Нотатки</button>
+        <button class="tab-btn" id="tab-btn-thoughts" onclick="switchTab('thoughts', event)">Секрети</button>
     </div>
 
-    <!-- ГОЛОВНЕ ТІЛО ДОДАТКА -->
     <div class="main-layout">
-        
         <!-- ЛІВЕ МЕНЮ ПК -->
         <aside class="pc-sidebar pc-only">
             <a href="javascript:void(0)" id="pc-link-profile" class="active" onclick="switchTab('profile', event)">Моя Сторінка</a>
             <a href="javascript:void(0)" id="pc-link-chat" onclick="switchTab('chat', event)">Мої Повідомлення</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
+            <a href="javascript:void(0)" id="pc-link-notes" onclick="switchTab('notes', event)">Мої Нотатки</a>
+            <a href="javascript:void(0)" id="pc-link-thoughts" onclick="switchTab('thoughts', event)">Думки та Секрети</a>
             <div class="sidebar-divider"></div>
-            <a href="javascript:void(0)" style="color: #888; cursor: default;">Мої Друзі</a>
-            <a href="javascript:void(0)" style="color: #888; cursor: default;">Мої Фотографії</a>
-            <a href="javascript:void(0)" style="color: #888; cursor: default;">Мої Налаштування</a>
+            <a href="javascript:void(0)" onclick="openEditProfileModal()">Редагувати профіль</a>
         </aside>
 
         <!-- ЗОНА КОНТЕНТУ -->
@@ -756,32 +242,79 @@
             <!-- 1. МОЯ СТОРІНКА -->
             <div id="tab-profile" class="tab-content active">
                 <div class="profile-container">
+                    
+                    <!-- ЛІВА КОЛОНКА ПРОФІЛЮ (Аватар, Рейтинг, Друзі, Подарунки) -->
                     <div class="profile-left-col">
                         <div class="avatar-wrap">
                             <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
                         </div>
-                        
-                        <div class="rating-bar-container" title="Рейтинг сторінки">
+
+                        <div class="rating-bar-container" title="Рейтинг профілю">
                             <div class="rating-bar-fill" id="profile-rating-fill" style="width: 100%;">
                                 <span id="profile-rating-text">100%</span>
                             </div>
                         </div>
 
-                        <button class="btn-vk-secondary" style="font-size: 10px; padding: 2px;" onclick="openModal('modal-rating')">
-                            + Підвищити рейтинг
-                        </button>
-                    </div>
+                        <div style="display: flex; gap: 4px; margin-top: 6px;">
+                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
+                            <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
+                        </div>
 
-                    <div class="profile-right-col">
-                        <div class="profile-name-row">
-                            <div class="profile-title" id="profile-name">Завантаження...</div>
-                            <div class="profile-status-box">
-                                <span id="status-display">на зв'язку</span>
-                                <span class="status-edit-link" onclick="promptStatus()">[змінити]</span>
+                        <!-- БЛОК ДРУЗІВ (3x2 СІТКА) -->
+                        <div class="side-block">
+                            <div class="side-block-header">
+                                <span>Друзі (6)</span>
+                                <span style="font-weight: normal; color: var(--vk-subtext);">online 2</span>
+                            </div>
+                            <div class="friends-grid">
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="Дмитро"><br>Олена</div>
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="Олег"><br>Тарас</div>
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Марія"><br>Марія</div>
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" alt="Ігор"><br>Андрій</div>
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="Юля"><br>Оксана</div>
+                                <div class="friend-card"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="Богдан"><br>Павло</div>
                             </div>
                         </div>
 
-                        <div class="info-block-header">Особиста інформація</div>
+                        <!-- БЛОК ФОТОАЛЬБОМУ -->
+                        <div class="side-block">
+                            <div class="side-block-header">
+                                <span>Фотографії</span>
+                                <span style="font-weight: normal; color: var(--vk-link); cursor: pointer;" onclick="vkAlert('Світлини', 'Розділ додавання фотографій знаходиться в розробці.')">+ додати</span>
+                            </div>
+                            <div class="photos-preview-strip">
+                                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=80&h=80&fit=crop" alt="Фото">
+                                <img src="https://images.unsplash.com/photo-1511497584788-87676104235f?w=80&h=80&fit=crop" alt="Фото">
+                                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=80&h=80&fit=crop" alt="Фото">
+                            </div>
+                        </div>
+
+                        <!-- БЛОК ПОДАРУНКІВ -->
+                        <div class="side-block">
+                            <div class="side-block-header">
+                                <span>Подарунки (<span id="gifts-counter">0</span>)</span>
+                                <span style="font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="openModal('modal-gift')">подарувати</span>
+                            </div>
+                            <div class="gifts-list" id="gifts-grid" style="padding: 6px; display: flex; gap: 8px; overflow-x: auto;">
+                                <span style="color: var(--vk-subtext);">Немає подарунків</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ПРАВА КОЛОНКА ПРОФІЛЮ (Анкета зі спойлером та Стіна) -->
+                    <div class="profile-right-col">
+                        <div class="profile-name-row">
+                            <div>
+                                <span class="profile-title" id="profile-name">Завантаження...</span>
+                                <span style="color: var(--vk-subtext); font-size: 10px; margin-left: 6px;">(online)</span>
+                                <div class="profile-status-box">
+                                    <span id="status-display">встановити статус</span>
+                                    <span class="status-edit-link" onclick="promptStatus()">[змінити]</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- БАЗОВА АНКЕТА -->
                         <table class="info-table">
                             <tr>
                                 <td class="info-label">Місто:</td>
@@ -789,85 +322,152 @@
                             </tr>
                             <tr>
                                 <td class="info-label">Сімейний стан:</td>
-                                <td class="info-value" id="profile-relationship">не вказано</td>
+                                <td class="info-value" id="profile-relationship">все складно</td>
                             </tr>
                             <tr>
-                                <td class="info-label">Голоси:</td>
+                                <td class="info-label">Мобільний телефон:</td>
+                                <td class="info-value" id="profile-phone">+380 (XX) XXX-XX-XX</td>
+                            </tr>
+                            <tr>
+                                <td class="info-label">ICQ UIN:</td>
+                                <td class="info-value" id="profile-icq">345-982-110</td>
+                            </tr>
+                            <tr>
+                                <td class="info-label">Баланс голосів:</td>
                                 <td class="info-value"><b style="color: #45688e;" id="profile-coins">100</b> золотих</td>
                             </tr>
-                            <tr>
-                                <td class="info-label">ID користувача:</td>
-                                <td class="info-value" id="profile-uid" style="font-family: monospace;">-</td>
-                            </tr>
                         </table>
-                    </div>
-                </div>
 
-                <!-- ПОДАРУНКИ -->
-                <div class="gifts-card">
-                    <div class="gifts-header">
-                        <span>Мої Подарунки (<span id="gifts-counter">0</span>)</span>
-                        <span style="font-weight: normal; cursor: pointer; text-decoration: underline;" onclick="openModal('modal-gift')">
-                            Зробити подарунок
-                        </span>
-                    </div>
-                    <div class="gifts-list" id="gifts-grid">
-                        <div style="color: var(--vk-subtext);">Завантаження подарунків...</div>
-                    </div>
-                </div>
+                        <!-- СПОЙЛЕР ДЕТАЛЬНОЇ ІНФОРМАЦІЇ -->
+                        <span class="spoiler-toggle" id="spoiler-btn" onclick="toggleDetailedInfo()">[показати детальну інформацію]</span>
 
-                <!-- СТІНА -->
-                <div class="wall-header-title">
-                    <span>Стіна</span>
-                    <span id="wall-counter" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
-                </div>
+                        <div id="detailed-info-block" style="display: none; border-top: 1px solid var(--vk-border-subtle); padding-top: 4px;">
+                            <div class="info-block-header">Особисті погляди</div>
+                            <table class="info-table">
+                                <tr><td class="info-label">Політичні погляди:</td><td class="info-value" id="info-politics">помірні</td></tr>
+                                <tr><td class="info-label">Світогляд:</td><td class="info-value" id="info-worldview">гуманізм</td></tr>
+                                <tr><td class="info-label">Ставлення до паління:</td><td class="info-value" id="info-smoking">нейтральне</td></tr>
+                                <tr><td class="info-label">Ставлення до алкоголю:</td><td class="info-value" id="info-alcohol">компромісне</td></tr>
+                            </table>
 
-                <div class="wall-input-box">
-                    <textarea id="new-post-content" class="wall-textarea" placeholder="Що у Вас нового?"></textarea>
-                    <div style="display: flex; justify-content: flex-end;">
-                        <button class="btn-vk" onclick="publishWallPost()">Опублікувати</button>
+                            <div class="info-block-header">Особисті інтереси</div>
+                            <table class="info-table">
+                                <tr><td class="info-label">Діяльність:</td><td class="info-value" id="info-activity">розробка додатків, подорожі, спорт</td></tr>
+                                <tr><td class="info-label">Улюблена музика:</td><td class="info-value" id="info-music">Rock, Retro Synthwave, Nu-Metal, Hip-Hop 2000s</td></tr>
+                                <tr><td class="info-label">Улюблені фільми:</td><td class="info-value" id="info-movies">Бійцівський клуб, Матриця, Карпати</td></tr>
+                                <tr><td class="info-label">Улюблені цитати:</td><td class="info-value" id="info-quotes">«Все що нас не вбиває, робить нас сильнішими»</td></tr>
+                                <tr><td class="info-label">Про себе:</td><td class="info-value" id="info-about">Завжди на зв'язку! Відповідаю на всі повідомлення.</td></tr>
+                            </table>
+                        </div>
+
+                        <!-- СТІНА ТА ПУБЛІКАЦІЯ (ТЕКСТ + ГРАФІТІ) -->
+                        <div style="margin-top: 12px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between;">
+                            <span>Стіна</span>
+                            <span id="wall-counter" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
+                        </div>
+
+                        <div class="wall-controls">
+                            <div class="wall-tab-bar">
+                                <span class="wall-tab-link" onclick="setWallMode('text')">Написати запис</span>
+                                <span>|</span>
+                                <span class="wall-tab-link" onclick="setWallMode('graffiti')">Намалювати графіті 🎨</span>
+                            </div>
+
+                            <!-- ТЕКСТОВИЙ БЛОК -->
+                            <div id="wall-text-block">
+                                <textarea id="new-post-content" class="wall-textarea" placeholder="Що у Вас нового?"></textarea>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button class="btn-vk" onclick="publishWallPost()">Опублікувати</button>
+                                </div>
+                            </div>
+
+                            <!-- ГРАФІТІ БОКС -->
+                            <div id="graffiti-palette">
+                                <div style="text-align: center;">
+                                    <div id="canvas-wrapper">
+                                        <canvas id="graffiti-canvas" width="340" height="170"></canvas>
+                                    </div>
+                                </div>
+                                <div class="graffiti-tools">
+                                    <span>Колір:</span>
+                                    <span class="color-dot" style="background: #000000;" onclick="setCanvasColor('#000000')"></span>
+                                    <span class="color-dot" style="background: #e53935;" onclick="setCanvasColor('#e53935')"></span>
+                                    <span class="color-dot" style="background: #1e88e5;" onclick="setCanvasColor('#1e88e5')"></span>
+                                    <span class="color-dot" style="background: #43a047;" onclick="setCanvasColor('#43a047')"></span>
+                                    <span class="color-dot" style="background: #fdd835;" onclick="setCanvasColor('#fdd835')"></span>
+                                    <span class="color-dot" style="background: #ffffff;" title="Гумка" onclick="setCanvasColor('#ffffff')"></span>
+
+                                    <span style="margin-left: 6px;">Пензель:</span>
+                                    <button class="btn-vk-secondary" style="padding: 1px 4px;" onclick="setCanvasSize(2)">2px</button>
+                                    <button class="btn-vk-secondary" style="padding: 1px 4px;" onclick="setCanvasSize(6)">6px</button>
+                                    <button class="btn-vk-secondary" style="padding: 1px 4px;" onclick="setCanvasSize(12)">12px</button>
+
+                                    <button class="btn-vk-secondary" style="margin-left: auto;" onclick="clearCanvas()">Очистити</button>
+                                    <button class="btn-vk" onclick="publishGraffiti()">Надіслати графіті</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- СПИСОК ЗАПИСІВ СТІНИ -->
+                        <div id="wall-posts-list"></div>
                     </div>
-                </div>
-
-                <div id="wall-posts-list">
-                    <!-- Записи на стіні -->
                 </div>
             </div>
 
             <!-- 2. ПОВІДОМЛЕННЯ (ЧАТ) -->
             <div id="tab-chat" class="tab-content">
                 <div class="chat-container">
-                    <div class="chat-header">
-                        Загальний чат «На зв'язку»
+                    <div style="background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 6px 10px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between;">
+                        <span>Загальний чат «На зв'язку»</span>
+                        <span style="font-size: 10px; font-weight: normal; color: var(--vk-subtext);">Звук сповіщень: Увімкнено 🔔</span>
                     </div>
-                    <div class="chat-stream" id="chat-stream">
-                        <!-- Повідомлення -->
-                    </div>
-                    <div class="chat-bar">
-                        <button id="voice-btn" class="btn-vk-secondary" onclick="handleVoiceRecord()" title="Голосове повідомлення">🎤</button>
+                    <div class="chat-stream" id="chat-stream"></div>
+                    <div style="border-top: 1px solid var(--vk-border); padding: 6px; display: flex; gap: 5px;">
                         <input type="text" id="chat-message-input" class="input-vk" style="flex: 1;" placeholder="Написати повідомлення..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                         <button class="btn-vk" onclick="sendChatMessage()">Надіслати</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. АУДІОЗАПИСИ -->
+            <!-- 3. АУДІОЗАПИСИ (ВІНТАЖНИЙ ПЛЕЄР) -->
             <div id="tab-music" class="tab-content">
-                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
-                    <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень та виконавців..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
                     <button class="btn-vk" onclick="performAudioSearch()">Шукати</button>
                 </div>
-                <div id="audio-results-list">
-                    <!-- Треки Jamendo -->
+                <div id="vintage-player-container" style="border: 1px solid var(--vk-border); background: #ffffff;">
+                    <div style="padding: 6px; color: var(--vk-subtext);">Введіть назву пісні для пошуку...</div>
                 </div>
+            </div>
+
+            <!-- 4. НОТАТКИ -->
+            <div id="tab-notes" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Мої Нотатки</span>
+                    <button class="btn-vk" onclick="openModal('modal-note')">+ Створити нотатку</button>
+                </div>
+                <div id="notes-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            <!-- 5. ДУМКИ ТА СЕКРЕТИ -->
+            <div id="tab-thoughts" class="tab-content">
+                <div style="margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Анонімні думки про вас</span>
+                    <p style="color: var(--vk-subtext); margin-top: 2px;">Друзі можуть залишити щирі враження без вказівки імені.</p>
+                </div>
+                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                    <input type="text" id="thought-input" class="input-vk" style="flex: 1;" placeholder="Напишіть щось анонімно...">
+                    <button class="btn-vk" onclick="submitAnonymousThought()">Сказати</button>
+                </div>
+                <div id="thoughts-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
             </div>
 
         </main>
     </div>
 
-    <!-- АДАПТИВНИЙ ПІДВАЛ -->
+    <!-- ПІДВАЛ -->
     <footer>
-        <div class="footer-links">
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
             <span>На зв'язку © 2006–2010</span>
             <span>|</span>
             <span class="footer-btn" id="version-toggle-btn" onclick="manualToggleMode()">Комп'ютерна версія</span>
@@ -877,7 +477,53 @@
     </footer>
 </div>
 
-<!-- МОДАЛЬНІ ВІКНА -->
+<!-- МОДАЛЬНЕ ВІКНО: РЕДАГУВАННЯ АНКЕТИ -->
+<div class="vk-modal" id="modal-edit-profile">
+    <div class="vk-modal-box">
+        <div class="vk-modal-header">
+            <span>Редагувати анкету</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-edit-profile')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Контактна інформація:</div>
+            <input type="text" id="edit-city" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Місто">
+            <input type="text" id="edit-relationship" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Сімейний стан">
+            <input type="text" id="edit-phone" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Номер телефону">
+            <input type="text" id="edit-icq" class="input-vk" style="width: 100%; margin-bottom: 10px;" placeholder="Номер ICQ">
+
+            <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Інтереси:</div>
+            <input type="text" id="edit-activity" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Діяльність">
+            <input type="text" id="edit-music" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Улюблена музика">
+            <input type="text" id="edit-movies" class="input-vk" style="width: 100%; margin-bottom: 6px;" placeholder="Улюблені фільми">
+            <textarea id="edit-about" class="wall-textarea" placeholder="Про себе..."></textarea>
+
+            <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                <button class="btn-vk-secondary" onclick="closeModal('modal-edit-profile')">Скасувати</button>
+                <button class="btn-vk" onclick="saveProfileChanges()">Зберегти</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО: НОВА НОТАТКА -->
+<div class="vk-modal" id="modal-note">
+    <div class="vk-modal-box">
+        <div class="vk-modal-header">
+            <span>Створити нотатку</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-note')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <input type="text" id="note-title-input" class="input-vk" style="width: 100%; margin-bottom: 8px;" placeholder="Заголовок нотатки...">
+            <textarea id="note-content-input" class="wall-textarea" style="height: 90px;" placeholder="Текст вашої нотатки..."></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                <button class="btn-vk-secondary" onclick="closeModal('modal-note')">Скасувати</button>
+                <button class="btn-vk" onclick="saveNewNote()">Зберегти нотатку</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО: ПОДАРУНКИ -->
 <div class="vk-modal" id="modal-gift">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -885,19 +531,13 @@
             <span style="cursor: pointer;" onclick="closeModal('modal-gift')">✕</span>
         </div>
         <div class="vk-modal-body">
-            <p style="margin-bottom: 8px; color: var(--vk-subtext);">Оберіть подарунок зі списку:</p>
             <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;">
-                <div onclick="pickGift('🌹', 'Троянда')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center; border-radius: 2px;">
-                    <span style="font-size: 26px;">🌹</span><br><span style="font-size: 10px;">Троянда</span>
-                </div>
-                <div onclick="pickGift('🍫', 'Шоколад')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center; border-radius: 2px;">
-                    <span style="font-size: 26px;">🍫</span><br><span style="font-size: 10px;">Шоколад</span>
-                </div>
-                <div onclick="pickGift('👑', 'Корона')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center; border-radius: 2px;">
-                    <span style="font-size: 26px;">👑</span><br><span style="font-size: 10px;">Корона</span>
-                </div>
+                <div onclick="pickGift('🌹', 'Троянда')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center;"><span style="font-size: 24px;">🌹</span><br><span style="font-size: 10px;">Троянда</span></div>
+                <div onclick="pickGift('🍫', 'Шоколад')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center;"><span style="font-size: 24px;">🍫</span><br><span style="font-size: 10px;">Шоколад</span></div>
+                <div onclick="pickGift('👑', 'Корона')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center;"><span style="font-size: 24px;">👑</span><br><span style="font-size: 10px;">Корона</span></div>
+                <div onclick="pickGift('🍺', 'Пиво')" style="cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center;"><span style="font-size: 24px;">🍺</span><br><span style="font-size: 10px;">Пиво</span></div>
             </div>
-            <input type="text" id="gift-message-text" class="input-vk" style="width: 100%; margin-bottom: 10px;" placeholder="Прикріпити коментар...">
+            <input type="text" id="gift-message-text" class="input-vk" style="width: 100%; margin-bottom: 10px;" placeholder="Прикріпити побажання...">
             <div style="display: flex; justify-content: flex-end; gap: 6px;">
                 <button class="btn-vk-secondary" onclick="closeModal('modal-gift')">Скасувати</button>
                 <button class="btn-vk" onclick="commitGiftSend()">Надіслати</button>
@@ -906,6 +546,7 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНЕ ВІКНО: РЕЙТИНГ -->
 <div class="vk-modal" id="modal-rating">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -913,91 +554,68 @@
             <span style="cursor: pointer;" onclick="closeModal('modal-rating')">✕</span>
         </div>
         <div class="vk-modal-body">
-            <p style="line-height: 1.4; margin-bottom: 10px;">
-                Золота смужка рейтингу відображає рівень вашого профілю у спільноті «На зв'язку».
-            </p>
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+            <p style="margin-bottom: 8px;">Золота смужка рейтингу свідчить про ваш авторитет.</p>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
                 <span>Додати до рейтингу:</span>
-                <input type="number" id="rating-val-input" class="input-vk" value="10" min="1" max="500" style="width: 60px;">
+                <input type="number" id="rating-val-input" class="input-vk" value="10" min="1" max="500" style="width: 50px;">
                 <span>%</span>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 6px;">
                 <button class="btn-vk-secondary" onclick="closeModal('modal-rating')">Скасувати</button>
-                <button class="btn-vk" onclick="commitRatingBoost()">Оновити</button>
+                <button class="btn-vk" onclick="commitRatingBoost()">Підтвердити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- СИСТЕМНИЙ VK DIALOG (ALERT) -->
+<div class="vk-modal" id="modal-alert">
+    <div class="vk-modal-box" style="max-width: 300px;">
+        <div class="vk-modal-header">
+            <span id="alert-title">Повідомлення</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-alert')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <p id="alert-text" style="margin-bottom: 12px; line-height: 1.4;"></p>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="btn-vk" onclick="closeModal('modal-alert')">Зрозуміло</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ==========================================================
-    // 1. АВТОМАТИЧНЕ ПІДЛАШТУВАННЯ ПІД ЕКРАН ТА РЕЖИМИ ВІДОБРАЖЕННЯ
-    // ==========================================================
-    const BREAKPOINT = 768; // Поріг між мобільними та десктопними дисплеями
-    let userPreference = localStorage.getItem('nz_display_preference'); // 'auto', 'pc' або 'mobile'
+    // 1. АВТОПІДЛАШТУВАННЯ ТА МАКЕТИ
+    const BREAKPOINT = 768;
+    let userPreference = localStorage.getItem('nz_display_pref') || 'auto';
 
-    if (!userPreference) {
-        userPreference = 'auto';
-        localStorage.setItem('nz_display_preference', 'auto');
+    function getActiveLayout() {
+        return userPreference === 'auto' ? (window.innerWidth >= BREAKPOINT ? 'pc' : 'mobile') : userPreference;
     }
 
-    function determineActiveLayout() {
-        if (userPreference === 'auto') {
-            return window.innerWidth >= BREAKPOINT ? 'pc' : 'mobile';
-        }
-        return userPreference;
-    }
-
-    function updateLayoutView() {
-        const layout = determineActiveLayout();
-        const body = document.body;
-        const toggleBtn = document.getElementById('version-toggle-btn');
-        const autoBtn = document.getElementById('auto-mode-btn');
-
-        if (layout === 'pc') {
-            body.classList.remove('mode-mobile');
-            body.classList.add('mode-pc');
-            toggleBtn.innerText = 'Мобільна версія';
-        } else {
-            body.classList.remove('mode-pc');
-            body.classList.add('mode-mobile');
-            toggleBtn.innerText = "Комп'ютерна версія";
-        }
-
-        if (userPreference === 'auto') {
-            autoBtn.style.fontWeight = 'bold';
-            autoBtn.innerText = '● Авто (активно)';
-        } else {
-            autoBtn.style.fontWeight = 'normal';
-            autoBtn.innerText = 'Авторежим';
-        }
+    function syncLayout() {
+        const layout = getActiveLayout();
+        document.body.className = layout === 'pc' ? 'mode-pc' : 'mode-mobile';
+        document.getElementById('version-toggle-btn').innerText = layout === 'pc' ? 'Мобільна версія' : "Комп'ютерна версія";
+        document.getElementById('auto-mode-btn').style.fontWeight = userPreference === 'auto' ? 'bold' : 'normal';
     }
 
     function manualToggleMode() {
-        const current = determineActiveLayout();
-        userPreference = current === 'mobile' ? 'pc' : 'mobile';
-        localStorage.setItem('nz_display_preference', userPreference);
-        updateLayoutView();
+        userPreference = getActiveLayout() === 'mobile' ? 'pc' : 'mobile';
+        localStorage.setItem('nz_display_pref', userPreference);
+        syncLayout();
     }
 
     function resetToAutoMode() {
         userPreference = 'auto';
-        localStorage.setItem('nz_display_preference', 'auto');
-        updateLayoutView();
+        localStorage.setItem('nz_display_pref', 'auto');
+        syncLayout();
     }
 
-    // Слухач зміни розміру або орієнтації екрана
-    window.addEventListener('resize', () => {
-        if (userPreference === 'auto') {
-            updateLayoutView();
-        }
-    });
+    window.addEventListener('resize', () => { if (userPreference === 'auto') syncLayout(); });
+    syncLayout();
 
-    updateLayoutView();
-
-    // ==========================================================
-    // 2. ІНІЦІАЛІЗАЦІЯ FIREBASE
-    // ==========================================================
+    // 2. FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyYOUR_API_KEY_HERE",
         authDomain: "your-app.firebaseapp.com",
@@ -1007,20 +625,12 @@
         appId: "1:1234567890:web:abcdef123456"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
-    // ==========================================================
-    // 3. TELEGRAM WEBAPP ТА ПРОФІЛЬ ЮЗЕРА
-    // ==========================================================
+    // 3. TELEGRAM І КОРИСТУВАЧ
     const tg = window.Telegram?.WebApp;
-    if (tg) {
-        tg.ready();
-        tg.expand();
-    }
+    if (tg) { tg.ready(); tg.expand(); }
 
     let activeUser = {
         id: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "id_" + Math.floor(Math.random() * 89999 + 10000),
@@ -1029,218 +639,268 @@
         photo_url: tg?.initDataUnsafe?.user?.photo_url || "https://vk.com/images/camera_200.png",
         rating: 100,
         status: "на зв'язку",
-        coins: 100
+        coins: 100,
+        city: "Одеса",
+        relationship: "все складно",
+        phone: "+380 (XX) XXX-XX-XX",
+        icq: "345-982-110",
+        activity: "розробка додатків, подорожі, спорт",
+        music: "Rock, Retro Synthwave, Hip-Hop",
+        movies: "Бійцівський клуб, Матриця",
+        about: "Завжди на зв'язку!"
     };
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
-
     document.getElementById('top-user-name').innerText = userFullName;
     document.getElementById('profile-name').innerText = userFullName;
-    document.getElementById('profile-uid').innerText = activeUser.id;
     document.getElementById('profile-avatar').src = activeUser.photo_url;
 
-    async function syncUserData() {
-        const userDocRef = db.collection('users').doc(activeUser.id);
-        const doc = await userDocRef.get();
-
+    async function loadUserData() {
+        const docRef = db.collection('users').doc(activeUser.id);
+        const doc = await docRef.get();
         if (!doc.exists) {
-            await userDocRef.set({
-                name: userFullName,
-                avatar: activeUser.photo_url,
-                rating: activeUser.rating,
-                status: activeUser.status,
-                coins: activeUser.coins,
-                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await docRef.set({ ...activeUser, name: userFullName, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         } else {
-            const data = doc.data();
-            activeUser.rating = data.rating || 100;
-            activeUser.status = data.status || "на зв'язку";
-            activeUser.coins = data.coins || 0;
+            Object.assign(activeUser, doc.data());
         }
-
-        renderProfileStats();
+        renderProfileInfo();
     }
 
-    function renderProfileStats() {
+    function renderProfileInfo() {
         document.getElementById('status-display').innerText = activeUser.status;
         document.getElementById('profile-coins').innerText = activeUser.coins;
         document.getElementById('profile-rating-text').innerText = `${activeUser.rating}%`;
-        const percentage = Math.min(activeUser.rating, 100);
-        document.getElementById('profile-rating-fill').style.width = `${percentage}%`;
+        document.getElementById('profile-rating-fill').style.width = `${Math.min(activeUser.rating, 100)}%`;
+
+        document.getElementById('profile-city').innerText = activeUser.city || 'не вказано';
+        document.getElementById('profile-relationship').innerText = activeUser.relationship || 'не вказано';
+        document.getElementById('profile-phone').innerText = activeUser.phone || 'не вказано';
+        document.getElementById('profile-icq').innerText = activeUser.icq || 'не вказано';
+        document.getElementById('info-activity').innerText = activeUser.activity || 'не вказано';
+        document.getElementById('info-music').innerText = activeUser.music || 'не вказано';
+        document.getElementById('info-movies').innerText = activeUser.movies || 'не вказано';
+        document.getElementById('info-about').innerText = activeUser.about || 'не вказано';
     }
 
-    syncUserData();
+    loadUserData();
 
-    // ==========================================================
-    // 4. СИНХРОННЕ ПЕРЕМИКАННЯ ВКЛАДОК
-    // ==========================================================
+    // 4. НАВІГАЦІЯ
     function switchTab(tabId, event) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.pc-sidebar a').forEach(link => link.classList.remove('active'));
 
         document.getElementById(`tab-${tabId}`).classList.add('active');
-
         const activeBtn = document.getElementById(`tab-btn-${tabId}`);
         if (activeBtn) activeBtn.classList.add('active');
-
         const activePcLink = document.getElementById(`pc-link-${tabId}`);
         if (activePcLink) activePcLink.classList.add('active');
     }
 
-    // ==========================================================
-    // 5. ОНОВЛЕННЯ СТАТУСУ ТА РЕЙТИНГУ
-    // ==========================================================
-    async function promptStatus() {
-        const newStatus = prompt("Введіть новий статус:", activeUser.status);
-        if (newStatus !== null && newStatus.trim() !== "") {
-            activeUser.status = newStatus.trim();
-            await db.collection('users').doc(activeUser.id).update({ status: activeUser.status });
-            renderProfileStats();
+    // 5. СПОЙЛЕР АНКЕТИ ТА РЕДАГУВАННЯ
+    function toggleDetailedInfo() {
+        const block = document.getElementById('detailed-info-block');
+        const btn = document.getElementById('spoiler-btn');
+        if (block.style.display === 'none') {
+            block.style.display = 'block';
+            btn.innerText = '[приховати детальну інформацію]';
+        } else {
+            block.style.display = 'none';
+            btn.innerText = '[показати детальну інформацію]';
         }
     }
 
-    async function commitRatingBoost() {
-        const val = parseInt(document.getElementById('rating-val-input').value, 10) || 0;
-        if (val <= 0) return;
-
-        activeUser.rating += val;
-        await db.collection('users').doc(activeUser.id).update({ rating: activeUser.rating });
-        renderProfileStats();
-        closeModal('modal-rating');
+    function openEditProfileModal() {
+        document.getElementById('edit-city').value = activeUser.city || '';
+        document.getElementById('edit-relationship').value = activeUser.relationship || '';
+        document.getElementById('edit-phone').value = activeUser.phone || '';
+        document.getElementById('edit-icq').value = activeUser.icq || '';
+        document.getElementById('edit-activity').value = activeUser.activity || '';
+        document.getElementById('edit-music').value = activeUser.music || '';
+        document.getElementById('edit-movies').value = activeUser.movies || '';
+        document.getElementById('edit-about').value = activeUser.about || '';
+        openModal('modal-edit-profile');
     }
 
-    // ==========================================================
-    // 6. СТІНА ТА ПУБЛІКАЦІЇ
-    // ==========================================================
+    async function saveProfileChanges() {
+        activeUser.city = document.getElementById('edit-city').value.trim();
+        activeUser.relationship = document.getElementById('edit-relationship').value.trim();
+        activeUser.phone = document.getElementById('edit-phone').value.trim();
+        activeUser.icq = document.getElementById('edit-icq').value.trim();
+        activeUser.activity = document.getElementById('edit-activity').value.trim();
+        activeUser.music = document.getElementById('edit-music').value.trim();
+        activeUser.movies = document.getElementById('edit-movies').value.trim();
+        activeUser.about = document.getElementById('edit-about').value.trim();
+
+        await db.collection('users').doc(activeUser.id).update({
+            city: activeUser.city,
+            relationship: activeUser.relationship,
+            phone: activeUser.phone,
+            icq: activeUser.icq,
+            activity: activeUser.activity,
+            music: activeUser.music,
+            movies: activeUser.movies,
+            about: activeUser.about
+        });
+
+        renderProfileInfo();
+        closeModal('modal-edit-profile');
+        vkAlert('Успіх', 'Дані профілю збережено!');
+    }
+
+    // 6. ГРАФІТІ НА СТІНІ (CANVAS)
+    const canvas = document.getElementById('graffiti-canvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let currentColor = '#000000';
+    let currentLineWidth = 2;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    function getCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: (clientX - rect.left) * (canvas.width / rect.width),
+            y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+    }
+
+    function startDraw(e) {
+        isDrawing = true;
+        const { x, y } = getCoords(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        e.preventDefault();
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        const { x, y } = getCoords(e);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentLineWidth;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        e.preventDefault();
+    }
+
+    function stopDraw() { isDrawing = false; }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    function setCanvasColor(col) { currentColor = col; }
+    function setCanvasSize(sz) { currentLineWidth = sz; }
+    function clearCanvas() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function setWallMode(mode) {
+        document.getElementById('wall-text-block').style.display = mode === 'text' ? 'block' : 'none';
+        document.getElementById('graffiti-palette').style.display = mode === 'graffiti' ? 'block' : 'none';
+    }
+
+    async function publishGraffiti() {
+        const graffitiDataUrl = canvas.toDataURL("image/png");
+        await db.collection('posts').add({
+            authorId: activeUser.id,
+            authorName: userFullName,
+            authorAvatar: activeUser.photo_url,
+            type: 'graffiti',
+            imageUrl: graffitiDataUrl,
+            likes: [],
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        clearCanvas();
+        setWallMode('text');
+        vkAlert('Графіті', 'Ваше графіті опубліковано на стіні!');
+    }
+
+    // 7. СТІНА ТА ПУБЛІКАЦІЇ
     async function publishWallPost() {
         const input = document.getElementById('new-post-content');
         const text = input.value.trim();
-        if (!text) {
-            alert('Будь ласка, введіть текст повідомлення для стіни.');
-            return;
-        }
+        if (!text) return vkAlert('Помилка', 'Введіть текст повідомлення.');
 
-        try {
-            await db.collection('posts').add({
-                authorId: activeUser.id,
-                authorName: userFullName,
-                authorAvatar: activeUser.photo_url,
-                text: text,
-                likes: [],
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            input.value = '';
-        } catch (e) {
-            console.error(e);
-            alert('Помилка публікації запису.');
-        }
+        await db.collection('posts').add({
+            authorId: activeUser.id,
+            authorName: userFullName,
+            authorAvatar: activeUser.photo_url,
+            type: 'text',
+            text: text,
+            likes: [],
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        input.value = '';
     }
 
-    db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-        const container = document.getElementById('wall-posts-list');
-        container.innerHTML = '';
-        document.getElementById('wall-counter').innerText = `${snapshot.size} записів`;
+    db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        const cont = document.getElementById('wall-posts-list');
+        cont.innerHTML = '';
+        document.getElementById('wall-counter').innerText = `${snap.size} записів`;
 
-        snapshot.forEach(docSnap => {
-            const post = docSnap.data();
-            const postId = docSnap.id;
-            const isLiked = post.likes && post.likes.includes(activeUser.id);
-            const likesCount = post.likes ? post.likes.length : 0;
-            const dateDisplay = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
+        snap.forEach(docSnap => {
+            const p = docSnap.data();
+            const id = docSnap.id;
+            const isLiked = p.likes && p.likes.includes(activeUser.id);
+            const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
 
-            const card = document.createElement('div');
-            card.className = 'post-card';
-            card.innerHTML = `
-                <div class="post-left">
-                    <img src="${post.authorAvatar || 'https://vk.com/images/camera_200.png'}" class="post-author-pic" alt="Аватар">
-                </div>
-                <div class="post-body">
-                    <a href="javascript:void(0)" class="post-author-name">${escapeText(post.authorName)}</a>
-                    <div class="post-text">${escapeText(post.text)}</div>
-                    <div class="post-footer">
-                        <span>${dateDisplay}</span>
-                        <span class="post-action" onclick="togglePostLike('${postId}')">
-                            ${isLiked ? 'Не подобається' : 'Мені подобається'} (${likesCount})
-                        </span>
-                        <span class="post-action" onclick="toggleCommentBox('${postId}')">Коментувати</span>
-                    </div>
-                    <div id="comment-box-${postId}" class="comments-box" style="display: none;">
-                        <div id="comments-container-${postId}">Завантаження...</div>
-                        <div style="display: flex; gap: 4px; margin-top: 6px;">
-                            <input type="text" id="comm-input-${postId}" class="input-vk" style="flex: 1;" placeholder="Залишити коментар...">
-                            <button class="btn-vk" onclick="sendPostComment('${postId}')">ОК</button>
+            let bodyHtml = p.type === 'graffiti'
+                ? `<img src="${p.imageUrl}" class="post-image" alt="Графіті">`
+                : `<div class="post-text">${escapeText(p.text)}</div>`;
+
+            cont.innerHTML += `
+                <div class="post-card">
+                    <img src="${p.authorAvatar}" class="post-author-pic" alt="Аватар">
+                    <div class="post-body">
+                        <a href="javascript:void(0)" class="post-author-name">${escapeText(p.authorName)}</a>
+                        ${bodyHtml}
+                        <div class="post-footer">
+                            <span>${dateStr}</span>
+                            <span class="post-action" onclick="togglePostLike('${id}')">
+                                ${isLiked ? 'Не подобається' : 'Мені подобається'} (${p.likes ? p.likes.length : 0})
+                            </span>
                         </div>
                     </div>
                 </div>
             `;
-            container.appendChild(card);
         });
     });
 
-    async function togglePostLike(postId) {
-        const ref = db.collection('posts').doc(postId);
+    async function togglePostLike(id) {
+        const ref = db.collection('posts').doc(id);
         const doc = await ref.get();
         if (!doc.exists) return;
-
         let likes = doc.data().likes || [];
-        if (likes.includes(activeUser.id)) {
-            likes = likes.filter(uid => uid !== activeUser.id);
-        } else {
-            likes.push(activeUser.id);
-        }
+        likes = likes.includes(activeUser.id) ? likes.filter(uid => uid !== activeUser.id) : [...likes, activeUser.id];
         await ref.update({ likes });
     }
 
-    function toggleCommentBox(postId) {
-        const box = document.getElementById(`comment-box-${postId}`);
-        if (box.style.display === 'none') {
-            box.style.display = 'block';
-            listenComments(postId);
-        } else {
-            box.style.display = 'none';
-        }
+    // 8. ЧАТ ТА СИНТЕЗ ЗВУКУ СПОВІЩЕННЯ (WEB AUDIO API)
+    function playIncomingSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(650, ctx.currentTime);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        } catch (e) {}
     }
 
-    function listenComments(postId) {
-        db.collection('posts').doc(postId).collection('comments').orderBy('timestamp', 'asc').onSnapshot(snap => {
-            const wrap = document.getElementById(`comments-container-${postId}`);
-            if (!wrap) return;
-            wrap.innerHTML = '';
-            if (snap.empty) {
-                wrap.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px;">Ще немає коментарів.</span>';
-                return;
-            }
-            snap.forEach(cDoc => {
-                const c = cDoc.data();
-                wrap.innerHTML += `
-                    <div class="comment-row">
-                        <span class="comment-author">${escapeText(c.authorName)}:</span>
-                        <span>${escapeText(c.text)}</span>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    async function sendPostComment(postId) {
-        const field = document.getElementById(`comm-input-${postId}`);
-        const text = field.value.trim();
-        if (!text) return;
-
-        await db.collection('posts').doc(postId).collection('comments').add({
-            authorId: activeUser.id,
-            authorName: userFullName,
-            text: text,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        field.value = '';
-    }
-
-    // ==========================================================
-    // 7. ЗАГАЛЬНИЙ ЧАТ ТА ГОЛОСОВІ
-    // ==========================================================
     async function sendChatMessage() {
         const input = document.getElementById('chat-message-input');
         const text = input.value.trim();
@@ -1249,98 +909,204 @@
         await db.collection('messages').add({
             senderId: activeUser.id,
             senderName: userFullName,
-            type: 'text',
             text: text,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         input.value = '';
     }
 
+    let isInitialChatLoad = true;
     db.collection('messages').orderBy('timestamp', 'asc').onSnapshot(snap => {
         const stream = document.getElementById('chat-stream');
         stream.innerHTML = '';
 
-        snap.forEach(docSnap => {
-            const m = docSnap.data();
+        if (!isInitialChatLoad && !snap.empty) {
+            const lastMsg = snap.docs[snap.docs.length - 1].data();
+            if (lastMsg.senderId !== activeUser.id) playIncomingSound();
+        }
+        isInitialChatLoad = false;
+
+        snap.forEach(d => {
+            const m = d.data();
             const isMine = m.senderId === activeUser.id;
-            const timeFormatted = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-
-            let contentArea = '';
-            if (m.type === 'voice') {
-                contentArea = `<audio controls src="${m.audioUrl}" style="width: 190px; height: 26px;"></audio>`;
-            } else {
-                contentArea = `<div>${escapeText(m.text)}</div>`;
-            }
-
+            const time = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             stream.innerHTML += `
                 <div class="message-bubble ${isMine ? 'mine' : 'theirs'}">
-                    <div class="message-author">${escapeText(m.senderName)}</div>
-                    ${contentArea}
-                    <div class="message-time">${timeFormatted}</div>
+                    <div style="font-weight: bold; color: var(--vk-link); margin-bottom: 2px;">${escapeText(m.senderName)}</div>
+                    <div>${escapeText(m.text)}</div>
+                    <div style="font-size: 9px; color: var(--vk-subtext); text-align: right; margin-top: 3px;">${time}</div>
                 </div>
             `;
         });
         stream.scrollTop = stream.scrollHeight;
     });
 
-    let voiceRecorder = null;
-    let voiceChunks = [];
-    let isVoiceRecording = false;
+    // 9. ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 (JAMENDO)
+    let currentAudio = null;
+    let currentPlayBtn = null;
+    let currentProgressFill = null;
 
-    async function handleVoiceRecord() {
-        const btn = document.getElementById('voice-btn');
-        if (!isVoiceRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                voiceRecorder = new MediaRecorder(stream);
-                voiceChunks = [];
+    async function performAudioSearch() {
+        const q = document.getElementById('music-query').value.trim();
+        const cont = document.getElementById('vintage-player-container');
+        if (!q) return;
 
-                voiceRecorder.ondataavailable = e => voiceChunks.push(e.data);
-                voiceRecorder.onstop = async () => {
-                    const audioBlob = new Blob(voiceChunks, { type: 'audio/mp3' });
-                    const fileRef = storage.ref().child(`voices/${activeUser.id}_${Date.now()}.mp3`);
-                    await fileRef.put(audioBlob);
-                    const audioUrl = await fileRef.getDownloadURL();
+        cont.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">Шукаємо пісні...</div>';
+        const res = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56b41217&format=json&limit=10&search=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        cont.innerHTML = '';
 
-                    await db.collection('messages').add({
-                        senderId: activeUser.id,
-                        senderName: userFullName,
-                        type: 'voice',
-                        audioUrl: audioUrl,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                };
+        data.results.forEach(tr => {
+            const row = document.createElement('div');
+            row.className = 'vintage-audio-row';
+            row.innerHTML = `
+                <button class="vintage-play-btn" id="btn-play-${tr.id}">▶</button>
+                <div class="audio-track-info">
+                    <b>${escapeText(tr.artist_name)}</b> — <span>${escapeText(tr.name)}</span>
+                </div>
+                <div class="audio-progress-bar" id="bar-${tr.id}">
+                    <div class="audio-progress-fill" id="fill-${tr.id}"></div>
+                </div>
+                <span class="audio-duration-text" id="dur-${tr.id}">${formatTime(tr.duration)}</span>
+            `;
+            cont.appendChild(row);
 
-                voiceRecorder.start();
-                isVoiceRecording = true;
-                btn.style.background = '#ff4b4b';
-                btn.innerText = '⏹️';
-            } catch (err) {
-                alert('Не вдалося отримати доступ до мікрофона.');
-            }
-        } else {
-            voiceRecorder.stop();
-            isVoiceRecording = false;
-            btn.style.background = '';
-            btn.innerText = '🎤';
-        }
+            const btn = row.querySelector(`#btn-play-${tr.id}`);
+            const fill = row.querySelector(`#fill-${tr.id}`);
+            btn.onclick = () => playVintageTrack(tr.audio, btn, fill);
+        });
     }
 
-    // ==========================================================
-    // 8. ПОДАРУНКИ
-    // ==========================================================
+    function playVintageTrack(url, btn, fill) {
+        if (currentAudio && currentAudio.src === url) {
+            if (currentAudio.paused) {
+                currentAudio.play();
+                btn.innerText = '❚❚';
+            } else {
+                currentAudio.pause();
+                btn.innerText = '▶';
+            }
+            return;
+        }
+
+        if (currentAudio) {
+            currentAudio.pause();
+            if (currentPlayBtn) currentPlayBtn.innerText = '▶';
+            if (currentProgressFill) currentProgressFill.style.width = '0%';
+        }
+
+        currentAudio = new Audio(url);
+        currentPlayBtn = btn;
+        currentProgressFill = fill;
+
+        currentAudio.play();
+        btn.innerText = '❚❚';
+
+        currentAudio.ontimeupdate = () => {
+            if (currentAudio.duration) {
+                const perc = (currentAudio.currentTime / currentAudio.duration) * 100;
+                fill.style.width = `${perc}%`;
+            }
+        };
+
+        currentAudio.onended = () => {
+            btn.innerText = '▶';
+            fill.style.width = '0%';
+        };
+    }
+
+    function formatTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // 10. НОТАТКИ ТА ДУМКИ
+    async function saveNewNote() {
+        const title = document.getElementById('note-title-input').value.trim();
+        const content = document.getElementById('note-content-input').value.trim();
+        if (!title || !content) return vkAlert('Помилка', 'Заповніть назву та текст нотатки.');
+
+        await db.collection('notes').add({
+            userId: activeUser.id,
+            authorName: userFullName,
+            title: title,
+            content: content,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        closeModal('modal-note');
+        document.getElementById('note-title-input').value = '';
+        document.getElementById('note-content-input').value = '';
+        vkAlert('Нотатка', 'Нотатку збережено!');
+    }
+
+    db.collection('notes').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        const cont = document.getElementById('notes-container');
+        cont.innerHTML = '';
+        if (snap.empty) {
+            cont.innerHTML = '<div style="color: var(--vk-subtext);">У вас ще немає збережених нотаток.</div>';
+            return;
+        }
+        snap.forEach(d => {
+            const n = d.data();
+            const date = n.timestamp ? new Date(n.timestamp.toDate()).toLocaleDateString('uk-UA') : '';
+            cont.innerHTML += `
+                <div style="border: 1px solid var(--vk-border); background: #ffffff; padding: 10px;">
+                    <div style="font-weight: bold; font-size: 12px; color: var(--vk-link); margin-bottom: 3px;">${escapeText(n.title)}</div>
+                    <div style="font-size: 10px; color: var(--vk-subtext); margin-bottom: 6px;">Опубліковано: ${date}</div>
+                    <div style="line-height: 1.4;">${escapeText(n.content)}</div>
+                </div>
+            `;
+        });
+    });
+
+    async function submitAnonymousThought() {
+        const input = document.getElementById('thought-input');
+        const val = input.value.trim();
+        if (!val) return;
+
+        await db.collection('thoughts').add({
+            targetUserId: activeUser.id,
+            text: val,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        input.value = '';
+        vkAlert('Секрет', 'Вашу анонімну думку доставлено!');
+    }
+
+    db.collection('thoughts').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        const cont = document.getElementById('thoughts-list');
+        cont.innerHTML = '';
+        if (snap.empty) {
+            cont.innerHTML = '<div style="color: var(--vk-subtext);">Ще ніхто не залишав анонімних думок.</div>';
+            return;
+        }
+        snap.forEach(d => {
+            const t = d.data();
+            const date = t.timestamp ? new Date(t.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
+            cont.innerHTML += `
+                <div style="border: 1px solid var(--vk-border); background: #ffffff; padding: 8px;">
+                    <div style="font-weight: bold; color: #45688e; margin-bottom: 2px;">Таємний доброзичливець:</div>
+                    <div style="font-size: 11px;">${escapeText(t.text)}</div>
+                    <div style="font-size: 9px; color: var(--vk-subtext); text-align: right;">${date}</div>
+                </div>
+            `;
+        });
+    });
+
+    // 11. ПОДАРУНКИ ТА РЕЙТИНГ
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
     function pickGift(emoji, title) {
         pickedGiftIcon = emoji;
         pickedGiftTitle = title;
-        alert(`Обрано: ${title} ${emoji}`);
+        vkAlert('Подарунок', `Обрано: ${title} ${emoji}`);
     }
 
     async function commitGiftSend() {
         const comment = document.getElementById('gift-message-text').value.trim();
-
         await db.collection('users').doc(activeUser.id).collection('gifts').add({
             emoji: pickedGiftIcon,
             title: pickedGiftTitle,
@@ -1348,90 +1114,56 @@
             comment: comment,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         closeModal('modal-gift');
-        alert('Подарунок надіслано!');
+        vkAlert('Подарунок', 'Подарунок відправлено!');
     }
 
-    db.collection('users').doc(activeUser.id).collection('gifts').onSnapshot(snapshot => {
-        const container = document.getElementById('gifts-grid');
-        document.getElementById('gifts-counter').innerText = snapshot.size;
-
-        if (snapshot.empty) {
-            container.innerHTML = '<span style="color: var(--vk-subtext); font-size: 11px;">Подарунків поки немає</span>';
+    db.collection('users').doc(activeUser.id).collection('gifts').onSnapshot(snap => {
+        const cont = document.getElementById('gifts-grid');
+        document.getElementById('gifts-counter').innerText = snap.size;
+        if (snap.empty) {
+            cont.innerHTML = '<span style="color: var(--vk-subtext);">Немає</span>';
             return;
         }
-
-        container.innerHTML = '';
-        snapshot.forEach(docSnap => {
-            const g = docSnap.data();
-            container.innerHTML += `
-                <div class="gift-badge" title="${escapeText(g.comment || '')}">
-                    <div class="gift-emoji">${g.emoji}</div>
-                    <div class="gift-from">Від: ${escapeText(g.sender)}</div>
-                </div>
-            `;
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const g = d.data();
+            cont.innerHTML += `<div title="${escapeText(g.comment || '')}" style="text-align: center;"><span style="font-size: 20px;">${g.emoji}</span></div>`;
         });
     });
 
-    // ==========================================================
-    // 9. АУДІОЗАПИСИ (JAMENDO)
-    // ==========================================================
-    async function performAudioSearch() {
-        const q = document.getElementById('music-query').value.trim();
-        const results = document.getElementById('audio-results-list');
-        if (!q) return;
+    async function commitRatingBoost() {
+        const val = parseInt(document.getElementById('rating-val-input').value, 10) || 0;
+        if (val <= 0) return;
+        activeUser.rating += val;
+        await db.collection('users').doc(activeUser.id).update({ rating: activeUser.rating });
+        renderProfileInfo();
+        closeModal('modal-rating');
+        vkAlert('Рейтинг', `Рейтинг успішно підвищено до ${activeUser.rating}%!`);
+    }
 
-        results.innerHTML = '<div style="color: var(--vk-subtext); padding: 8px;">Шукаємо пісні...</div>';
-
-        const jamendoClientId = '56b41217';
-        const endpoint = `https://api.jamendo.com/v3.0/tracks/?client_id=${jamendoClientId}&format=json&limit=12&search=${encodeURIComponent(q)}`;
-
-        try {
-            const res = await fetch(endpoint);
-            const data = await res.json();
-            results.innerHTML = '';
-
-            if (!data.results || data.results.length === 0) {
-                results.innerHTML = '<div style="color: var(--vk-subtext); padding: 8px;">Аудіозаписів не знайдено.</div>';
-                return;
-            }
-
-            data.results.forEach(track => {
-                results.innerHTML += `
-                    <div class="audio-item">
-                        <div class="audio-details">
-                            <span class="audio-artist">${escapeText(track.artist_name)}</span> — 
-                            <span class="audio-title">${escapeText(track.name)}</span>
-                        </div>
-                        <audio controls src="${track.audio}"></audio>
-                    </div>
-                `;
-            });
-        } catch (e) {
-            results.innerHTML = '<div style="color: red; padding: 8px;">Помилка завантаження пісень.</div>';
+    async function promptStatus() {
+        const newStatus = prompt("Введіть новий статус:", activeUser.status);
+        if (newStatus !== null && newStatus.trim() !== "") {
+            activeUser.status = newStatus.trim();
+            await db.collection('users').doc(activeUser.id).update({ status: activeUser.status });
+            renderProfileInfo();
         }
     }
 
-    // ==========================================================
-    // 10. ДОПОМІЖНІ УТИЛІТИ
-    // ==========================================================
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.add('show');
-    }
+    // 12. ДІАЛОГИ ТА УТИЛІТИ
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('show');
+    function vkAlert(title, message) {
+        document.getElementById('alert-title').innerText = title;
+        document.getElementById('alert-text').innerText = message;
+        openModal('modal-alert');
     }
 
     function escapeText(str) {
         if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 </script>
 
