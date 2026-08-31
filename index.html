@@ -724,18 +724,16 @@
             </div>
 
             <!-- 7. АУДІОЗАПИСИ -->
-            <div id="tab-music" class="tab-content"><form onsubmit="searchYouTubeMusic(event);" style="display: flex; gap: 6px; margin-bottom: 10px;"><input type="text" id="music-query" placeholder="Пошук пісень..." style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;"><button type="submit" class="btn-vk">🔍</button></form>
+            <div id="tab-music" class="tab-content">
+    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+        <input type="text" id="music-query" placeholder="Пошук пісень..." style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        <button onclick="searchYouTubeMusic()" class="btn-vk">🔍</button>
+    </div>
+    <div id="my-saved-music-container"></div>
+</div>
 
-            
-                <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Мої збережені аудіозаписи:</div>
-                <div id="my-saved-music-container" class="vintage-player-box" style="margin-bottom: 15px;">
-                    <div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>
-                </div>
-                <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Результати пошуку:</div>
-                <div id="vintage-player-container" class="vintage-player-box">
-                    <div style="padding: 8px; color: var(--vk-subtext);">Введіть назву пісні для пошуку...</div>
-                </div>
-            </div>
+
+                
 
             <!-- 8. СПІЛЬНОТИ (ГРУПИ) -->
             <div id="tab-groups" class="tab-content">
