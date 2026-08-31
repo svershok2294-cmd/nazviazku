@@ -4105,30 +4105,43 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
             `;
         }
+// Хіти та рендер
+let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 15px 0 10px 0; color: #2b587a;">🌍 Фонотека хітів:</div>';
 
-        // Хіти
-        let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🌍 Фонотека хітів:</div>';
-        masterHits.forEach(song => {
-            const songUrl = `https://www.youtube.com/watch?v=` + song.id;
-            const safeTitle = song.title.replace(/'/g, "\\'");
-            hitsHtml += `
-                <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 13px;">🎵 [${song.year}] ${song.title}</span>
-                    <div style="display: flex; gap: 6px;">
-                        <a href="${songUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 11px;">▶️ Слухати</a>
-                        <button onclick="addSongToMyPage('${safeTitle}')" style="background: #4a76a8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">➕ Додати</button>
-                    </div>
-                </div>
-            `;
-        });
+const masterHits = [
+    { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
+    { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
+    { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
+    { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
+    { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
+    { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
+    { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
+    { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
+    { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
+    { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
+    { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
+    { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
+    { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
+    { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
+    { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
+    { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" }
+];
 
-        container.innerHTML = savedHtml + searchHtml + hitsHtml;
-    }
+masterHits.forEach(song => {
+    const songUrl = `https://www.youtube.com/watch?v=` + song.id;
+    hitsHtml += `
+        <div style="padding: 10px; background: #f0f2f5; margin-top: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; color: #000;">🎵 [${song.year}] ${song.title}</span>
+            <a href="${songUrl}" target="_blank" style="background: #5181b8; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">▶️ Слухати</a>
+        </div>
+    `;
+});
 
-    // Запуск при завантаженні
-    renderMusicContent('');
-    
-})();
+const container = document.getElementById('my-saved-music-container') || document.body;
+container.innerHTML = hitsHtml;
 </script>
+
+        
+
 </body>
 </html>
