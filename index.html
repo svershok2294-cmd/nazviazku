@@ -3976,60 +3976,51 @@
                 renderMusicTab(query);
             };
 
-                        // Додавання треку до сторінки та збереження у Firebase
-            window.addSongToMyPage = function(title) {
-                if (!window.mySavedTracks.includes(title)) {
-                    window.mySavedTracks.push(title);
-                    
-                    // Миттєво перемальовуємо інтерфейс
+                        
+// Додавання треку до сторінки та збереження у Firebase (Firestore)
+window.addSongToMyPage = function(title) {
+    if (!window.mySavedTracks.includes(title)) {
+        window.mySavedTracks.push(title);
+        
+        // Миттєво перемальовуємо інтерфейс
+        const input = document.getElementById('music-query');
+        renderMusicTab(input ? input.value.trim() : '');
+
+        // Зберігаємо оновлений список у Firestore
+        const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe 
+                       ? window.Telegram.WebApp.initDataUnsafe.user 
+                       : null;
+        const userId = tgUser ? String(tgUser.id) : activeUser.id;
+
+        if (typeof db !== 'undefined') {
+            db.collection('users').doc(userId).set({
+                savedMusic: window.mySavedTracks
+            }, { merge: true }).catch(error => console.error("Помилка збереження треку:", error));
+        }
+    }
+};
+
+// Завантаження треків при старті додатку
+document.addEventListener("DOMContentLoaded", function() {
+    renderMusicTab();
+
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+        const userId = tgUser ? String(tgUser.id) : (typeof activeUser !== 'undefined' ? activeUser.id : 'test_user');
+
+        if (typeof db !== 'undefined') {
+            // Підтягуємо збережені треки з Firestore у реальному часі
+            db.collection('users').doc(userId).onSnapshot((doc) => {
+                if (doc.exists && doc.data().savedMusic) {
+                    window.mySavedTracks = doc.data().savedMusic;
                     const input = document.getElementById('music-query');
                     renderMusicTab(input ? input.value.trim() : '');
-
-                    // --- МАГІЯ FIREBASE (ЗБЕРЕЖЕННЯ) ---
-                    // Отримуємо ID користувача Telegram
-                    const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe 
-                                   ? window.Telegram.WebApp.initDataUnsafe.user 
-                                   : null;
-                    const userId = tgUser ? tgUser.id : 'test_user';
-
-                    // Зберігаємо оновлений список у базу даних
-                    if (typeof firebase !== 'undefined') {
-                        firebase.database().ref('users/' + userId + '/savedMusic').set(window.mySavedTracks)
-                            .catch(error => console.error("Помилка збереження треку:", error));
-                    }
-                }
-            };
-
-            // Завантаження треків при старті додатку
-            document.addEventListener("DOMContentLoaded", function() {
-                // 1. Спочатку малюємо інтерфейс
-                renderMusicTab();
-
-                // 2. Повідомляємо Telegram, що додаток готовий
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.ready();
-                    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-                    const userId = tgUser ? tgUser.id : 'test_user';
-
-                    // 3. --- МАГІЯ FIREBASE (ЗАВАНТАЖЕННЯ) ---
-                    if (typeof firebase !== 'undefined') {
-                        const musicRef = firebase.database().ref('users/' + userId + '/savedMusic');
-                        
-                        // on('value') автоматично підтягує дані при старті 
-                        // і щоразу, коли вони змінюються в базі!
-                        musicRef.on('value', (snapshot) => {
-                            const data = snapshot.val();
-                            if (data) {
-                                window.mySavedTracks = data; // Беремо треки з хмари
-                                
-                                // Перемальовуємо інтерфейс зі збереженими піснями
-                                const input = document.getElementById('music-query');
-                                renderMusicTab(input ? input.value.trim() : '');
-                            }
-                        });
-                    }
                 }
             });
+        }
+    }
+});
 
         </script>
    
