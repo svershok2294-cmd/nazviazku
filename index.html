@@ -3813,16 +3813,19 @@
             }
         }
         // Функція для пошуку музики
+// Зберігаємо список доданих користувачем треків у пам'яті сторінки
+let mySavedTracks = [];
+
 function searchYouTubeMusic(event) {
     if (event) event.preventDefault();
-
+    
     const searchInput = document.getElementById('music-query');
     const query = searchInput ? searchInput.value.trim() : '';
     
     const resultsContainer = document.getElementById('my-saved-music-container');
     if (!resultsContainer) return;
 
-    // Велика золота колекція хітів 2002–2017 років (~100 треків)
+    // Велика база треків
     const masterHits = [
         { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
         { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
@@ -3906,9 +3909,14 @@ function searchYouTubeMusic(event) {
         { year: "2017", title: "Camila Cabello - Havana", id: "HCOyl4_O0yQ" }
     ];
 
-    let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🌍 Загальна фонотека хітів 2002–2017 (Спільний доступ):</div>';
+    // Автоматичне оновлення хітів кожні 20 днів на основі дати
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const rotationIndex = Math.floor(dayOfYear / 20) * 15 % masterHits.length;
+    const rotatedHits = masterHits.slice(rotationIndex).concat(masterHits.slice(0, rotationIndex));
+
+    let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🌍 Загальна фонотека хітів (Оновлюється кожні 20 днів):</div>';
     
-    masterHits.forEach((song, index) => {
+    rotatedHits.forEach((song) => {
         const songUrl = `https://www.youtube.com/watch?v=${song.id}`;
         hitsHtml += `
             <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
@@ -3921,11 +3929,27 @@ function searchYouTubeMusic(event) {
         `;
     });
 
+    // Формуємо блок моїх збережених треків
+    let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
+    if (mySavedTracks.length === 0) {
+        savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
+    } else {
+        mySavedTracks.forEach((trackTitle) => {
+            savedHtml += `
+                <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px;">🎵 ${trackTitle}</span>
+                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
+                </div>
+            `;
+        });
+    }
+
     if (query) {
         const encodedQuery = encodeURIComponent(query);
         const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
         resultsContainer.innerHTML = `
-            <div style="font-size: 13px; color: var(--vk-subtext); margin-bottom: 6px;">Результати пошуку для: <b>${query}</b></div>
+            ${savedHtml}
+            <div style="font-size: 13px; color: var(--vk-subtext); margin: 12px 0 6px 0;">Результати пошуку для: <b>${query}</b></div>
             <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
                 <span>🎵 ${query}</span>
                 <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
@@ -3933,21 +3957,27 @@ function searchYouTubeMusic(event) {
             ${hitsHtml}
         `;
     } else {
-        resultsContainer.innerHTML = hitsHtml;
+        resultsContainer.innerHTML = savedHtml + hitsHtml;
     }
 }
 
-// Допоміжна функція для додавання треку на свою сторінку
+// Функція додавання треку на свою сторінку в реальному часі
 function addSongToMyPage(songTitle) {
-    alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
+    if (!mySavedTracks.includes(songTitle)) {
+        mySavedTracks.push(songTitle);
+        alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
+        searchYouTubeMusic(); // Оновлюємо вигляд сторінки одразу
+    } else {
+        alert('Цей трек вже є у ваших аудіозаписах!');
+    }
 }
 
-
-
-
+// Автоматичний запуск при відкритті сторінки
 document.addEventListener("DOMContentLoaded", function() {
     searchYouTubeMusic();
 });
+
+
 
 
     </script>
