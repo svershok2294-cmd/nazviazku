@@ -3793,7 +3793,7 @@
             let ytPlayer;
             let currentPlayingId = ''; // Додана змінна для відстеження помилок
 
-            // Оновлена ініціалізація YouTube IFrame API
+                        // Оновлена ініціалізація YouTube IFrame API з розумним обходом блокувань
             function onYouTubeIframeAPIReady() {
                 ytPlayer = new YT.Player('youtube-player-iframe', {
                     height: '200',
@@ -3808,11 +3808,27 @@
                             console.log("YouTube плеєр готовий!");
                         },
                         'onError': function(event) {
+                            // Якщо відео заблоковане правовласником (коди 101, 150)
                             if (event.data === 101 || event.data === 150) {
-                                alert("Правовласник заборонив слухати цей трек всередині інших додатків 😢\nЗараз він відкриється у самому YouTube!");
-                                window.open('https://www.youtube.com/watch?v=' + currentPlayingId, '_blank');
+                                // Знаходимо назву треку в базі за його ID
+                                const blockedHit = masterHits.find(h => h.id === currentPlayingId);
+                                const trackName = blockedHit ? blockedHit.title : 'музика';
+                                
+                                alert("Цей трек захищено авторським правом 😢\nЗараз ми знайдемо його для вас у YouTube!");
+                                
+                                // Формуємо посилання на пошук замість прямого посилання
+                                const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(trackName + ' audio');
+                                
+                                // Спроба відкрити через рідний метод Telegram, якщо він доступний
+                                if (window.Telegram && window.Telegram.WebApp) {
+                                    window.Telegram.WebApp.openLink(searchUrl);
+                                } else {
+                                    window.open(searchUrl, '_blank');
+                                }
+                                
                                 window.closeYTPlayer();
                             } else {
+                                // Для інших помилок
                                 window.open('https://www.youtube.com/watch?v=' + currentPlayingId, '_blank');
                                 window.closeYTPlayer();
                             }
@@ -3820,6 +3836,7 @@
                     }
                 });
             }
+
 
             // Функція відтворення відео (вбудована)
             window.playYTTrack = function(videoId) {
