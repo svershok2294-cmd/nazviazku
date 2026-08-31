@@ -3813,42 +3813,26 @@
         }
         // Функція для пошуку музики
 function searchYouTubeMusic() {
-    const searchInput = document.getElementById('audio-search-input');
-    const query = searchInput ? searchInput.value : '';
+    const searchInput = document.getElementById('music-query');
+    const query = searchInput ? searchInput.value.trim() : '';
     if (!query) return;
 
-    const resultsContainer = document.getElementById('search-results-container');
+    const resultsContainer = document.getElementById('my-saved-music-container');
     if (resultsContainer) {
+        // Екрануємо лапки для безпеки, щоб не ламався код
+        const safeQuery = query.replace(/'/g, "\\'");
+        
         resultsContainer.innerHTML = `
+            <div style="font-size: 13px; color: var(--vk-subtext); margin-bottom: 6px;">Результати пошуку для: <b>${query}</b></div>
             <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span>${query} (Знайдено з YouTube)</span>
-                <button onclick="playTrack('jfKfPfyJRdk', '${query}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️</button>
+                <span>🎵 ${query} (Знайдено з YouTube)</span>
+                <button onclick="playTrack('jfKfPfyJRdk', '${safeQuery}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️ Слухати</button>
             </div>
         `;
     }
 }
-// Автоматичний зв'язок пошуку з плеєром
-function searchYouTubeMusic() {
-    const searchInput = document.querySelector('input[type="text"]');
-    const query = searchInput ? searchInput.value.trim() : 'Музика';
-    if (!query) return;
 
-    let resultsContainer = document.getElementById('search-results-container');
-    if (!resultsContainer && searchInput) {
-        resultsContainer = document.createElement('div');
-        resultsContainer.id = 'search-results-container';
-        searchInput.parentNode.appendChild(resultsContainer);
-    }
 
-    if (resultsContainer) {
-        resultsContainer.innerHTML = `
-            <div style="padding: 10px; background: var(--vk-card); margin-top: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span>🎵 ${query} — Популярний мікс</span>
-                <button onclick="playTrack('jfKfPfyJRdk', '${query}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️ Слухати</button>
-            </div>
-        `;
-    }
-}
 
     </script>
 
