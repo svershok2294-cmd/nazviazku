@@ -3782,366 +3782,184 @@
         if (!str) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
-</script>    <!-- Контейнер для відеоплеєра YouTube (прихований) -->
-    <div id="youtube-player" style="display:none;"></div>
+        </script> <!-- Закриваємо попередній скрипт -->
 
-    <script>
-        let player;
+        <!-- Підключаємо офіційний скрипт YouTube -->
+        <script src="https://www.youtube.com/iframe_api"></script>
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-player', {
-                height: '0',
-                width: '0',
-                videoId: '',
-                events: {
-                    'onReady': function(event) {
-                        console.log("YouTube плеєр готовий!");
+        <script>
+            // Глобальні змінні
+            window.mySavedTracks = window.mySavedTracks || [];
+            let ytPlayer;
+
+            // Ініціалізація YouTube IFrame API
+            function onYouTubeIframeAPIReady() {
+                ytPlayer = new YT.Player('youtube-player-iframe', {
+                    height: '180',
+                    width: '100%',
+                    videoId: '',
+                    playerVars: { 'playsinline': 1 },
+                    events: {
+                        'onReady': function(event) {
+                            console.log("YouTube плеєр готовий!");
+                        }
                     }
-                }
-            });
-        }
-
-        function playTrack(videoId, trackName) {
-            if (player && player.loadVideoById) {
-                player.loadVideoById(videoId);
-                console.log("Грає: " + trackName);
+                });
             }
-        }
-    let mySavedTracks = [];
 
-function searchYouTubeMusic(event) {
-    if (event) event.preventDefault();
-    
-    const searchInput = document.getElementById('music-query');
-    const query = searchInput ? searchInput.value.trim() : '';
-    
-    let resultsContainer = document.getElementById('my-saved-music-container');
-    if (!resultsContainer) {
-        const musicTab = document.getElementById('tab-music');
-        if (musicTab) {
-            resultsContainer = document.createElement('div');
-            resultsContainer.id = 'my-saved-music-container';
-            musicTab.appendChild(resultsContainer);
-        } else {
-            return;
-        }
-    }
+            // Функція відтворення відео (вбудована)
+            window.playYTTrack = function(videoId) {
+                const playerContainer = document.getElementById('youtube-player-container');
+                if (playerContainer) playerContainer.style.display = 'block';
+                
+                if (ytPlayer && ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById(videoId);
+                } else {
+                    // Якщо плеєр ще не завантажився, відкриваємо в новому вікні
+                    window.open('https://www.youtube.com/watch?v=' + videoId, '_blank');
+                }
+            };
 
-    const masterHits = [
-        { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
-        { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
-        { year: "2002", title: "Shakira - Whenever, Wherever", id: "weRByhT6GYg" },
-        { year: "2002", title: "Nelly - Hot In Herre", id: "DmIVy8YjDbc" },
-        { year: "2002", title: "Las Ketchup - The Ketchup Song", id: "VL_1ZXZkgq8" },
-        { year: "2003", title: "Benny Benassi - Satisfaction", id: "Vjn5x_Sc6cI" },
-        { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
-        { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
-        { year: "2003", title: "Beyoncé ft. Jay-Z - Crazy In Love", id: "ViwtNLUqkMY" },
-        { year: "2003", title: "Outkast - Hey Ya!", id: "PWgvGjAhvIw" },
-        { year: "2004", title: "O-Zone - Dragostea Din Tei", id: "fYHUXjKi7uI" },
-        { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
-        { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
-        { year: "2004", title: "Green Day - Boulevard of Broken Dreams", id: "Soa3gO7tL-c" },
-        { year: "2004", title: "Maroon 5 - This Love", id: "XPpTgCho5ZA" },
-        { year: "2005", title: "The Black Eyed Peas - Don't Phunk With My Heart", id: "cUo1b5f7bEE" },
-        { year: "2005", title: "Crazy Frog - Axel F", id: "k85mRPqvMbE" },
-        { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
-        { year: "2005", title: "Pussycat Dolls - Don't Cha", id: "YVkUvYTq4gE" },
-        { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
-        { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
-        { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
-        { year: "2006", title: "Gnarls Barkley - Crazy", id: "4ohkWY8uJ2k" },
-        { year: "2006", title: "Rihanna - Unfaithful", id: "rp4twPbyglM" },
-        { year: "2006", title: "My Chemical Romance - Welcome to the Black Parade", id: "RRKivVYX4EA" },
-        { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
-        { year: "2007", title: "Timbaland ft. OneRepublic - Apologize", id: "Zp6nsxG3Jyc" },
-        { year: "2007", title: "Avril Lavigne - Girlfriend", id: "Bg59q4puhmg" },
-        { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
-        { year: "2007", title: "Britney Spears - Piece of Me", id: "uOK9bgt-Gr8" },
-        { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
-        { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
-        { year: "2008", title: "Lady Gaga - Just Dance", id: "2Abk1jAONjw" },
-        { year: "2008", title: "Beyoncé - Single Ladies", id: "4m1EFMoRFvY" },
-        { year: "2008", title: "Britney Spears - Womanizer", id: "rMqWJfR0k28" },
-        { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
-        { year: "2009", title: "David Guetta ft. Akon - Sexy Bitch", id: "N7o4t4_r00s" },
-        { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" },
-        { year: "2009", title: "Jay-Z ft. Alicia Keys - Empire State of Mind", id: "ZsDMql_wjaU" },
-        { year: "2009", title: "Pitbull - I Know You Want Me", id: "p0ZgnQfL7qg" },
-        { year: "2010", title: "Eminem ft. Rihanna - Love The Way You Lie", id: "uelHwf8o7_U" },
-        { year: "2010", title: "Shakira - Waka Waka", id: "pRpeEdMmmQ0" },
-        { year: "2010", title: "Katy Perry - Firework", id: "QGju6IfxJko" },
-        { year: "2010", title: "Bruno Mars - Just the Way You Are", id: "LjhCEhWiKXk" },
-        { year: "2010", title: "Taio Cruz - Dynamite", id: "VHsRJWkngzY" },
-        { year: "2011", title: "LMFAO - Party Rock Anthem", id: "KQ6zr6kCPj8" },
-        { year: "2011", title: "Adele - Rolling in the Deep", id: "rYEDA3JcQqw" },
-        { year: "2011", title: "Maroon 5 ft. Christina Aguilera - Moves Like Jagger", id: "iEPTlhBmwRg" },
-        { year: "2011", title: "Jennifer Lopez ft. Pitbull - On The Floor", id: "t4H_Zoh7G5A" },
-        { year: "2011", title: "Gotye ft. Kimbra - Somebody That I Used to Know", id: "8UVNT4wvIGY" },
-        { year: "2012", title: "PSY - Gangnam Style", id: "9bZkp7q19f0" },
-        { year: "2012", title: "Carly Rae Jepsen - Call Me Maybe", id: "fWNaR-rxAic" },
-        { year: "2012", title: "Maroon 5 - Payphone", id: "KRaWnd3LJfs" },
-        { year: "2012", title: "Rihanna - Diamonds", id: "lWA2pjMjpBs" },
-        { year: "2012", title: "Fun. - Some Nights", id: "qQkBeOisNM0" },
-        { year: "2013", title: "Daft Punk - Get Lucky", id: "5NV6Rdv1a3I" },
-        { year: "2013", title: "Avicii - Wake Me Up", id: "IcrbM1l_BoI" },
-        { year: "2013", title: "Katy Perry - Roar", id: "CevxZvSJLk8" },
-        { year: "2013", title: "Miley Cyrus - Wrecking Ball", id: "My2FRPA3Gf8" },
-        { year: "2013", title: "Robin Thicke - Blurred Lines", id: "yyDUC1LUXSU" },
-        { year: "2014", title: "Pharrell Williams - Happy", id: "y6Sxv-sUYtM" },
-        { year: "2014", title: "Mark Ronson ft. Bruno Mars - Uptown Funk", id: "OPf0YbXqDm0" },
-        { year: "2014", title: "John Legend - All of Me", id: "450p7goxZqg" },
-        { year: "2014", title: "Katy Perry - Dark Horse", id: "0KSOMA3QBU0" },
-        { year: "2014", title: "Meghan Trainor - All About That Bass", id: "7PCkvCPvDXk" },
-        { year: "2015", title: "Adele - Hello", id: "YQHsXMglC9A" },
-        { year: "2015", title: "Wiz Khalifa ft. Charlie Puth - See You Again", id: "RgKAFK5djSk" },
-        { year: "2015", title: "Major Lazer & DJ Snake - Lean On", id: "YqeW9_5kURI" },
-        { year: "2015", title: "Justin Bieber - Sorry", id: "fRh_vgS2dFE" },
-        { year: "2015", title: "The Weeknd - Can't Feel My Face", id: "KEI4qSrkPAs" },
-        { year: "2016", title: "Despacito - Luis Fonsi (Original vibe)", id: "kJQP7kiw5Fk" },
-        { year: "2016", title: "The Chainsmokers ft. Halsey - Closer", id: "PT2_F-1esPk" },
-        { year: "2016", title: "Calvin Harris - This Is What You Came For", id: "kOkQ4T5WO9E" },
-        { year: "2016", title: "Sia ft. Sean Paul - Cheap Thrills", id: "nYh-n7EOtMA" },
-        { year: "2016", title: "Twenty One Pilots - Stressed Out", id: "pXRviuL6vMY" },
-        { year: "2017", title: "Ed Sheeran - Shape of You", id: "JGwWNGJdvx8" },
-        { year: "2017", title: "Luis Fonsi ft. Daddy Yankee - Despacito", id: "kJQP7kiw5Fk" },
-        { year: "2017", title: "Imagine Dragons - Thunder", id: "fKopy74WEmk" },
-        { year: "2017", title: "Post Malone ft. 21 Savage - rockstar", id: "UEdTc06CHuF" },
-        { year: "2017", title: "Camila Cabello - Havana", id: "HCOyl4_O0yQ" }
-    ];
+            // Функція закриття плеєра
+            window.closeYTPlayer = function() {
+                const playerContainer = document.getElementById('youtube-player-container');
+                if (playerContainer) playerContainer.style.display = 'none';
+                if (ytPlayer && ytPlayer.stopVideo) {
+                    ytPlayer.stopVideo();
+                }
+            };
 
-    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    const rotationIndex = Math.floor(dayOfYear / 20) * 15 % masterHits.length;
-    const rotatedHits = masterHits.slice(rotationIndex).concat(masterHits.slice(0, rotationIndex));
+            // База хітів (один раз для всього коду)
+            const masterHits = [
+                { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
+                { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
+                { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
+                { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
+                { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
+                { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
+                { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
+                { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
+                { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
+                { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
+                { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
+                { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
+                { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
+                { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
+                { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
+                { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" },
+                { year: "2015", title: "Adele - Hello", id: "YQHsXMglC9A" }
+            ];
 
-    let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🌍 Загальна фонотека хітів (Оновлюється кожні 20 днів):</div>';
-    
-    rotatedHits.forEach((song) => {
-        const songUrl = `https://www.youtube.com/watch?v=${song.id}`;
-        hitsHtml += `
-            <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px;">🎵 [${song.year}] ${song.title}</span>
-                <div style="display: flex; gap: 6px;">
-                    <a href="${songUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 11px;">▶️ Слухати</a>
-                    <button onclick="addSongToMyPage('${song.title.replace(/'/g, "\\'")}')" style="background: #4a76a8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">➕ Додати</button>
-                </div>
-            </div>
-        `;
-    });
+            // Головна функція рендеру вкладки "Аудіо"
+            window.renderMusicTab = function(searchQuery = '') {
+                const musicTab = document.getElementById('tab-music');
+                if (!musicTab) return;
 
-    let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
-    if (mySavedTracks.length === 0) {
-        savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
-    } else {
-        mySavedTracks.forEach((trackTitle) => {
-            savedHtml += `
-                <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 13px;">🎵 ${trackTitle}</span>
-                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
-                </div>
-            `;
-        });
-    }
+                // Якщо структури ще немає, створюємо її
+                if (!document.getElementById('music-interface-built')) {
+                    musicTab.innerHTML = `
+                        <div id="music-interface-built">
+                            <!-- Прихований плеєр -->
+                            <div id="youtube-player-container" style="display:none; text-align: center; margin-bottom: 15px; background: #000; padding: 10px; border-radius: 8px;">
+                                <div id="youtube-player-iframe"></div>
+                                <button onclick="closeYTPlayer()" style="background: #ff3b30; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-weight: bold;">✖ Закрити плеєр</button>
+                            </div>
+                            
+                            <!-- Рядок пошуку -->
+                            <div style="display: flex; gap: 6px; margin-bottom: 15px;">
+                                <input type="text" id="music-query" placeholder="Пошук пісень..." value="${searchQuery}" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onkeydown="if(event.key === 'Enter') runDirectSearch()">
+                                <button onclick="runDirectSearch()" style="background: #4a76a8; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer;">🔍</button>
+                            </div>
+                            
+                            <!-- Контейнер для списків -->
+                            <div id="music-content-container"></div>
+                        </div>
+                    `;
+                }
 
-    let searchHtml = '';
-    if (query) {
-        const encodedQuery = encodeURIComponent(query);
-        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
-        searchHtml = `
-            <div style="font-size: 13px; color: var(--vk-subtext); margin: 12px 0 6px 0;">Результати пошуку для: <b>${query}</b></div>
-            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span>🎵 ${query}</span>
-                <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
-            </div>
-        `;
-    }
+                const contentContainer = document.getElementById('music-content-container');
+                if (!contentContainer) return;
 
-    resultsContainer.innerHTML = savedHtml + searchHtml + hitsHtml;
-}
+                let htmlContent = '';
 
-function addSongToMyPage(songTitle) {
-    if (!mySavedTracks.includes(songTitle)) {
-        mySavedTracks.push(songTitle);
-        alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
-        searchYouTubeMusic(); 
-    } else {
-        alert('Цей трек вже є у ваших аудіозаписах!');
-    }
-}
+                // 1. Мої збережені аудіозаписи
+                htmlContent += '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: #2b587a;">🎵 Мої збережені аудіозаписи:</div>';
+                
+                if (window.mySavedTracks.length === 0) {
+                    htmlContent += '<div style="padding: 6px; color: #888; font-size: 13px;">У вас ще немає збережених треків.</div>';
+                } else {
+                    window.mySavedTracks.forEach(trackTitle => {
+                        // Знаходимо трек у базі хітів, щоб дістати його ID для відтворення
+                        const hit = masterHits.find(h => h.title === trackTitle);
+                        const playBtnHtml = hit ? `<button onclick="playYTTrack('${hit.id}')" style="background: #5181b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">▶️ Слухати</button>` : '';
+                        
+                        htmlContent += `
+                            <div style="padding: 8px 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; max-width: 60%; word-wrap: break-word;">🎵 ${trackTitle}</span>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    ${playBtnHtml}
+                                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
 
-window.onload = function() {
-    searchYouTubeMusic();
-};
-    
-    
-    let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
-    if (mySavedTracks.length === 0) {
-        savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
-    } else {
-        mySavedTracks.forEach((trackTitle) => {
-            savedHtml += `
-                <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 13px;">🎵 ${trackTitle}</span>
-                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
-                </div>
-            `;
-        });
-    }
+                // 2. Результати пошуку
+                if (searchQuery) {
+                    const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(searchQuery + ' audio');
+                    htmlContent += `
+                        <div style="font-size: 13px; color: #888; margin: 15px 0 6px 0;">Результати пошуку: <b>${searchQuery}</b></div>
+                        <div style="padding: 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 13px;">🎵 ${searchQuery}</span>
+                            <a href="${ytUrl}" target="_blank" style="background: #5181b8; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">▶️ Шукати на YT</a>
+                        </div>
+                    `;
+                }
 
-    // Результати пошуку (якщо введено запит)
-    let searchHtml = '';
-    if (query) {
-        const encodedQuery = encodeURIComponent(query);
-        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
-        searchHtml = `
-            <div style="font-size: 13px; color: var(--vk-subtext); margin: 12px 0 6px 0;">Результати пошуку для: <b>${query}</b></div>
-            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span>🎵 ${query}</span>
-                <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
-            </div>
-        `;
-    }
+                // 3. Загальна фонотека хітів
+                htmlContent += '<div style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0; color: #2b587a;">🌍 Загальна фонотека хітів:</div>';
+                
+                masterHits.forEach((song) => {
+                    htmlContent += `
+                        <div style="padding: 10px; background: #f0f2f5; margin-top: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 13px; color: #000; max-width: 60%;">🎵 [${song.year}] ${song.title}</span>
+                            <div style="display: flex; gap: 6px;">
+                                <button onclick="playYTTrack('${song.id}')" style="background: #5181b8; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">▶️ Слухати</button>
+                                <button onclick="addSongToMyPage('${song.title.replace(/'/g, "\\'")}')" style="background: #4a76a8; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">➕ Додати</button>
+                            </div>
+                        </div>
+                    `;
+                });
 
-    resultsContainer.innerHTML = savedHtml + searchHtml + hitsHtml;
-}
+                contentContainer.innerHTML = htmlContent;
+            };
 
-function addSongToMyPage(songTitle) {
-    if (!mySavedTracks.includes(songTitle)) {
-        mySavedTracks.push(songTitle);
-        alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
-        searchYouTubeMusic(); 
-    } else {
-        alert('Цей трек вже є у ваших аудіозаписах!');
-    }
-}
+            // Виклик пошуку з інпуту
+            window.runDirectSearch = function() {
+                const input = document.getElementById('music-query');
+                const query = input ? input.value.trim() : '';
+                renderMusicTab(query);
+            };
 
-// Запускаємо одразу при завантаженні сторінки та при перемиканні на вкладку аудіо
-document.addEventListener("DOMContentLoaded", function() {
-    searchYouTubeMusic();
-});
-             
+            // Додавання треку до сторінки
+            window.addSongToMyPage = function(title) {
+                if (!window.mySavedTracks.includes(title)) {
+                    window.mySavedTracks.push(title);
+                    alert('Трек "' + title + '" успішно додано до ваших аудіозаписів!');
+                    
+                    // Оновлюємо інтерфейс, зберігаючи поточний пошуковий запит
+                    const input = document.getElementById('music-query');
+                    renderMusicTab(input ? input.value.trim() : '');
+                } else {
+                    alert('Цей трек вже є у ваших аудіозаписах!');
+                }
+            };
 
-
-
-
-
-<div id="fixed-music-block" style="margin-top: 20px;">
-<script>
-(function() {
-    // Шукаємо вкладку аудіо або створюємо контейнер, якщо його немає
-    let musicTab = document.getElementById('tab-music');
-    if (!musicTab) return;
-
-    // Очищаємо вміст і ставимо нашу працюючу форму та контейнери
-    musicTab.innerHTML = `
-        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-            <input type="text" id="music-query" placeholder="Пошук пісень..." style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
-            <button onclick="runDirectSearch()" class="btn-vk" style="padding: 6px 12px; cursor: pointer;">🔍</button>
-        </div>
-        <div id="my-saved-music-container"></div>
-        <div id="vintage-player-container"></div>
-    `;
-
-    window.mySavedTracks = window.mySavedTracks || [];
-
-    window.runDirectSearch = function() {
-        const input = document.getElementById('music-query');
-        const query = input ? input.value.trim() : '';
-        renderMusicContent(query);
-    };
-
-    window.addSongToMyPage = function(title) {
-        if (!window.mySavedTracks.includes(title)) {
-            window.mySavedTracks.push(title);
-            alert('Трек "' + title + '" успішно додано!');
-            runDirectSearch();
-        } else {
-            alert('Цей трек вже є у ваших аудіозаписах!');
-        }
-    };
-
-    function renderMusicContent(searchQuery) {
-        const container = document.getElementById('my-saved-music-container');
-        if (!container) return;
-
-        const masterHits = [
-            { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
-            { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
-            { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
-            { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
-            { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
-            { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
-            { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
-            { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
-            { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
-            { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
-            { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
-            { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
-            { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
-            { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
-            { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
-            { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" }
-        ];
-
-        // Збережені треки
-        let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
-        if (window.mySavedTracks.length === 0) {
-            savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
-        } else {
-            window.mySavedTracks.forEach(track => {
-                savedHtml += `<div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px;">🎵 ${track} (Додано)</div>`;
+            // Запускаємо відмальовку, коли сторінка завантажилася
+            document.addEventListener("DOMContentLoaded", function() {
+                renderMusicTab();
             });
-        }
-
-        // Пошук
-        let searchHtml = '';
-        if (searchQuery) {
-            const ytUrl = `https://www.youtube.com/results?search_query=` + encodeURIComponent(searchQuery);
-            searchHtml = `
-                <div style="font-size: 13px; color: var(--vk-subtext); margin: 12px 0 6px 0;">Результати пошуку: <b>${searchQuery}</b></div>
-                <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>🎵 ${searchQuery}</span>
-                    <a href="${ytUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
-                </div>
-            `;
-        }
-// Хіти та рендер
-let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 15px 0 10px 0; color: #2b587a;">🌍 Фонотека хітів:</div>';
-
-const masterHits = [
-    { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
-    { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
-    { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
-    { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
-    { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
-    { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
-    { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
-    { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
-    { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
-    { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
-    { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
-    { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
-    { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
-    { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
-    { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
-    { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" }
-];
-
-masterHits.forEach(song => {
-    const songUrl = `https://www.youtube.com/watch?v=` + song.id;
-    hitsHtml += `
-        <div style="padding: 10px; background: #f0f2f5; margin-top: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; color: #000;">🎵 [${song.year}] ${song.title}</span>
-            <a href="${songUrl}" target="_blank" style="background: #5181b8; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">▶️ Слухати</a>
-        </div>
-    `;
-});
-
-const container = document.getElementById('my-saved-music-container') || document.body;
-container.innerHTML = hitsHtml;
-</script>
-
-        
-
-</body>
+        </script>
+    </body>
 </html>
