@@ -4032,5 +4032,162 @@
             });
 
         </script>
-    </body>
+   <!-- === МАГІЯ РЕДАГУВАННЯ ПРОФІЛЮ ТА РЕЙТИНГУ === -->
+<script>
+    // --- НАЛАШТУВАННЯ АДМІНІСТРАТОРА ---
+    // Ваш особистий Telegram ID
+    const ADMIN_IDS = [325300795]; 
+    
+    // Перевірка на Адміна за ID
+    function checkIsAdmin(tgUser) {
+        if (!tgUser) return false;
+        return ADMIN_IDS.includes(tgUser.id);
+    }
+
+    // 1. Створюємо інтерфейс вікна
+    function createProfileModal() {
+        if(document.getElementById('profile-edit-modal')) return;
+
+        const modalHtml = `
+            <div id="profile-edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+                <div style="background:#fff; padding:20px; border-radius:16px; width:85%; max-width:350px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+                    <h3 style="margin:0 0 10px 0; color:#2b587a; text-align:center;">Мій профіль</h3>
+                    
+                    <div style="margin-bottom:15px; text-align:center; padding:10px; background:#f8f9fa; border-radius:10px;">
+                        <div id="user-rating-display" style="font-size:22px; font-weight:bold; color:#f39c12;">Рейтинг: 10 ⭐️</div>
+                        <div id="user-rating-hint" style="font-size:11px; color:#7f8c8d; margin-top:4px;">Заповніть профіль (+15 ⭐️). Далі рейтинг росте за активність!</div>
+                        
+                        <!-- Смуга прогресу до 100 -->
+                        <div style="width:100%; background:#e0e0e0; border-radius:4px; height:8px; margin-top:10px; overflow:hidden;">
+                            <div id="rating-progress-bar" style="width:10%; background:#5181b8; height:100%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <label style="font-size:13px; color:#555; font-weight:bold;">Місто (+5 ⭐️):</label>
+                    <input type="text" id="edit-city" placeholder="Ваше місто..." style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ccc; border-radius:8px; box-sizing:border-box; outline:none;">
+                    
+                    <label style="font-size:13px; color:#555; font-weight:bold;">Телефон (+5 ⭐️):</label>
+                    <input type="tel" id="edit-phone" placeholder="+380..." style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ccc; border-radius:8px; box-sizing:border-box; outline:none;">
+                    
+                    <label style="font-size:13px; color:#555; font-weight:bold;">Про себе (+5 ⭐️):</label>
+                    <textarea id="edit-about" placeholder="Пару слів про ваші інтереси..." style="width:100%; padding:10px; margin:5px 0 15px; border:1px solid #ccc; border-radius:8px; height:60px; box-sizing:border-box; outline:none;"></textarea>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="document.getElementById('profile-edit-modal').style.display='none'" style="flex:1; padding:10px; border:none; border-radius:8px; background:#ecf0f1; color:#333; font-weight:bold; cursor:pointer;">Скасувати</button>
+                        <button onclick="saveUserProfile()" style="flex:1; padding:10px; border:none; border-radius:8px; background:#5181b8; color:#fff; font-weight:bold; cursor:pointer;">Зберегти</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    // 2. Відкриття вікна
+    window.openProfileEditor = function() {
+        createProfileModal();
+        
+        const tgUser = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initDataUnsafe.user : null;
+        const userId = tgUser ? tgUser.id : 'test_user';
+        const isAdmin = checkIsAdmin(tgUser);
+
+        if (typeof firebase !== 'undefined') {
+            firebase.database().ref('users/' + userId + '/profileInfo').once('value').then((snapshot) => {
+                const data = snapshot.val() || {};
+                document.getElementById('edit-city').value = data.city || '';
+                document.getElementById('edit-phone').value = data.phone || '';
+                document.getElementById('edit-about').value = data.about || '';
+                
+                const currentRating = data.rating || 10;
+                
+                if (isAdmin) {
+                    document.getElementById('user-rating-display').innerText = `Рейтинг: 100 👑`;
+                    document.getElementById('user-rating-display').style.color = '#e74c3c'; 
+                    document.getElementById('user-rating-hint').innerText = 'Ви Творець мережі. Ваш статус максимальний!';
+                    document.getElementById('rating-progress-bar').style.width = '100%';
+                    document.getElementById('rating-progress-bar').style.background = '#e74c3c';
+                } else {
+                    document.getElementById('user-rating-display').innerText = `Рейтинг: ${currentRating} ⭐️`;
+                    document.getElementById('user-rating-display').style.color = '#f39c12';
+                    document.getElementById('user-rating-hint').innerText = 'Заповніть профіль (+15 ⭐️). Далі рейтинг росте за активність!';
+                    
+                    // Захист для смуги прогресу (щоб не була більше 100%)
+                    const widthPercent = currentRating > 100 ? 100 : currentRating;
+                    document.getElementById('rating-progress-bar').style.width = widthPercent + '%';
+                }
+                
+                document.getElementById('profile-edit-modal').style.display = 'flex';
+            });
+        }
+    };
+
+    // 3. Збереження і логіка
+    window.saveUserProfile = function() {
+        const city = document.getElementById('edit-city').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const about = document.getElementById('edit-about').value.trim();
+        
+        const tgUser = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initDataUnsafe.user : null;
+        const userId = tgUser ? tgUser.id : 'test_user';
+        const isAdmin = checkIsAdmin(tgUser);
+
+        if (typeof firebase !== 'undefined') {
+            // Беремо поточні дані, щоб зберегти бонус за активність, якщо він буде в майбутньому
+            firebase.database().ref('users/' + userId + '/profileInfo').once('value').then((snapshot) => {
+                const data = snapshot.val() || {};
+                let activityBonus = data.activityBonus || 0; // Бали, які будуть нараховуватися щотижня
+                
+                // Математика: старт 10, кожне поле +5, плюс накопичена активність
+                let rating = 10 + activityBonus; 
+                if(city.length > 2) rating += 5;
+                if(phone.length > 5) rating += 5;
+                if(about.length > 5) rating += 5;
+                
+                if (isAdmin) {
+                    rating = 100;
+                }
+
+                // Використовуємо .update(), щоб не затерти інші дані користувача
+                firebase.database().ref('users/' + userId + '/profileInfo').update({
+                    city: city,
+                    phone: phone,
+                    about: about,
+                    rating: rating,
+                    isAdmin: isAdmin,
+                    activityBonus: activityBonus 
+                }).then(() => {
+                    if (isAdmin) {
+                        document.getElementById('user-rating-display').innerText = `Рейтинг: 100 👑`;
+                        document.getElementById('rating-progress-bar').style.width = '100%';
+                        alert('Дані збережено, Шеф! 🫡');
+                    } else {
+                        document.getElementById('user-rating-display').innerText = `Рейтинг: ${rating} ⭐️`;
+                        const widthPercent = rating > 100 ? 100 : rating;
+                        document.getElementById('rating-progress-bar').style.width = widthPercent + '%';
+                        
+                        alert(`Супер! Дані збережено.\nВаш поточний рейтинг: ${rating} ⭐️\nПродовжуйте користуватися додатком, щоб згодом отримувати +5 балів щотижня!`);
+                    }
+                    document.getElementById('profile-edit-modal').style.display = 'none';
+                });
+            });
+        }
+    };
+
+    // 4. Прив'язка до меню
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const elements = document.querySelectorAll('div, a, span, li');
+            elements.forEach(el => {
+                if(el.innerText && el.innerText.trim() === 'Редагувати профіль') {
+                    el.style.cursor = 'pointer';
+                    el.onclick = function(event) {
+                        event.preventDefault(); 
+                        openProfileEditor();
+                    };
+                }
+            });
+        }, 1500);
+    });
+</script>
+ 
+</body>
 </html>
