@@ -727,8 +727,9 @@
             <div id="tab-music" class="tab-content">
                 <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                     <input type="text" id="music-query" class="input-vk" style="flex: 1;" placeholder="Пошук пісень..." onkeypress="if(event.key === 'Enter') performAudioSearch()">
-                        <button class="btn-vk" onclick="searchYouTubeMusic()">Шукати</button>
-                </div>
+                   <button class="btn-vk" onclick="searchYouTubeMusic(event)">
+     
+             </div>
                 <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Мої збережені аудіозаписи:</div>
                 <div id="my-saved-music-container" class="vintage-player-box" style="margin-bottom: 15px;">
                     <div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>
@@ -3812,7 +3813,9 @@
             }
         }
         // Функція для пошуку музики
-function searchYouTubeMusic() {
+function searchYouTubeMusic(event) {
+    if (event) event.preventDefault();
+
     const searchInput = document.getElementById('music-query');
     const query = searchInput ? searchInput.value.trim() : '';
     
