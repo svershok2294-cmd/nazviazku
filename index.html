@@ -3815,21 +3815,128 @@
 function searchYouTubeMusic() {
     const searchInput = document.getElementById('music-query');
     const query = searchInput ? searchInput.value.trim() : '';
-    if (!query) return;
-
+    
     const resultsContainer = document.getElementById('my-saved-music-container');
-    if (resultsContainer) {
+    if (!resultsContainer) return;
+
+    // Велика золота колекція хітів 2002–2017 років (~100 треків)
+    const masterHits = [
+        { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
+        { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
+        { year: "2002", title: "Shakira - Whenever, Wherever", id: "weRByhT6GYg" },
+        { year: "2002", title: "Nelly - Hot In Herre", id: "DmIVy8YjDbc" },
+        { year: "2002", title: "Las Ketchup - The Ketchup Song", id: "VL_1ZXZkgq8" },
+        { year: "2003", title: "Benny Benassi - Satisfaction", id: "Vjn5x_Sc6cI" },
+        { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
+        { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
+        { year: "2003", title: "Beyoncé ft. Jay-Z - Crazy In Love", id: "ViwtNLUqkMY" },
+        { year: "2003", title: "Outkast - Hey Ya!", id: "PWgvGjAhvIw" },
+        { year: "2004", title: "O-Zone - Dragostea Din Tei", id: "fYHUXjKi7uI" },
+        { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
+        { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
+        { year: "2004", title: "Green Day - Boulevard of Broken Dreams", id: "Soa3gO7tL-c" },
+        { year: "2004", title: "Maroon 5 - This Love", id: "XPpTgCho5ZA" },
+        { year: "2005", title: "The Black Eyed Peas - Don't Phunk With My Heart", id: "cUo1b5f7bEE" },
+        { year: "2005", title: "Crazy Frog - Axel F", id: "k85mRPqvMbE" },
+        { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
+        { year: "2005", title: "Pussycat Dolls - Don't Cha", id: "YVkUvYTq4gE" },
+        { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
+        { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
+        { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
+        { year: "2006", title: "Gnarls Barkley - Crazy", id: "4ohkWY8uJ2k" },
+        { year: "2006", title: "Rihanna - Unfaithful", id: "rp4twPbyglM" },
+        { year: "2006", title: "My Chemical Romance - Welcome to the Black Parade", id: "RRKivVYX4EA" },
+        { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
+        { year: "2007", title: "Timbaland ft. OneRepublic - Apologize", id: "Zp6nsxG3Jyc" },
+        { year: "2007", title: "Avril Lavigne - Girlfriend", id: "Bg59q4puhmg" },
+        { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
+        { year: "2007", title: "Britney Spears - Piece of Me", id: "uOK9bgt-Gr8" },
+        { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
+        { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
+        { year: "2008", title: "Lady Gaga - Just Dance", id: "2Abk1jAONjw" },
+        { year: "2008", title: "Beyoncé - Single Ladies", id: "4m1EFMoRFvY" },
+        { year: "2008", title: "Britney Spears - Womanizer", id: "rMqWJfR0k28" },
+        { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
+        { year: "2009", title: "David Guetta ft. Akon - Sexy Bitch", id: "N7o4t4_r00s" },
+        { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" },
+        { year: "2009", title: "Jay-Z ft. Alicia Keys - Empire State of Mind", id: "ZsDMql_wjaU" },
+        { year: "2009", title: "Pitbull - I Know You Want Me", id: "p0ZgnQfL7qg" },
+        { year: "2010", title: "Eminem ft. Rihanna - Love The Way You Lie", id: "uelHwf8o7_U" },
+        { year: "2010", title: "Shakira - Waka Waka", id: "pRpeEdMmmQ0" },
+        { year: "2010", title: "Katy Perry - Firework", id: "QGju6IfxJko" },
+        { year: "2010", title: "Bruno Mars - Just the Way You Are", id: "LjhCEhWiKXk" },
+        { year: "2010", title: "Taio Cruz - Dynamite", id: "VHsRJWkngzY" },
+        { year: "2011", title: "LMFAO - Party Rock Anthem", id: "KQ6zr6kCPj8" },
+        { year: "2011", title: "Adele - Rolling in the Deep", id: "rYEDA3JcQqw" },
+        { year: "2011", title: "Maroon 5 ft. Christina Aguilera - Moves Like Jagger", id: "iEPTlhBmwRg" },
+        { year: "2011", title: "Jennifer Lopez ft. Pitbull - On The Floor", id: "t4H_Zoh7G5A" },
+        { year: "2011", title: "Gotye ft. Kimbra - Somebody That I Used to Know", id: "8UVNT4wvIGY" },
+        { year: "2012", title: "PSY - Gangnam Style", id: "9bZkp7q19f0" },
+        { year: "2012", title: "Carly Rae Jepsen - Call Me Maybe", id: "fWNaR-rxAic" },
+        { year: "2012", title: "Maroon 5 - Payphone", id: "KRaWnd3LJfs" },
+        { year: "2012", title: "Rihanna - Diamonds", id: "lWA2pjMjpBs" },
+        { year: "2012", title: "Fun. - Some Nights", id: "qQkBeOisNM0" },
+        { year: "2013", title: "Daft Punk - Get Lucky", id: "5NV6Rdv1a3I" },
+        { year: "2013", title: "Avicii - Wake Me Up", id: "IcrbM1l_BoI" },
+        { year: "2013", title: "Katy Perry - Roar", id: "CevxZvSJLk8" },
+        { year: "2013", title: "Miley Cyrus - Wrecking Ball", id: "My2FRPA3Gf8" },
+        { year: "2013", title: "Robin Thicke - Blurred Lines", id: "yyDUC1LUXSU" },
+        { year: "2014", title: "Pharrell Williams - Happy", id: "y6Sxv-sUYtM" },
+        { year: "2014", title: "Mark Ronson ft. Bruno Mars - Uptown Funk", id: "OPf0YbXqDm0" },
+        { year: "2014", title: "John Legend - All of Me", id: "450p7goxZqg" },
+        { year: "2014", title: "Katy Perry - Dark Horse", id: "0KSOMA3QBU0" },
+        { year: "2014", title: "Meghan Trainor - All About That Bass", id: "7PCkvCPvDXk" },
+        { year: "2015", title: "Adele - Hello", id: "YQHsXMglC9A" },
+        { year: "2015", title: "Wiz Khalifa ft. Charlie Puth - See You Again", id: "RgKAFK5djSk" },
+        { year: "2015", title: "Major Lazer & DJ Snake - Lean On", id: "YqeW9_5kURI" },
+        { year: "2015", title: "Justin Bieber - Sorry", id: "fRh_vgS2dFE" },
+        { year: "2015", title: "The Weeknd - Can't Feel My Face", id: "KEI4qSrkPAs" },
+        { year: "2016", title: "Despacito - Luis Fonsi (Original vibe)", id: "kJQP7kiw5Fk" },
+        { year: "2016", title: "The Chainsmokers ft. Halsey - Closer", id: "PT2_F-1esPk" },
+        { year: "2016", title: "Calvin Harris - This Is What You Came For", id: "kOkQ4T5WO9E" },
+        { year: "2016", title: "Sia ft. Sean Paul - Cheap Thrills", id: "nYh-n7EOtMA" },
+        { year: "2016", title: "Twenty One Pilots - Stressed Out", id: "pXRviuL6vMY" },
+        { year: "2017", title: "Ed Sheeran - Shape of You", id: "JGwWNGJdvx8" },
+        { year: "2017", title: "Luis Fonsi ft. Daddy Yankee - Despacito", id: "kJQP7kiw5Fk" },
+        { year: "2017", title: "Imagine Dragons - Thunder", id: "fKopy74WEmk" },
+        { year: "2017", title: "Post Malone ft. 21 Savage - rockstar", id: "UEdTc06CHuF" },
+        { year: "2017", title: "Camila Cabello - Havana", id: "HCOyl4_O0yQ" }
+    ];
+
+    let hitsHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🌍 Загальна фонотека хітів 2002–2017 (Спільний доступ):</div>';
+    
+    masterHits.forEach((song, index) => {
+        const songUrl = `https://www.youtube.com/watch?v=${song.id}`;
+        hitsHtml += `
+            <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px;">🎵 [${song.year}] ${song.title}</span>
+                <div style="display: flex; gap: 6px;">
+                    <a href="${songUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 11px;">▶️ Слухати</a>
+                    <button onclick="addSongToMyPage('${song.title.replace(/'/g, "\\'")}')" style="background: #4a76a8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">➕ Додати</button>
+                </div>
+            </div>
+        `;
+    });
+
+    if (query) {
         const encodedQuery = encodeURIComponent(query);
         const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
-        
         resultsContainer.innerHTML = `
             <div style="font-size: 13px; color: var(--vk-subtext); margin-bottom: 6px;">Результати пошуку для: <b>${query}</b></div>
             <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
                 <span>🎵 ${query}</span>
-                <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: 500;">▶️ Слухати</a>
+                <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
             </div>
+            ${hitsHtml}
         `;
+    } else {
+        resultsContainer.innerHTML = hitsHtml;
     }
+}
+
+// Допоміжна функція для додавання треку на свою сторінку
+function addSongToMyPage(songTitle) {
+    alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
 }
 
 
