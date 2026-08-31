@@ -4221,7 +4221,7 @@
         }, 1200);
     });
 </script>
-<!-- === ФІНАЛЬНЕ ВИПРАВЛЕННЯ РЕЙТИНГУ === -->
+<!-- === ЗАЛІЗОБЕТОННИЙ ФІКС РЕЙТИНГУ === -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => {
@@ -4233,9 +4233,9 @@
             if (typeof firebase !== 'undefined') {
                 const userRef = firebase.database().ref('users/' + userId + '/profileInfo');
                 
-                // Жорстко переписуємо базу на 100 для адміна раз і назавжди
+                // Очищаємо базу даних від глючного значення раз і назавжди
                 if (isAdmin) {
-                    userRef.set({ rating: 100, isAdmin: true, city: "Одеса", phone: "+380...", about: "Творець" });
+                    userRef.set({ rating: 100, isAdmin: true });
                 }
 
                 userRef.on('value', (snapshot) => {
@@ -4243,21 +4243,13 @@
                     let rating = isAdmin ? 100 : Number(data.rating || 10);
                     if (isNaN(rating) || rating > 100) rating = 100;
 
-                    // Шукаємо фіолетову смужку за кнопками "+ Рейтинг" / "Ред."
-                    const buttons = document.querySelectorAll('button, div');
-                    buttons.forEach(btn => {
-                        if (btn.innerText && (btn.innerText.includes('+ Рейтинг') || btn.innerText.includes('Ред.'))) {
-                            // Шукаємо батьківський блок і правимо саму шкалу
-                            let parent = btn.closest('div').parentElement;
-                            if (parent) {
-                                const bars = parent.querySelectorAll('div');
-                                bars.forEach(bar => {
-                                    // Перевіряємо, чи це той самий блок зі шкалою (містить знак %)
-                                    if (bar.innerText && bar.innerText.includes('%')) {
-                                        bar.innerText = rating + '%'; // Повністю замінюємо текст, а не склеюємо
-                                        bar.style.width = rating + '%';
-                                    }
-                                });
+                    // Шукаємо листові текстові елементи з відсотками, щоб уникнути склеювання
+                    const allElements = document.querySelectorAll('div, span');
+                    allElements.forEach(el => {
+                        if (el.childNodes.length === 1 && el.textContent.includes('%') && el.textContent.length < 8) {
+                            el.textContent = rating + '%'; // Повністю замінюємо текст
+                            if (el.parentElement) {
+                                el.parentElement.style.width = rating + '%'; // Вирівнюємо шкалу
                             }
                         }
                     });
@@ -4266,6 +4258,7 @@
         }, 800);
     });
 </script>
+
 
 
 
