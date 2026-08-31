@@ -3819,18 +3819,18 @@ function searchYouTubeMusic() {
 
     const resultsContainer = document.getElementById('my-saved-music-container');
     if (resultsContainer) {
-        // Екрануємо лапки для безпеки, щоб не ламався код
-        const safeQuery = query.replace(/'/g, "\\'");
+        const testVideoId = 'kJQP7kiw5Fk'; // Тестовий робочий трек
         
         resultsContainer.innerHTML = `
             <div style="font-size: 13px; color: var(--vk-subtext); margin-bottom: 6px;">Результати пошуку для: <b>${query}</b></div>
-            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                <span>🎵 ${query} (Знайдено з YouTube)</span>
-                <button onclick="playTrack('jfKfPfyJRdk', '${safeQuery}')" style="background: var(--vk-btn); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;">▶️ Слухати</button>
+            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px;">
+                <div style="margin-bottom: 6px; font-weight: 500;">🎵 ${query}</div>
+                <iframe width="100%" height="150" src="https://www.youtube.com/embed/${testVideoId}?autoplay=1" title="YouTube player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 4px;"></iframe>
             </div>
         `;
     }
 }
+
 
 
 
