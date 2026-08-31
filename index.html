@@ -3812,9 +3812,7 @@
                 console.log("Грає: " + trackName);
             }
         }
-        // Функція для пошуку музики
-// Зберігаємо список доданих користувачем треків у пам'яті сторінки
-   let mySavedTracks = [];
+    let mySavedTracks = [];
 
 function searchYouTubeMusic(event) {
     if (event) event.preventDefault();
@@ -3822,7 +3820,6 @@ function searchYouTubeMusic(event) {
     const searchInput = document.getElementById('music-query');
     const query = searchInput ? searchInput.value.trim() : '';
     
-    // Шукаємо або створюємо контейнер автоматично, щоб він ніколи не був порожнім
     let resultsContainer = document.getElementById('my-saved-music-container');
     if (!resultsContainer) {
         const musicTab = document.getElementById('tab-music');
@@ -3918,7 +3915,6 @@ function searchYouTubeMusic(event) {
         { year: "2017", title: "Camila Cabello - Havana", id: "HCOyl4_O0yQ" }
     ];
 
-    // Оновлення кожні 20 днів
     const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
     const rotationIndex = Math.floor(dayOfYear / 20) * 15 % masterHits.length;
     const rotatedHits = masterHits.slice(rotationIndex).concat(masterHits.slice(0, rotationIndex));
@@ -3938,7 +3934,51 @@ function searchYouTubeMusic(event) {
         `;
     });
 
-    // Мої збережені треки
+    let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
+    if (mySavedTracks.length === 0) {
+        savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
+    } else {
+        mySavedTracks.forEach((trackTitle) => {
+            savedHtml += `
+                <div style="padding: 8px 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px;">🎵 ${trackTitle}</span>
+                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
+                </div>
+            `;
+        });
+    }
+
+    let searchHtml = '';
+    if (query) {
+        const encodedQuery = encodeURIComponent(query);
+        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
+        searchHtml = `
+            <div style="font-size: 13px; color: var(--vk-subtext); margin: 12px 0 6px 0;">Результати пошуку для: <b>${query}</b></div>
+            <div style="padding: 10px; background: var(--vk-card); margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span>🎵 ${query}</span>
+                <a href="${youtubeSearchUrl}" target="_blank" style="background: var(--vk-btn); color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px;">▶️ Слухати</a>
+            </div>
+        `;
+    }
+
+    resultsContainer.innerHTML = savedHtml + searchHtml + hitsHtml;
+}
+
+function addSongToMyPage(songTitle) {
+    if (!mySavedTracks.includes(songTitle)) {
+        mySavedTracks.push(songTitle);
+        alert('Трек "' + songTitle + '" успішно додано до ваших аудіозаписів!');
+        searchYouTubeMusic(); 
+    } else {
+        alert('Цей трек вже є у ваших аудіозаписах!');
+    }
+}
+
+window.onload = function() {
+    searchYouTubeMusic();
+};
+    
+    
     let savedHtml = '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: var(--vk-header);">🎵 Мої збережені аудіозаписи:</div>';
     if (mySavedTracks.length === 0) {
         savedHtml += '<div style="padding: 6px; color: var(--vk-subtext); font-size: 13px;">У вас ще немає збережених треків.</div>';
