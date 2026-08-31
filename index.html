@@ -4221,41 +4221,40 @@
         }, 1200);
     });
 </script>
-<!-- === ФІКС ТА ТОЧНЕ ОЖИВЛЕННЯ РЕЙТИНГУ === -->
+<!-- === ФІНАЛЬНЕ ВИПРАВЛЕННЯ РЕЙТИНГУ === -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => {
             const tgUser = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initDataUnsafe.user : null;
             const userId = tgUser ? tgUser.id : 325300795;
-            
             const ADMIN_ID = 325300795;
             const isAdmin = (Number(userId) === ADMIN_ID);
 
             if (typeof firebase !== 'undefined') {
                 const userRef = firebase.database().ref('users/' + userId + '/profileInfo');
                 
-                // Жорстко скидаємо глючне значення на число 100 для адміністратора
+                // Жорстко переписуємо базу на 100 для адміна раз і назавжди
                 if (isAdmin) {
-                    userRef.update({ rating: 100, isAdmin: true });
+                    userRef.set({ rating: 100, isAdmin: true, city: "Одеса", phone: "+380...", about: "Творець" });
                 }
 
                 userRef.on('value', (snapshot) => {
                     const data = snapshot.val() || {};
-                    // Використовуємо Number(), щоб гарантовано уникнути склеювання рядків на кшталт "1021"
                     let rating = isAdmin ? 100 : Number(data.rating || 10);
                     if (isNaN(rating) || rating > 100) rating = 100;
 
-                    // Точний пошук елемента рейтингу за сусідством з кнопкою "+ Рейтинг"
-                    const allElements = document.querySelectorAll('div, span');
-                    allElements.forEach(el => {
-                        if (el.innerText && (el.innerText.includes('+ Рейтинг') || el.innerText.trim() === 'Ред.')) {
-                            // Шукаємо фіолетову/жовту смужку неподалік
-                            let container = el.closest('div').parentElement;
-                            if (container) {
-                                const bars = container.querySelectorAll('div');
+                    // Шукаємо фіолетову смужку за кнопками "+ Рейтинг" / "Ред."
+                    const buttons = document.querySelectorAll('button, div');
+                    buttons.forEach(btn => {
+                        if (btn.innerText && (btn.innerText.includes('+ Рейтинг') || btn.innerText.includes('Ред.'))) {
+                            // Шукаємо батьківський блок і правимо саму шкалу
+                            let parent = btn.closest('div').parentElement;
+                            if (parent) {
+                                const bars = parent.querySelectorAll('div');
                                 bars.forEach(bar => {
+                                    // Перевіряємо, чи це той самий блок зі шкалою (містить знак %)
                                     if (bar.innerText && bar.innerText.includes('%')) {
-                                        bar.innerText = rating + '%';
+                                        bar.innerText = rating + '%'; // Повністю замінюємо текст, а не склеюємо
                                         bar.style.width = rating + '%';
                                     }
                                 });
@@ -4264,9 +4263,10 @@
                     });
                 });
             }
-        }, 1000);
+        }, 800);
     });
 </script>
+
 
 
 
