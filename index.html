@@ -4221,40 +4221,44 @@
         }, 1200);
     });
 </script>
-<!-- === ВИПРАВЛЕННЯ ТА ТОЧНЕ ОЖИВЛЕННЯ РЕЙТИНГУ === -->
+<!-- === ФІКС ТА ТОЧНЕ ОЖИВЛЕННЯ РЕЙТИНГУ === -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => {
             const tgUser = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initDataUnsafe.user : null;
             const userId = tgUser ? tgUser.id : 325300795;
             
-            // Ваш ID адміністратора
             const ADMIN_ID = 325300795;
             const isAdmin = (Number(userId) === ADMIN_ID);
 
             if (typeof firebase !== 'undefined') {
                 const userRef = firebase.database().ref('users/' + userId + '/profileInfo');
                 
-                // Примусово виправляємо значення в базі для адміна, щоб прибрати зайві тисячі відсотків
+                // Жорстко скидаємо глючне значення на число 100 для адміністратора
                 if (isAdmin) {
                     userRef.update({ rating: 100, isAdmin: true });
                 }
 
                 userRef.on('value', (snapshot) => {
                     const data = snapshot.val() || {};
-                    let rating = isAdmin ? 100 : (data.rating || 10);
-                    if (rating > 100) rating = 100;
+                    // Використовуємо Number(), щоб гарантовано уникнути склеювання рядків на кшталт "1021"
+                    let rating = isAdmin ? 100 : Number(data.rating || 10);
+                    if (isNaN(rating) || rating > 100) rating = 100;
 
-                    // Акуратно шукаємо смужку рейтингу за її текстовим вмістом з відсотком
-                    const elements = document.querySelectorAll('div, span');
-                    elements.forEach(el => {
-                        // Шукаємо елемент, всередині якого написані старі відсотки (наприклад, 110% або 1021%)
-                        const text = el.innerText ? el.innerText.trim() : '';
-                        if (text.endsWith('%') && text.length <= 6 && el.children.length === 0) {
-                            el.innerText = rating + '%';
-                            // Якщо це сама шкала (батьківський блок), змінюємо її ширину
-                            if (el.parentElement && el.parentElement.style) {
-                                el.parentElement.style.width = rating + '%';
+                    // Точний пошук елемента рейтингу за сусідством з кнопкою "+ Рейтинг"
+                    const allElements = document.querySelectorAll('div, span');
+                    allElements.forEach(el => {
+                        if (el.innerText && (el.innerText.includes('+ Рейтинг') || el.innerText.trim() === 'Ред.')) {
+                            // Шукаємо фіолетову/жовту смужку неподалік
+                            let container = el.closest('div').parentElement;
+                            if (container) {
+                                const bars = container.querySelectorAll('div');
+                                bars.forEach(bar => {
+                                    if (bar.innerText && bar.innerText.includes('%')) {
+                                        bar.innerText = rating + '%';
+                                        bar.style.width = rating + '%';
+                                    }
+                                });
                             }
                         }
                     });
@@ -4263,6 +4267,7 @@
         }, 1000);
     });
 </script>
+
 
 
 </body>
