@@ -4188,6 +4188,40 @@
         }, 1500);
     });
 </script>
- 
+ <!-- === ОЖИВЛЕННЯ СМУЖКИ РЕЙТИНГУ НА ПРОФІЛІ === -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Даємо сторінці трохи часу на повне завантаження верстки
+        setTimeout(() => {
+            const tgUser = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initDataUnsafe.user : null;
+            const userId = tgUser ? tgUser.id : 'test_user';
+            
+            // Ваш ID адміністратора
+            const isAdmin = (userId === 325300795);
+
+            if (typeof firebase !== 'undefined') {
+                firebase.database().ref('users/' + userId + '/profileInfo').on('value', (snapshot) => {
+                    const data = snapshot.val() || {};
+                    
+                    // Адмін завжди має 100%, інші — свій поточний рейтинг (від 10)
+                    let rating = isAdmin ? 100 : (data.rating || 10);
+                    if (rating > 100) rating = 100;
+
+                    // Шукаємо елемент смужки рейтингу (де на скріншотиках було написано 110%)
+                    const allElements = document.querySelectorAll('div');
+                    allElements.forEach(el => {
+                        // Шукаємо блок із відсотками, який схожий на шкалу
+                        if (el.innerText && el.innerText.includes('%') && el.style.background) {
+                            el.style.width = rating + '%';
+                            el.innerText = rating + '%';
+                        }
+                    });
+                });
+            }
+        }, 1200);
+    });
+</script>
+
+
 </body>
 </html>
