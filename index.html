@@ -970,6 +970,17 @@
             </select>
 
             <input type="text" id="edit-blacklist" class="input-vk modal-input" placeholder="Чорний список (ID через кому)">
+            <!-- НАЛАШТУВАННЯ ЗВУКУ -->
+            <div style="font-weight: bold; margin-top: 8px; margin-bottom: 4px; color: var(--vk-link);">Звук сповіщень:</div>
+            <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 8px;">
+                <select id="edit-sound-setting" class="input-vk modal-input" style="flex: 1; margin-bottom: 0;" onchange="testSound(this.value)">
+                    <option value="vk">🔔 ВКонтакте (Передзвін)</option>
+                    <option value="icq_knock">🚪 ICQ (Стук у двері)</option>
+                    <option value="icq_uhoh">🔊 ICQ («О-оу!»)</option>
+                    <option value="mute">🔕 Без звуку</option>
+                </select>
+                <button type="button" class="btn-vk-secondary" style="font-size: 10px; padding: 4px 8px;" onclick="testSound(document.getElementById('edit-sound-setting').value)">▶ Тест</button>
+            </div>
 
             <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Особисті погляди:</div>
             <input type="text" id="edit-politics" class="input-vk modal-input" placeholder="Політичні погляди">
@@ -1293,6 +1304,90 @@
 
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
+    // === ГЕНЕРАТОР РЕТРО ЗВУКІВ ===
+    let retroAudioCtx = null;
+    function getAudioContext() {
+        if (!retroAudioCtx) retroAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (retroAudioCtx.state === 'suspended') retroAudioCtx.resume();
+        return retroAudioCtx;
+    }
+
+    function playVkMessageSound() {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator(), gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0.001, now);
+        gain1.gain.exponentialRampToValueAtTime(0.28, now + 0.015);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+        osc1.connect(gain1); gain1.connect(ctx.destination);
+        osc1.start(now); osc1.stop(now + 0.11);
+
+        const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880.00, now + 0.07);
+        gain2.gain.setValueAtTime(0.001, now + 0.07);
+        gain2.gain.exponentialRampToValueAtTime(0.32, now + 0.085);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.start(now + 0.07); osc2.stop(now + 0.28);
+    }
+
+    function playIcqKnockSound() {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        function triggerKnock(time, baseFreq) {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(baseFreq, time);
+            osc.frequency.exponentialRampToValueAtTime(35, time + 0.04);
+            gain.gain.setValueAtTime(0.45, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.045);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(time); osc.stop(time + 0.05);
+        }
+        triggerKnock(now, 260);
+        triggerKnock(now + 0.09, 210);
+    }
+
+    function playIcqUhOhSound() {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator(), gain1 = ctx.createGain(), filter1 = ctx.createBiquadFilter();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(310, now);
+        osc1.frequency.exponentialRampToValueAtTime(250, now + 0.09);
+        filter1.type = 'bandpass'; filter1.frequency.value = 850; filter1.Q.value = 3.2;
+        gain1.gain.setValueAtTime(0.01, now);
+        gain1.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc1.connect(filter1); filter1.connect(gain1); gain1.connect(ctx.destination);
+        osc1.start(now); osc1.stop(now + 0.09);
+
+        const start2 = now + 0.11;
+        const osc2 = ctx.createOscillator(), gain2 = ctx.createGain(), filter2 = ctx.createBiquadFilter();
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(530, start2);
+        osc2.frequency.exponentialRampToValueAtTime(370, start2 + 0.18);
+        filter2.type = 'bandpass'; filter2.frequency.value = 1150; filter2.Q.value = 3.5;
+        gain2.gain.setValueAtTime(0.01, start2);
+        gain2.gain.exponentialRampToValueAtTime(0.3, start2 + 0.03);
+        gain2.gain.exponentialRampToValueAtTime(0.001, start2 + 0.18);
+        osc2.connect(filter2); filter2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.start(start2); osc2.stop(start2 + 0.18);
+    }
+
+    function playNotificationSound(soundKey) {
+        const selected = soundKey || activeUser.soundSetting || 'vk';
+        if (selected === 'vk') playVkMessageSound();
+        else if (selected === 'icq_knock') playIcqKnockSound();
+        else if (selected === 'icq_uhoh') playIcqUhOhSound();
+    }
+
+    function testSound(soundKey) {
+        playNotificationSound(soundKey);
+    }
 
     let activeUser = {
         id: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "id_" + Math.floor(Math.random() * 89999 + 10000),
@@ -1300,6 +1395,8 @@
         last_name: tg?.initDataUnsafe?.user?.last_name || "",
         photo_url: tg?.initDataUnsafe?.user?.photo_url || "https://vk.com/images/camera_200.png",
         rating: 100,
+                soundSetting: "vk",
+
         status: "на зв'язку",
         currentTrack: "",
         coins: 100,
@@ -1712,6 +1809,8 @@ function loadProfileFriends(userId) {
         document.getElementById('edit-privacy-friends').value = activeUser.privacyFriends || 'all';
         document.getElementById('edit-privacy-wall').value = activeUser.privacyWall || 'all';
         document.getElementById('edit-blacklist').value = (activeUser.blacklist || []).join(', ');
+                document.getElementById('edit-sound-setting').value = activeUser.soundSetting || 'vk';
+
         document.getElementById('edit-politics').value = activeUser.politics || '';
         document.getElementById('edit-worldview').value = activeUser.worldview || '';
         document.getElementById('edit-smoking').value = activeUser.smoking || '';
@@ -1737,6 +1836,8 @@ function loadProfileFriends(userId) {
         
         const blacklistRaw = document.getElementById('edit-blacklist').value;
         const blacklist = blacklistRaw.split(',').map(s => s.trim()).filter(Boolean);
+const newSoundSetting = document.getElementById('edit-sound-setting').value;
+activeUser.soundSetting = newSoundSetting;
 
         const newBirthDate = document.getElementById('edit-birthdate').value;
         const newRelType = document.getElementById('edit-relationship-type').value;
@@ -1782,8 +1883,11 @@ function loadProfileFriends(userId) {
         activeUser.movies = document.getElementById('edit-movies').value.trim();
         activeUser.quotes = document.getElementById('edit-quotes').value.trim();
         activeUser.about = document.getElementById('edit-about').value.trim();
+        activeUser.soundSetting = document.getElementById('edit-sound-setting').value;
 
         await db.collection('users').doc(activeUser.id).update({
+                        soundSetting: activeUser.soundSetting,
+
             birthDate: activeUser.birthDate,
             city: activeUser.city,
             relationshipType: activeUser.relationshipType,
@@ -3142,7 +3246,8 @@ function loadProfileFriends(userId) {
             if (!isFirstLoad && !snap.empty) {
                 const lastMsg = snap.docs[snap.docs.length - 1].data();
                 if (lastMsg.senderId !== activeUser.id) {
-                    playClickSound();
+                                        playNotificationSound();
+
                 }
             }
             isFirstLoad = false;
