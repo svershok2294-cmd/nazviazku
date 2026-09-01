@@ -1337,6 +1337,7 @@
         loadWallPosts(activeUser.id);
         loadProfileVisitors(activeUser.id);
         loadMyInstalledApps();
+        loadUserGifts(activeUser.id)
         switchTab('profile');
     }
 
@@ -1367,6 +1368,7 @@
         loadWallPosts(targetId);
         loadProfileVisitors(targetId);
         loadUserInstalledApps(targetId);
+        loadUserGifts(targetId);
         switchTab('profile');
     }
 
@@ -4021,6 +4023,30 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+function loadUserGifts(userId) {
+    const giftsGrid = document.getElementById('gifts-grid');
+    const giftsCounter = document.getElementById('gifts-counter');
+    if (!giftsGrid || !giftsCounter) return;
+
+    db.collection('users').doc(userId).collection('gifts').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        giftsCounter.innerText = snap.size;
+        giftsGrid.innerHTML = '';
+        
+        if (snap.empty) {
+            giftsGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
+            return;
+        }
+
+        snap.forEach(doc => {
+            const g = doc.data();
+            giftsGrid.innerHTML += `
+                <div style="text-align: center; font-size: 20px; cursor: pointer; flex-shrink: 0;" title="${escapeText(g.title)} від ${escapeText(g.sender)}: ${escapeText(g.comment || '')}">
+                    ${g.emoji}
+                </div>
+            `;
+        });
+    });
+}
 
         </script>
    
