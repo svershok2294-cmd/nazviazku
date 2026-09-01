@@ -2196,7 +2196,7 @@
         }
     }
 
-    db.collection('users').doc(activeUser.id).collection('friends').onSnapshot(async snapshot => {
+    db.collection('users').doc(viewingProfileId).collection('friends').onSnapshot(async snapshot => {
         userFriendsMap.clear();
         const sidebarGrid = document.getElementById('sidebar-friends-grid');
         const myFriendsList = document.getElementById('my-friends-list');
