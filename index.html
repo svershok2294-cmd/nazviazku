@@ -298,6 +298,28 @@
         .gifts-picker-row { display: flex; gap: 8px; margin-bottom: 12px; justify-content: center; }
         .gift-select-item { cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center; border-radius: 2px; font-size: 10px; }
         .gift-select-item span { font-size: 24px; }
+   /* Ефект м'якого натискання на всі кнопки, вкладки та картки */
+.btn-vk, 
+.btn-vk-secondary, 
+.tab-btn, 
+.friend-card, 
+.user-row-card, 
+.app-store-card, 
+.post-action {
+    transition: transform 0.08s ease, opacity 0.08s ease;
+}
+
+.btn-vk:active, 
+.btn-vk-secondary:active, 
+.tab-btn:active, 
+.friend-card:active, 
+.user-row-card:active, 
+.app-store-card:active, 
+.post-action:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+}
+
     </style>
 </head>
 <body class="mode-mobile">
