@@ -1306,6 +1306,81 @@
     let viewingProfileId = null; 
     let viewingGroupId = null;   
     let currentGroupCreatorId = null;
+let friendsUnsubscribe = null;
+
+function loadProfileFriends(userId) {
+    if (friendsUnsubscribe) {
+        friendsUnsubscribe();
+        friendsUnsubscribe = null;
+    }
+
+    friendsUnsubscribe = db.collection('users').doc(userId).collection('friends').onSnapshot(async snapshot => {
+        userFriendsMap.clear();
+        const sidebarGrid = document.getElementById('sidebar-friends-grid');
+        const myFriendsList = document.getElementById('my-friends-list');
+
+        sidebarGrid.innerHTML = '';
+        if (myFriendsList) myFriendsList.innerHTML = '';
+
+        document.getElementById('friends-total-counter').innerText = snapshot.size;
+        document.getElementById('sidebar-friends-count').innerText = snapshot.size;
+
+        if (snapshot.empty) {
+            sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У користувача ще немає друзів</span>';
+            if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Список друзів порожній.</div>';
+            document.getElementById('sidebar-friends-online').innerText = '0';
+            return;
+        }
+
+        let onlineCount = 0;
+        let count = 0;
+
+        for (let docSnap of snapshot.docs) {
+            const friend = docSnap.data();
+            const friendId = docSnap.id;
+            userFriendsMap.set(friendId, friend);
+
+            let isOnline = false;
+            try {
+                const uDoc = await db.collection('users').doc(friendId).get();
+                if (uDoc.exists && uDoc.data().lastSeen) {
+                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
+                    if (diffMs < 120000) { 
+                        isOnline = true;
+                        onlineCount++;
+                    }
+                }
+            } catch(e) {}
+
+            if (count < 6) {
+                sidebarGrid.innerHTML += `
+                    <div class="friend-card" title="${escapeText(friend.name)}" onclick="openUserProfile('${friendId}')">
+                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
+                        ${escapeText(friend.name.split(' ')[0])}
+                    </div>
+                `;
+                count++;
+            }
+
+            if (myFriendsList) {
+                myFriendsList.innerHTML += `
+                    <div class="user-row-card">
+                        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
+                            <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
+                            <div>
+                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
+                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        const onlineSpan = document.getElementById('sidebar-friends-online');
+        if (onlineSpan) onlineSpan.innerText = onlineCount;
+    });
+}
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
     document.getElementById('top-user-name').innerText = userFullName;
@@ -1355,6 +1430,7 @@
         viewingProfileId = null;
         viewingGroupId = null;
         currentGroupCreatorId = null;
+        loadProfileFriends(activeUser.id);
         renderProfileInfo(activeUser, userFullName, true, activeUser.id);
         loadWallPosts(activeUser.id);
         loadProfileVisitors(activeUser.id);
@@ -1375,6 +1451,7 @@
         }
 
         viewingProfileId = targetId;
+        loadProfileFriends(targetId);
         viewingGroupId = null;
         currentGroupCreatorId = null;
 
