@@ -1445,6 +1445,15 @@
             checkBirthdaysWidget();
         });
     }
+function formatOnlineStatus(lastSeen, isMe) {
+    if (isMe) return '<span style="color: #43a047;">(online)</span>';
+    if (!lastSeen) return '<span style="color: var(--vk-subtext);">(офлайн)</span>';
+    const date = lastSeen.toDate ? lastSeen.toDate() : new Date(lastSeen);
+    const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+    if (diffMin < 2) return '<span style="color: #43a047;">(online)</span>';
+    if (diffMin < 60) return `(був ${diffMin} хв тому)`;
+    return `(був о ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
+}
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
     document.getElementById('top-user-name').innerText = userFullName;
@@ -1483,11 +1492,20 @@
                 }
             });
 
-            setInterval(() => {
-                db.collection('users').doc(activeUser.id).update({
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(e => {});
-            }, 30000);
+            const sendHeartbeat = () => {
+    db.collection('users').doc(activeUser.id).update({
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(e => {});
+};
+
+setInterval(sendHeartbeat, 45000);
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        sendHeartbeat();
+    }
+});
+
 
             goHome();
             checkInviteDeepLink();
@@ -1583,6 +1601,11 @@
         document.getElementById('profile-avatar').src = u.photo_url || "https://vk.com/images/camera_200.png";
         
         const userIsAdmin = checkIsAdmin(userId);
+            const onlineStatusEl = document.getElementById('profile-online-text');
+    if (onlineStatusEl) {
+        onlineStatusEl.innerHTML = formatOnlineStatus(u.lastSeen, isMe);
+    }
+
         document.getElementById('profile-name').innerText = uName + (userIsAdmin ? " 👑 [Адмін]" : "");
         document.getElementById('status-display').innerText = u.status || "на зв'язку";
         document.getElementById('profile-coins').innerText = u.coins || 100;
