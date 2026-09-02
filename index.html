@@ -11,8 +11,9 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<!-- YouTube IFrame Player API -->
-<script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- YouTube IFrame Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         :root {
@@ -144,7 +145,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* БЕЙДЖИК КІЛЬКОСТІ */
         .badge-count {
             background: #e53935;
             color: #fff;
@@ -191,10 +191,7 @@
         .info-block-header { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 4px 6px; font-weight: bold; color: var(--vk-link); font-size: 11px; margin: 8px 0 4px 0; }
         .spoiler-toggle { color: var(--vk-link); cursor: pointer; text-decoration: underline; font-weight: bold; display: inline-block; margin-bottom: 8px; }
 
-        /* ХЕШТЕГИ У ТЕКСТІ */
         .hashtag-link { color: var(--vk-link); cursor: pointer; text-decoration: underline; font-weight: bold; }
-
-        /* ЗІРОЧКИ ОЦІНКИ ФОТО / ВІДЕО */
         .star-rating { display: inline-flex; gap: 3px; font-size: 18px; cursor: pointer; }
         .star-rating span { color: #ccc; }
         .star-rating span.active { color: #f5c518; }
@@ -225,7 +222,7 @@
         .comment-author { font-weight: bold; color: var(--vk-link); margin-right: 4px; }
         .comment-input-row { display: flex; gap: 4px; margin-top: 6px; }
 
-        /* ЧАТ ТА МІНІ-ГРА */
+        /* ЧАТ */
         .chat-container { border: 1px solid var(--vk-border); background: #ffffff; display: flex; flex-direction: column; }
         .chat-top-bar { background: #f7f7f7; border-bottom: 1px solid var(--vk-border); padding: 6px 10px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between; align-items: center; }
         .chat-stream { height: 360px; overflow-y: auto; padding: 10px; background: #fbfbfb; display: flex; flex-direction: column; gap: 8px; }
@@ -254,38 +251,27 @@
         .ttt-cell { background: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; cursor: pointer; user-select: none; }
         .ttt-cell:hover { background: #f0f4f8; }
 
-        /* РЕТРО ФЕРМА СТИЛІ */
-.farm-plot {
-    width: 65px;
-    height: 65px;
-    background: #6d4c41;
-    border: 2px solid #3e2723;
-    transform: rotate(45deg);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    font-size: 9px;
-    text-align: center;
-    margin: 10px auto;
-}
-.farm-plot span {
-    transform: rotate(-45deg); /* Щоб текст усередині ромба не перевертався */
-}
-.farm-plot.growing { background: #81c784; border-color: #2e7d32; }
-.farm-plot.ready { background: #fff176; border-color: #fbc02d; }
-.animal-card { background: #fafafa; border: 1px solid var(--vk-border); padding: 6px 10px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-
-        /* ВІНТАЖНИЙ АУДІОПЛЕЄР 2007 */
-        .vintage-player-box { border: 1px solid var(--vk-border); background: #ffffff; }
-        .vintage-audio-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--vk-border-subtle); }
-        .vintage-play-btn { width: 20px; height: 20px; background: #597da3; color: #ffffff; border: 1px solid #4a6f94; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; flex-shrink: 0; }
-        .audio-track-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .audio-progress-bar { width: 80px; height: 5px; background: #d7e0e8; border-radius: 1px; cursor: pointer; position: relative; }
-        .audio-progress-fill { height: 100%; background: #45688e; width: 0%; }
-        .audio-duration-text { font-size: 9px; color: var(--vk-subtext); width: 32px; text-align: right; }
+        /* РЕТРО ФЕРМА */
+        .farm-plot {
+            width: 65px;
+            height: 65px;
+            background: #6d4c41;
+            border: 2px solid #3e2723;
+            transform: rotate(45deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            font-size: 9px;
+            text-align: center;
+            margin: 10px auto;
+        }
+        .farm-plot span { transform: rotate(-45deg); }
+        .farm-plot.growing { background: #81c784; border-color: #2e7d32; }
+        .farm-plot.ready { background: #fff176; border-color: #fbc02d; }
+        .animal-card { background: #fafafa; border: 1px solid var(--vk-border); padding: 6px 10px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 
         /* ВІДЕО ТА ДОДАТКИ */
         .video-card-item { border: 1px solid var(--vk-border); padding: 4px; background: #ffffff; text-align: center; cursor: pointer; }
@@ -314,28 +300,14 @@
         .gifts-picker-row { display: flex; gap: 8px; margin-bottom: 12px; justify-content: center; }
         .gift-select-item { cursor: pointer; padding: 6px; border: 1px solid var(--vk-border); text-align: center; border-radius: 2px; font-size: 10px; }
         .gift-select-item span { font-size: 24px; }
-   /* Ефект м'якого натискання на всі кнопки, вкладки та картки */
-.btn-vk, 
-.btn-vk-secondary, 
-.tab-btn, 
-.friend-card, 
-.user-row-card, 
-.app-store-card, 
-.post-action {
-    transition: transform 0.08s ease, opacity 0.08s ease;
-}
 
-.btn-vk:active, 
-.btn-vk-secondary:active, 
-.tab-btn:active, 
-.friend-card:active, 
-.user-row-card:active, 
-.app-store-card:active, 
-.post-action:active {
-    transform: scale(0.96);
-    opacity: 0.85;
-}
-
+        .btn-vk, .btn-vk-secondary, .tab-btn, .friend-card, .user-row-card, .app-store-card, .post-action {
+            transition: transform 0.08s ease, opacity 0.08s ease;
+        }
+        .btn-vk:active, .btn-vk-secondary:active, .tab-btn:active, .friend-card:active, .user-row-card:active, .app-store-card:active, .post-action:active {
+            transform: scale(0.96);
+            opacity: 0.85;
+        }
     </style>
 </head>
 <body class="mode-mobile">
@@ -392,7 +364,7 @@
             <div id="tab-profile" class="tab-content active">
                 <div class="profile-container">
                     
-                    <!-- ЛІВА КОЛОНКА ПРОФІЛЮ -->
+                    <!-- ЛІВА КОЛОНКА -->
                     <div class="profile-left-col">
                         <div class="avatar-wrap">
                             <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
@@ -406,30 +378,26 @@
                             </div>
                         </div>
 
-                        <!-- ДЛЯ ВЛАСНОГО ПРОФІЛЮ -->
                         <div id="profile-action-btns" style="display: none; gap: 4px; margin-top: 6px;">
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openModal('modal-rating')">+ Рейтинг</button>
                             <button class="btn-vk-secondary" style="flex: 1; font-size: 10px;" onclick="openEditProfileModal()">Ред.</button>
                         </div>
 
-                        <!-- КНОПКА ЗАВДАНЬ ДЛЯ ДРУЗІВ -->
                         <div id="profile-task-btn-wrap" style="margin-top: 6px; display: none;">
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #43a047;" onclick="doRatingTask()">✨ Завдання (+10%)</button>
                         </div>
 
-                        <!-- КНОПКИ КЕРУВАННЯ ГРУПОЮ -->
                         <div id="group-manage-btn-wrap" style="margin-top: 6px; display: none; flex-direction: column; gap: 4px;">
                             <button class="btn-vk" style="width: 100%; font-size: 10px; background: #d32f2f;" onclick="openEditGroupModal()">⚙️ Керувати групою</button>
                         </div>
 
-                        <!-- ДЛЯ ЧУЖОГО ПРОФІЛЮ -->
                         <div id="friend-profile-action-btns" style="display: none; flex-direction: column; gap: 4px; margin-top: 6px;">
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-send-msg-btn">✉️ Написати повідомлення</button>
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" onclick="openModal('modal-gift')">🎁 Надіслати подарунок</button>
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
                         </div>
 
-                        <!-- ПРОПОЗИЦІЯ СІМЕЙНОГО СТАНУ (БАНЕР) -->
+                        <!-- ПРОПОЗИЦІЯ СІМЕЙНОГО СТАНУ -->
                         <div id="relationship-proposal-banner" style="display: none; background: #fffde7; border: 1px solid #fbc02d; padding: 6px; margin-top: 8px; border-radius: 2px; font-size: 10px;">
                             <div id="relationship-proposal-text" style="font-weight: bold; margin-bottom: 4px; color: #f57f17;">Пропозиція сімейного стану</div>
                             <div style="display: flex; gap: 4px;">
@@ -438,7 +406,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК МОЇХ ДОДАТКІВ -->
+                        <!-- ДОДАТКИ -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Мої Додатки 🎮</span>
@@ -449,7 +417,7 @@
                             </div>
                         </div>
 
-                        <!-- ГОСТЬОВА КНИГА -->
+                        <!-- ГОСТІ -->
                         <div class="side-block">
                             <div class="side-block-header"><span>👀 Хто заходив</span></div>
                             <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="profile-visitors-list">
@@ -457,7 +425,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ДНІВ НАРОДЖЕННЯ -->
+                        <!-- ДНІ НАРОДЖЕННЯ -->
                         <div class="side-block">
                             <div class="side-block-header"><span>🎂 Дні народження</span></div>
                             <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="birthdays-widget-content">
@@ -465,7 +433,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ДРУЗІВ 3x2 -->
+                        <!-- ДРУЗІ 3x2 -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Друзі (<span id="sidebar-friends-count">0</span>) <span style="font-weight: normal; color: #43a047;" id="sidebar-friends-online-wrap">• <span id="sidebar-friends-online">0</span> онлайн</span></span>
@@ -476,7 +444,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ФОТОАЛЬБОМІВ -->
+                        <!-- ФОТО СМУЖКА -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Фотографії (<span id="sidebar-photos-count">0</span>)</span>
@@ -487,7 +455,7 @@
                             </div>
                         </div>
 
-                        <!-- БЛОК ПОДАРУНКІВ -->
+                        <!-- ПОДАРУНКИ -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Подарунки (<span id="gifts-counter">0</span>)</span>
@@ -499,7 +467,7 @@
                         </div>
                     </div>
 
-                    <!-- ПРАВА КОЛОНКА ПРОФІЛЮ -->
+                    <!-- ПРАВА КОЛОНКА -->
                     <div class="profile-right-col">
                         <div class="profile-name-row">
                             <div>
@@ -513,35 +481,15 @@
                             </div>
                         </div>
 
-                        <!-- БАЗОВА АНКЕТА -->
                         <table class="info-table">
-                            <tr>
-                                <td class="info-label">День народження:</td>
-                                <td class="info-value" id="profile-birthday-display">не вказано</td>
-                            </tr>
-                            <tr>
-                                <td class="info-label">Місто:</td>
-                                <td class="info-value" id="profile-city">не вказано</td>
-                            </tr>
-                            <tr>
-                                <td class="info-label">Сімейний стан:</td>
-                                <td class="info-value" id="profile-relationship">не вказано</td>
-                            </tr>
-                            <tr>
-                                <td class="info-label">Мобільний телефон:</td>
-                                <td class="info-value" id="profile-phone">не вказано</td>
-                            </tr>
-                            <tr>
-                                <td class="info-label">ICQ UIN:</td>
-                                <td class="info-value" id="profile-icq">не вказано</td>
-                            </tr>
-                            <tr>
-                                <td class="info-label">Баланс голосів:</td>
-                                <td class="info-value"><b style="color: #45688e;" id="profile-coins">100</b> золотих</td>
-                            </tr>
+                            <tr><td class="info-label">День народження:</td><td class="info-value" id="profile-birthday-display">не вказано</td></tr>
+                            <tr><td class="info-label">Місто:</td><td class="info-value" id="profile-city">не вказано</td></tr>
+                            <tr><td class="info-label">Сімейний стан:</td><td class="info-value" id="profile-relationship">не вказано</td></tr>
+                            <tr><td class="info-label">Мобільний телефон:</td><td class="info-value" id="profile-phone">не вказано</td></tr>
+                            <tr><td class="info-label">ICQ UIN:</td><td class="info-value" id="profile-icq">не вказано</td></tr>
+                            <tr><td class="info-label">Баланс монет:</td><td class="info-value"><b style="color: #45688e;" id="profile-coins">100</b> золотих</td></tr>
                         </table>
 
-                        <!-- СПОЙЛЕР ДЕТАЛЬНОЇ ІНФОРМАЦІЇ -->
                         <span class="spoiler-toggle" id="spoiler-btn" onclick="toggleDetailedInfo()">[показати детальну інформацію]</span>
 
                         <div id="detailed-info-block" style="display: none; border-top: 1px solid var(--vk-border-subtle); padding-top: 4px;">
@@ -610,7 +558,6 @@
                             </div>
                         </div>
 
-                        <!-- СПИСОК ЗАПИСІВ СТІНИ -->
                         <div id="wall-posts-list"></div>
                     </div>
                 </div>
@@ -627,7 +574,7 @@
                 </div>
             </div>
 
-            <!-- 3. МОЇ ПОВІДОМЛЕННЯ (ДІАЛОГИ ТА ЛС) -->
+            <!-- 3. МОЇ ПОВІДОМЛЕННЯ -->
             <div id="tab-chat" class="tab-content">
                 <div class="chat-container">
                     <div class="chat-top-bar">
@@ -663,7 +610,6 @@
                     <div id="active-chat-view" style="display: none; position: relative;">
                         <div class="chat-stream" id="chat-stream"></div>
                         
-                        <!-- ПАНЕЛЬ СТІКЕРІВ -->
                         <div id="stickers-popup" class="stickers-popup" style="display: none;">
                             <span class="sticker-item" onclick="sendSticker('😀')">😀</span>
                             <span class="sticker-item" onclick="sendSticker('😎')">😎</span>
@@ -714,7 +660,6 @@
                     <button class="btn-vk" onclick="findUserByIdPrompt()">Знайти за ID</button>
                 </div>
 
-                <!-- ЗАЯВКИ В ДРУЗІ -->
                 <div id="incoming-requests-section" style="display: none; margin-bottom: 15px;">
                     <div style="font-weight: bold; margin-bottom: 6px; color: #d32f2f;">Заявки в друзі (<span id="requests-count">0</span>):</div>
                     <div id="incoming-requests-list" class="user-directory-list"></div>
@@ -723,7 +668,6 @@
                 <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-subtext);">Список ваших друзів:</div>
                 <div id="my-friends-list" class="user-directory-list"></div>
 
-                <!-- ПІДПИСНИКИ -->
                 <div id="subscribers-section" style="display: none; margin-top: 15px;">
                     <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-subtext);">Мої підписники (<span id="subscribers-count">0</span>):</div>
                     <div id="subscribers-list" class="user-directory-list"></div>
@@ -763,17 +707,10 @@
 
             <!-- 7. АУДІОЗАПИСИ -->
             <div id="tab-music" class="tab-content">
-    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-        <input type="text" id="music-query" placeholder="Пошук пісень..." style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
-        <button onclick="searchYouTubeMusic()" class="btn-vk">🔍</button>
-    </div>
-    <div id="my-saved-music-container"></div>
-</div>
+                <!-- Інтерфейс створюється динамічно функцією renderMusicTab() -->
+            </div>
 
-
-                
-
-            <!-- 8. СПІЛЬНОТИ (ГРУПИ) -->
+            <!-- 8. СПІЛЬНОТИ -->
             <div id="tab-groups" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-size: 13px; font-weight: bold; color: var(--vk-link);">Тематичні спільноти</span>
@@ -793,51 +730,40 @@
                     <div style="color: var(--vk-subtext); padding: 10px;">Завантаження бібліотеки ігор...</div>
                 </div>
 
-                <!-- 🏡 Ретро-Ферма у точному ізометричному стилі оригінального ВК -->
-<div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin: 15px 0 10px 0; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
-    🏡 Ретро-Ферма («Щаслива ферма»)
-</div>
+                <!-- 🏡 РЕТРО ФЕРМА -->
+                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin: 15px 0 10px 0; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
+                    🏡 Ретро-Ферма («Щаслива ферма»)
+                </div>
 
-<!-- Ігровий екран-галявина в ізометрії -->
-<div style="background: linear-gradient(180deg, #6bb55b 0%, #4a8c3f 100%); border: 3px solid #2d5a27; border-radius: 6px; padding: 12px; margin-bottom: 10px; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.3);">
-    
-    <!-- Верхній рядок: Баланс та склад -->
-    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.4); padding: 5px 10px; border-radius: 4px; color: #fff; margin-bottom: 10px; font-size: 11px;">
-        <span>🏠 Хата • Склад: 🌾 <b id="storage-wheat">0</b> | 🥚 <b id="storage-eggs">0</b> | 🥛 <b id="storage-milk">0</b></span>
-        <span>🪙 <b id="storage-coins">100</b> монет</span>
-    </div>
+                <div style="background: linear-gradient(180deg, #6bb55b 0%, #4a8c3f 100%); border: 3px solid #2d5a27; border-radius: 6px; padding: 12px; margin-bottom: 10px; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.4); padding: 5px 10px; border-radius: 4px; color: #fff; margin-bottom: 10px; font-size: 11px;">
+                        <span>🏠 Хата • Склад: 🌾 <b id="storage-wheat">0</b> | 🥚 <b id="storage-eggs">0</b> | 🥛 <b id="storage-milk">0</b></span>
+                        <span>🪙 <b id="storage-coins">100</b> монет</span>
+                    </div>
 
-    <!-- Ізометричне поле (імітація галявини з грядками під кутом) -->
-    <div style="background: #3e7a35; border: 2px inset #2d5a27; height: 190px; border-radius: 6px; position: relative; display: flex; justify-content: center; align-items: center; perspective: 600px; margin-bottom: 10px;">
-        
-        <!-- Сітка ізометричних грядок (ромби) -->
-        <div id="farm-plots-container" style="display: grid; grid-template-columns: repeat(2, 65px); gap: 14px; transform: rotateX(35deg) rotateZ(-15deg);">
-            <!-- Грядки автоматично малюватимуться тут -->
-        </div>
-    </div>
+                    <div style="background: #3e7a35; border: 2px inset #2d5a27; height: 190px; border-radius: 6px; position: relative; display: flex; justify-content: center; align-items: center; perspective: 600px; margin-bottom: 10px;">
+                        <div id="farm-plots-container" style="display: grid; grid-template-columns: repeat(2, 65px); gap: 14px; transform: rotateX(35deg) rotateZ(-15deg);"></div>
+                    </div>
 
-    <!-- Тварини на подвір'ї -->
-    <div style="background: rgba(255, 255, 255, 0.9); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; font-size: 10px; display: flex; justify-content: space-between; align-items: center;">
-        <div id="farm-animals-container" style="flex: 1; overflow-x: auto;">
-            <span style="color: var(--vk-subtext);">Тварин немає.</span>
-        </div>
-        <div style="display: flex; gap: 4px; flex-shrink: 0;">
-            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('chicken')">+ Курка (30 🪙)</button>
-            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('cow')">+ Корова (70 🪙)</button>
-        </div>
-    </div>
+                    <div style="background: rgba(255, 255, 255, 0.9); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; font-size: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div id="farm-animals-container" style="flex: 1; overflow-x: auto;">
+                            <span style="color: var(--vk-subtext);">Тварин немає.</span>
+                        </div>
+                        <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('chicken')">+ Курка (30 🪙)</button>
+                            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('cow')">+ Корова (70 🪙)</button>
+                        </div>
+                    </div>
 
-    <!-- Класична нижня панель інструментів (як у грі) -->
-    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.5); padding: 6px; border-radius: 6px;">
-        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лопата">🌱</button>
-        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Насіння">🌾</button>
-        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лійка">💧</button>
-        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Добриво">🧪</button>
-        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Зібрати руку">✋</button>
-    </div>
-</div>
-
-
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.5); padding: 6px; border-radius: 6px;">
+                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лопата">🌱</button>
+                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Насіння">🌾</button>
+                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лійка">💧</button>
+                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Добриво">🧪</button>
+                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Зібрати врожай">✋</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- 10. НОТАТКИ -->
             <div id="tab-notes" class="tab-content">
@@ -877,7 +803,6 @@
 </div>
 
 <!-- МОДАЛЬНІ ВІКНА -->
-<!-- АДМІН: ЗАВАНТАЖЕННЯ ГРИ -->
 <div class="vk-modal" id="modal-add-app">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -886,7 +811,7 @@
         </div>
         <div class="vk-modal-body">
             <input type="text" id="app-title-input" class="input-vk modal-input" placeholder="Назва гри (напр. Тетріс / Змійка)">
-            <input type="text" id="app-url-input" class="input-vk modal-input" placeholder="Посилання на гру (URL або iframe/embed)">
+            <input type="text" id="app-url-input" class="input-vk modal-input" placeholder="Посилання на гру (URL або embed)">
             <textarea id="app-desc-input" class="wall-textarea" style="height: 70px;" placeholder="Короткий опис гри..."></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 8px;">
                 <button class="btn-vk-secondary" onclick="closeModal('modal-add-app')">Скасувати</button>
@@ -896,7 +821,6 @@
     </div>
 </div>
 
-<!-- ІГРОВИЙ ПЛЕЄР МОДАЛКА -->
 <div class="vk-modal" id="modal-play-game">
     <div class="vk-modal-box" style="max-width: 520px; width: 96%;">
         <div class="vk-modal-header">
@@ -939,7 +863,6 @@
             <input type="text" id="edit-phone" class="input-vk modal-input" placeholder="Номер телефону">
             <input type="text" id="edit-icq" class="input-vk modal-input" placeholder="Номер ICQ">
 
-            <!-- НАЛАШТУВАННЯ ПРИВАТНОСТІ ДЕТАЛЬНІ -->
             <div style="font-weight: bold; margin-top: 8px; margin-bottom: 4px; color: var(--vk-link);">Налаштування приватності:</div>
             <label style="font-size: 10px; color: var(--vk-subtext);">Хто бачить дату народження:</label>
             <select id="edit-privacy-birthdate" class="input-vk modal-input">
@@ -962,15 +885,8 @@
                 <option value="nobody">Ніхто</option>
             </select>
 
-            <select id="edit-privacy-profile" class="input-vk modal-input" style="display:none;">
-                <option value="all">Усі</option>
-            </select>
-            <select id="edit-privacy-messages" class="input-vk modal-input" style="display:none;">
-                <option value="all">Усі</option>
-            </select>
-
             <input type="text" id="edit-blacklist" class="input-vk modal-input" placeholder="Чорний список (ID через кому)">
-            <!-- НАЛАШТУВАННЯ ЗВУКУ -->
+
             <div style="font-weight: bold; margin-top: 8px; margin-bottom: 4px; color: var(--vk-link);">Звук сповіщень:</div>
             <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 8px;">
                 <select id="edit-sound-setting" class="input-vk modal-input" style="flex: 1; margin-bottom: 0;" onchange="testSound(this.value)">
@@ -1003,7 +919,6 @@
     </div>
 </div>
 
-<!-- РЕДАГУВАННЯ ГРУПИ -->
 <div class="vk-modal" id="modal-edit-group">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -1024,7 +939,6 @@
     </div>
 </div>
 
-<!-- ГРАФІТІ В ЧАТІ -->
 <div class="vk-modal" id="modal-chat-graffiti">
     <div class="vk-modal-box" style="width: 370px;">
         <div class="vk-modal-header">
@@ -1052,7 +966,6 @@
     </div>
 </div>
 
-<!-- ДОДАТИ ВІДЕО -->
 <div class="vk-modal" id="modal-video">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -1071,7 +984,6 @@
     </div>
 </div>
 
-<!-- ПЕРЕГЛЯД ВІДЕО -->
 <div class="vk-modal" id="modal-video-view">
     <div class="vk-modal-box" style="max-width: 480px;">
         <div class="vk-modal-header">
@@ -1105,7 +1017,6 @@
     </div>
 </div>
 
-<!-- ПЕРЕГЛЯД ФОТО -->
 <div class="vk-modal" id="modal-photo-view">
     <div class="vk-modal-box" style="max-width: 450px;">
         <div class="vk-modal-header">
@@ -1139,7 +1050,6 @@
     </div>
 </div>
 
-<!-- СТВОРЕННЯ ГРУПИ -->
 <div class="vk-modal" id="modal-group">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -1232,6 +1142,7 @@
     </div>
 </div>
 
+<!-- ЄДИНИЙ ГОЛОВНИЙ СКРИПТ -->
 <script>
     const BREAKPOINT = 768;
     let userPreference = localStorage.getItem('nz_display_pref') || 'auto';
@@ -1262,7 +1173,7 @@
     window.addEventListener('resize', () => { if (userPreference === 'auto') syncLayout(); });
     syncLayout();
 
-    // Firebase конфігурація
+    // Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyC5Ox_25cWYi12M3dMlCpCXKfT-oZub8ts",
         authDomain: "nazviazku.firebaseapp.com",
@@ -1304,7 +1215,8 @@
 
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
-    // === ГЕНЕРАТОР РЕТРО ЗВУКІВ ===
+
+    // Звуковий генератор Web Audio API
     let retroAudioCtx = null;
     function getAudioContext() {
         if (!retroAudioCtx) retroAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1389,14 +1301,24 @@
         playNotificationSound(soundKey);
     }
 
+    // Генерація постійного ID для тестів у звичайному браузері
+    function getStableUserId() {
+        if (tg?.initDataUnsafe?.user?.id) return String(tg.initDataUnsafe.user.id);
+        let storedId = localStorage.getItem('nz_stable_user_id');
+        if (!storedId) {
+            storedId = "id_" + Math.floor(Math.random() * 89999 + 10000);
+            localStorage.setItem('nz_stable_user_id', storedId);
+        }
+        return storedId;
+    }
+
     let activeUser = {
-        id: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "id_" + Math.floor(Math.random() * 89999 + 10000),
+        id: getStableUserId(),
         first_name: tg?.initDataUnsafe?.user?.first_name || "Користувач",
         last_name: tg?.initDataUnsafe?.user?.last_name || "",
         photo_url: tg?.initDataUnsafe?.user?.photo_url || "https://vk.com/images/camera_200.png",
         rating: 100,
-                soundSetting: "vk",
-
+        soundSetting: "vk",
         status: "на зв'язку",
         currentTrack: "",
         coins: 100,
@@ -1434,81 +1356,95 @@
     let viewingProfileId = null; 
     let viewingGroupId = null;   
     let currentGroupCreatorId = null;
-let friendsUnsubscribe = null;
+    let friendsUnsubscribe = null;
+    let userFriendsMap = new Map();
+    let cachedUsers = [];
 
-function loadProfileFriends(userId) {
-    if (friendsUnsubscribe) {
-        friendsUnsubscribe();
-        friendsUnsubscribe = null;
-    }
-
-    friendsUnsubscribe = db.collection('users').doc(userId).collection('friends').onSnapshot(async snapshot => {
-        userFriendsMap.clear();
-        const sidebarGrid = document.getElementById('sidebar-friends-grid');
-        const myFriendsList = document.getElementById('my-friends-list');
-
-        sidebarGrid.innerHTML = '';
-        if (myFriendsList) myFriendsList.innerHTML = '';
-
-        document.getElementById('friends-total-counter').innerText = snapshot.size;
-        document.getElementById('sidebar-friends-count').innerText = snapshot.size;
-
-        if (snapshot.empty) {
-            sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У користувача ще немає друзів</span>';
-            if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Список друзів порожній.</div>';
-            document.getElementById('sidebar-friends-online').innerText = '0';
-            return;
+    // Єдине керування списком друзів профілю
+    function loadProfileFriends(userId) {
+        if (friendsUnsubscribe) {
+            friendsUnsubscribe();
+            friendsUnsubscribe = null;
         }
 
-        let onlineCount = 0;
-        let count = 0;
+        friendsUnsubscribe = db.collection('users').doc(userId).collection('friends').onSnapshot(async snapshot => {
+            userFriendsMap.clear();
+            const sidebarGrid = document.getElementById('sidebar-friends-grid');
+            const myFriendsList = document.getElementById('my-friends-list');
 
-        for (let docSnap of snapshot.docs) {
-            const friend = docSnap.data();
-            const friendId = docSnap.id;
-            userFriendsMap.set(friendId, friend);
+            sidebarGrid.innerHTML = '';
+            if (myFriendsList) myFriendsList.innerHTML = '';
 
-            let isOnline = false;
-            try {
-                const uDoc = await db.collection('users').doc(friendId).get();
-                if (uDoc.exists && uDoc.data().lastSeen) {
-                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
-                    if (diffMs < 120000) { 
-                        isOnline = true;
-                        onlineCount++;
-                    }
-                }
-            } catch(e) {}
+            document.getElementById('friends-total-counter').innerText = snapshot.size;
+            document.getElementById('sidebar-friends-count').innerText = snapshot.size;
 
-            if (count < 6) {
-                sidebarGrid.innerHTML += `
-                    <div class="friend-card" title="${escapeText(friend.name)}" onclick="openUserProfile('${friendId}')">
-                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
-                        ${escapeText(friend.name.split(' ')[0])}
-                    </div>
-                `;
-                count++;
+            if (snapshot.empty) {
+                sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У користувача ще немає друзів</span>';
+                if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Список друзів порожній.</div>';
+                document.getElementById('sidebar-friends-online').innerText = '0';
+                loadAllRegisteredUsers();
+                renderDialogsList();
+                checkBirthdaysWidget();
+                return;
             }
 
-            if (myFriendsList) {
-                myFriendsList.innerHTML += `
-                    <div class="user-row-card">
-                        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
-                            <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
-                            <div>
-                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
-                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'}</div>
+            let onlineCount = 0;
+            let count = 0;
+
+            for (let docSnap of snapshot.docs) {
+                const friend = docSnap.data();
+                const friendId = docSnap.id;
+                userFriendsMap.set(friendId, friend);
+
+                let isOnline = false;
+                try {
+                    const uDoc = await db.collection('users').doc(friendId).get();
+                    if (uDoc.exists && uDoc.data().lastSeen) {
+                        const diffMs = new Date() - uDoc.data().lastSeen.toDate();
+                        if (diffMs < 120000) { 
+                            isOnline = true;
+                            onlineCount++;
+                        }
+                    }
+                } catch(e) {}
+
+                if (count < 6) {
+                    sidebarGrid.innerHTML += `
+                        <div class="friend-card" title="${escapeText(friend.name)}" onclick="openUserProfile('${friendId}')">
+                            <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
+                            ${escapeText(friend.name.split(' ')[0])}
+                        </div>
+                    `;
+                    count++;
+                }
+
+                if (myFriendsList) {
+                    myFriendsList.innerHTML += `
+                        <div class="user-row-card">
+                            <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
+                                <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
+                                <div>
+                                    <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
+                                    <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'} • ID: ${friendId}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn-vk" style="font-size: 10px;" onclick="openDirectMessage('${friendId}', '${escapeText(friend.name)}')">Написати</button>
+                                <button class="btn-vk-secondary" style="font-size: 10px;" onclick="removeFriend('${friendId}')">Видалити</button>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             }
-        }
 
-        const onlineSpan = document.getElementById('sidebar-friends-online');
-        if (onlineSpan) onlineSpan.innerText = onlineCount;
-    });
-}
+            const onlineSpan = document.getElementById('sidebar-friends-online');
+            if (onlineSpan) onlineSpan.innerText = onlineCount;
+
+            loadAllRegisteredUsers();
+            renderDialogsList();
+            checkBirthdaysWidget();
+        });
+    }
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
     document.getElementById('top-user-name').innerText = userFullName;
@@ -1518,12 +1454,18 @@ function loadProfileFriends(userId) {
             const docRef = db.collection('users').doc(activeUser.id);
             const doc = await docRef.get();
             if (!doc.exists) {
-                if (checkIsAdmin(activeUser.id)) {
-                    activeUser.rating = 999;
-                }
-                await docRef.set({ ...activeUser, name: userFullName, lastSeen: firebase.firestore.FieldValue.serverTimestamp(), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                if (checkIsAdmin(activeUser.id)) activeUser.rating = 999;
+                await docRef.set({ 
+                    ...activeUser, 
+                    name: userFullName, 
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp(), 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    savedMusic: []
+                });
             } else {
-                Object.assign(activeUser, doc.data());
+                const data = doc.data();
+                Object.assign(activeUser, data);
+                if (data.savedMusic) window.mySavedTracks = data.savedMusic;
                 if (checkIsAdmin(activeUser.id) && activeUser.rating < 999) {
                     activeUser.rating = 999;
                     await docRef.update({ rating: 999, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
@@ -1531,6 +1473,15 @@ function loadProfileFriends(userId) {
                     await docRef.update({ lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
                 }
             }
+
+            // Слухач оновлень власних збережених аудіозаписів
+            db.collection('users').doc(activeUser.id).onSnapshot(d => {
+                if (d.exists && d.data().savedMusic) {
+                    window.mySavedTracks = d.data().savedMusic;
+                    const el = document.getElementById('music-interface-built');
+                    if (el) renderMusicTab();
+                }
+            });
 
             setInterval(() => {
                 db.collection('users').doc(activeUser.id).update({
@@ -1563,7 +1514,7 @@ function loadProfileFriends(userId) {
         loadWallPosts(activeUser.id);
         loadProfileVisitors(activeUser.id);
         loadMyInstalledApps();
-        loadUserGifts(activeUser.id)
+        loadUserGifts(activeUser.id);
         switchTab('profile');
     }
 
@@ -1666,7 +1617,6 @@ function loadProfileFriends(userId) {
         fillEl.style.color = textCol;
         containerEl.style.borderColor = borderCol;
 
-        // ПРИВАТНІСТЬ ДАТИ НАРОДЖЕННЯ
         const isFriend = userFriendsMap.has(userId);
         const canSeeBirthdate = isMe || checkIsAdmin(activeUser.id) || u.privacyBirthdate === 'all' || (u.privacyBirthdate === 'friends' && isFriend);
         
@@ -1675,7 +1625,7 @@ function loadProfileFriends(userId) {
             const age = calculateAge(u.birthDate);
             bDayDisplay.innerText = `${u.birthDate} ${age !== null ? `(${age} років)` : ''}`;
         } else if (!canSeeBirthdate && u.birthDate) {
-            bDayDisplay.innerText = 'приховано приватності';
+            bDayDisplay.innerText = 'приховано приватністю';
         } else {
             bDayDisplay.innerText = 'не вказано';
         }
@@ -1754,8 +1704,6 @@ function loadProfileFriends(userId) {
         document.getElementById('wall-header-title').innerText = isMe ? 'Стіна' : `Стіна користувача ${uName}`;
     }
 
-    loadUserData();
-
     function switchTab(tabId, event) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1775,7 +1723,7 @@ function loadProfileFriends(userId) {
         } else if (tabId === 'news') {
             loadGlobalNewsFeed();
         } else if (tabId === 'music') {
-            loadSavedMusic();
+            renderMusicTab();
         } else if (tabId === 'videos') {
             loadGlobalVideos();
         } else if (tabId === 'store') {
@@ -1809,7 +1757,7 @@ function loadProfileFriends(userId) {
         document.getElementById('edit-privacy-friends').value = activeUser.privacyFriends || 'all';
         document.getElementById('edit-privacy-wall').value = activeUser.privacyWall || 'all';
         document.getElementById('edit-blacklist').value = (activeUser.blacklist || []).join(', ');
-                document.getElementById('edit-sound-setting').value = activeUser.soundSetting || 'vk';
+        document.getElementById('edit-sound-setting').value = activeUser.soundSetting || 'vk';
 
         document.getElementById('edit-politics').value = activeUser.politics || '';
         document.getElementById('edit-worldview').value = activeUser.worldview || '';
@@ -1836,8 +1784,8 @@ function loadProfileFriends(userId) {
         
         const blacklistRaw = document.getElementById('edit-blacklist').value;
         const blacklist = blacklistRaw.split(',').map(s => s.trim()).filter(Boolean);
-const newSoundSetting = document.getElementById('edit-sound-setting').value;
-activeUser.soundSetting = newSoundSetting;
+        const newSoundSetting = document.getElementById('edit-sound-setting').value;
+        activeUser.soundSetting = newSoundSetting;
 
         const newBirthDate = document.getElementById('edit-birthdate').value;
         const newRelType = document.getElementById('edit-relationship-type').value;
@@ -1883,11 +1831,9 @@ activeUser.soundSetting = newSoundSetting;
         activeUser.movies = document.getElementById('edit-movies').value.trim();
         activeUser.quotes = document.getElementById('edit-quotes').value.trim();
         activeUser.about = document.getElementById('edit-about').value.trim();
-        activeUser.soundSetting = document.getElementById('edit-sound-setting').value;
 
         await db.collection('users').doc(activeUser.id).update({
-                        soundSetting: activeUser.soundSetting,
-
+            soundSetting: activeUser.soundSetting,
             birthDate: activeUser.birthDate,
             city: activeUser.city,
             relationshipType: activeUser.relationshipType,
@@ -1967,7 +1913,7 @@ activeUser.soundSetting = newSoundSetting;
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
     }
 
-    // КАТАЛОГ ТА ІГРОВИЙ АРХІВ ДОДАТКІВ
+    // Каталог ігор
     async function commitAddAppToLibrary() {
         const title = document.getElementById('app-title-input').value.trim();
         const url = document.getElementById('app-url-input').value.trim();
@@ -2080,7 +2026,7 @@ activeUser.soundSetting = newSoundSetting;
         openModal('modal-play-game');
     }
 
-    // ЛОГІКА РЕТРО-ФЕРМИ
+    // Ретро-Ферма
     function loadFarmData() {
         const farmContainer = document.getElementById('farm-plots-container');
         const animalsContainer = document.getElementById('farm-animals-container');
@@ -2178,7 +2124,7 @@ activeUser.soundSetting = newSoundSetting;
             document.getElementById('storage-wheat').innerText = activeUser.wheat;
             vkAlert('Врожай!', '🌾 Ви зібрали 3 мішки пшениці у склад хати!');
         } else {
-            vkAlert('Ферма', '⏳ Пшениця ще росте! Зачекайте хвилиночку.');
+            vkAlert('Ферма', '⏳ Пшениця ще росте! Зачекайте хвилинку.');
         }
     }
 
@@ -2245,9 +2191,6 @@ activeUser.soundSetting = newSoundSetting;
             vkAlert('Світлина', 'Головне фото оновлено!');
         });
     }
-
-    let userFriendsMap = new Map();
-    let cachedUsers = [];
 
     function getInviteUrl() {
         return `https://t.me/${BOT_USERNAME}/${APP_SHORTNAME}?startapp=add_${activeUser.id}`;
@@ -2399,96 +2342,12 @@ activeUser.soundSetting = newSoundSetting;
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             await batch.commit();
-            vkAlert("Друзі", "Користувача видалено з друзів (переведено в підписники).");
-            if (viewingProfileId === targetId) {
-                openUserProfile(targetId);
-            }
+            vkAlert("Друзі", "Користувача видалено з друзів.");
+            if (viewingProfileId === targetId) openUserProfile(targetId);
         } catch (e) {
             console.error(e);
         }
     }
-
-
-    
-    
-    db.collection('users').doc(viewingProfileId || activeUser.id).collection('friends').onSnapshot(async snapshot => {
-
-        userFriendsMap.clear();
-        const sidebarGrid = document.getElementById('sidebar-friends-grid');
-        const myFriendsList = document.getElementById('my-friends-list');
-
-        sidebarGrid.innerHTML = '';
-        if (myFriendsList) myFriendsList.innerHTML = '';
-
-        document.getElementById('friends-total-counter').innerText = snapshot.size;
-        document.getElementById('sidebar-friends-count').innerText = snapshot.size;
-
-        if (snapshot.empty) {
-            sidebarGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; grid-column: span 3; text-align: center; padding: 4px;">У вас ще немає друзів</span>';
-            if (myFriendsList) myFriendsList.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">У вас ще немає доданих друзів.</div>';
-            document.getElementById('sidebar-friends-online').innerText = '0';
-            loadAllRegisteredUsers();
-            renderDialogsList();
-            checkBirthdaysWidget();
-            return;
-        }
-
-        let onlineCount = 0;
-        let count = 0;
-
-        for (let docSnap of snapshot.docs) {
-            const friend = docSnap.data();
-            const friendId = docSnap.id;
-            userFriendsMap.set(friendId, friend);
-
-            let isOnline = false;
-            try {
-                const uDoc = await db.collection('users').doc(friendId).get();
-                if (uDoc.exists && uDoc.data().lastSeen) {
-                    const diffMs = new Date() - uDoc.data().lastSeen.toDate();
-                    if (diffMs < 120000) { 
-                        isOnline = true;
-                        onlineCount++;
-                    }
-                }
-            } catch(e) {}
-
-            if (count < 6) {
-                sidebarGrid.innerHTML += `
-                    <div class="friend-card" title="${escapeText(friend.name)} ${isOnline ? '(online)' : ''}" onclick="openUserProfile('${friendId}')">
-                        <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" alt="Аватар" style="${isOnline ? 'border-color: #43a047;' : ''}"><br>
-                        ${escapeText(friend.name.split(' ')[0])}
-                    </div>
-                `;
-                count++;
-            }
-
-            if (myFriendsList) {
-                myFriendsList.innerHTML += `
-                    <div class="user-row-card">
-                        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${friendId}')">
-                            <img src="${friend.avatar || 'https://vk.com/images/camera_200.png'}" style="width: 35px; height: 35px; border: 1px solid var(--vk-border); object-fit: cover;">
-                            <div>
-                                <span style="font-weight: bold; color: var(--vk-link);">${escapeText(friend.name)}</span>
-                                <div style="font-size: 9px; color: ${isOnline ? '#43a047' : 'var(--vk-subtext)'};">${isOnline ? 'online' : 'оффлайн'} • ID: ${friendId}</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 4px;">
-                            <button class="btn-vk" style="font-size: 10px;" onclick="openDirectMessage('${friendId}', '${escapeText(friend.name)}')">Написати</button>
-                            <button class="btn-vk-secondary" style="font-size: 10px;" onclick="removeFriend('${friendId}')">Видалити</button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        const onlineSpan = document.getElementById('sidebar-friends-online');
-        if (onlineSpan) onlineSpan.innerText = onlineCount;
-
-        loadAllRegisteredUsers();
-        renderDialogsList();
-        checkBirthdaysWidget();
-    });
 
     async function loadAllRegisteredUsers() {
         try {
@@ -3177,7 +3036,7 @@ activeUser.soundSetting = newSoundSetting;
         }
     }
 
-    // ГРАФІТІ В ЧАТІ
+    // Чат: Графіті
     const chatCanvas = document.getElementById('chat-graffiti-canvas');
     const chatCtx = chatCanvas.getContext('2d');
     let isChatDrawing = false;
@@ -3246,8 +3105,7 @@ activeUser.soundSetting = newSoundSetting;
             if (!isFirstLoad && !snap.empty) {
                 const lastMsg = snap.docs[snap.docs.length - 1].data();
                 if (lastMsg.senderId !== activeUser.id) {
-                                        playNotificationSound();
-
+                    playNotificationSound();
                 }
             }
             isFirstLoad = false;
@@ -3415,23 +3273,7 @@ activeUser.soundSetting = newSoundSetting;
         }
     }
 
-    function playClickSound() {
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
-            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.04);
-        } catch (e) {}
-    }
-
+    // Фотографії
     let selectedPhotoId = null;
     let selectedPhotoData = null;
 
@@ -3551,51 +3393,7 @@ activeUser.soundSetting = newSoundSetting;
         input.value = '';
     }
 
-    async function saveTrackToMyMusic(artist, title, url, duration) {
-        await db.collection('users').doc(activeUser.id).collection('my_music').add({
-            artist: artist,
-            title: title,
-            url: url,
-            duration: duration,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        vkAlert('Аудіо', 'Трек успішно додано до ваших аудіозаписів!');
-        loadSavedMusic();
-    }
-
-    function loadSavedMusic() {
-        const savedCont = document.getElementById('my-saved-music-container');
-        if (!savedCont) return;
-
-        db.collection('users').doc(activeUser.id).collection('my_music').orderBy('timestamp', 'desc').onSnapshot(snap => {
-            if (snap.empty) {
-                savedCont.innerHTML = '<div style="padding: 6px; color: var(--vk-subtext);">У вас ще немає збережених треків.</div>';
-                return;
-            }
-            savedCont.innerHTML = '';
-            snap.forEach(doc => {
-                const tr = doc.data();
-                const row = document.createElement('div');
-                row.className = 'vintage-audio-row';
-                row.innerHTML = `
-                    <button class="vintage-play-btn" id="btn-save-play-${doc.id}">▶</button>
-                    <div class="audio-track-info">
-                        <b>${escapeText(tr.artist)}</b> — <span>${escapeText(tr.title)}</span>
-                    </div>
-                    <div class="audio-progress-bar" id="bar-save-${doc.id}">
-                        <div class="audio-progress-fill" id="fill-save-${doc.id}"></div>
-                    </div>
-                    <span class="audio-duration-text" id="dur-save-${doc.id}">${formatTime(tr.duration || 180)}</span>
-                `;
-                savedCont.appendChild(row);
-                const btn = row.querySelector(`#btn-save-play-${doc.id}`);
-                const fill = row.querySelector(`#fill-save-${doc.id}`);
-                btn.onclick = () => playVintageTrack(tr.url, tr.artist, tr.title, btn, fill);
-            });
-        });
-    }
-
-    // Графіті
+    // Стіна: Графіті
     const canvas = document.getElementById('graffiti-canvas');
     const ctx = canvas.getContext('2d');
     let isDrawing = false;
@@ -3691,7 +3489,6 @@ activeUser.soundSetting = newSoundSetting;
         input.value = '';
     }
 
-    // ПРИВАТНІСТЬ СТІНИ ПРИ ЗАВАНТАЖЕННІ
     function loadWallPosts(targetId) {
         const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
@@ -3728,7 +3525,6 @@ activeUser.soundSetting = newSoundSetting;
                     const id = docSnap.id;
                     const isLiked = p.likes && p.likes.includes(activeUser.id);
                     const dateStr = p.timestamp ? new Date(p.timestamp.toDate()).toLocaleString('uk-UA') : 'щойно';
-
                     const canDelete = (p.authorId === activeUser.id) || (viewingProfileId === activeUser.id) || (viewingGroupId && currentGroupCreatorId === activeUser.id) || checkIsAdmin(activeUser.id);
 
                     let bodyHtml = p.type === 'graffiti'
@@ -3826,74 +3622,7 @@ activeUser.soundSetting = newSoundSetting;
         field.value = '';
     }
 
-    let currentAudio = null;
-    let currentPlayBtn = null;
-    let currentProgressFill = null;
-
-    async function performAudioSearch() {
-        const q = document.getElementById('music-query').value.trim();
-        const cont = document.getElementById('vintage-player-container');
-        if (!q) return;
-
-        cont.innerHTML = '<div style="padding: 8px; color: var(--vk-subtext);">Шукаємо пісні...</div>';
-        const res = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56b41217&format=json&limit=12&search=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        cont.innerHTML = '';
-
-        data.results.forEach(tr => {
-            const row = document.createElement('div');
-            row.className = 'vintage-audio-row';
-            row.innerHTML = `
-                <button class="vintage-play-btn" id="btn-play-${tr.id}">▶</button>
-                <button class="btn-vk-secondary" style="font-size:9px; padding:1px 4px;" onclick="saveTrackToMyMusic('${escapeText(tr.artist_name)}', '${escapeText(tr.name)}', '${tr.audio}', ${tr.duration})">+ Мої</button>
-                <div class="audio-track-info">
-                    <b>${escapeText(tr.artist_name)}</b> — <span>${escapeText(tr.name)}</span>
-                </div>
-                <div class="audio-progress-bar" id="bar-${tr.id}">
-                    <div class="audio-progress-fill" id="fill-${tr.id}"></div>
-                </div>
-                <span class="audio-duration-text" id="dur-${tr.id}">${formatTime(tr.duration)}</span>
-            `;
-            cont.appendChild(row);
-            const btn = row.querySelector(`#btn-play-${tr.id}`);
-            const fill = row.querySelector(`#fill-${tr.id}`);
-            btn.onclick = () => playVintageTrack(tr.audio, tr.artist_name, tr.name, btn, fill);
-        });
-    }
-
-    async function playVintageTrack(url, artist, title, btn, fill) {
-        if (currentAudio && currentAudio.src === url) {
-            if (currentAudio.paused) { currentAudio.play(); btn.innerText = '❚❚'; }
-            else { currentAudio.pause(); btn.innerText = '▶'; }
-            return;
-        }
-        if (currentAudio) {
-            currentAudio.pause();
-            if (currentPlayBtn) currentPlayBtn.innerText = '▶';
-            if (currentProgressFill) currentProgressFill.style.width = '0%';
-        }
-        currentAudio = new Audio(url);
-        currentPlayBtn = btn;
-        currentProgressFill = fill;
-        currentAudio.play();
-        btn.innerText = '❚❚';
-
-        activeUser.currentTrack = `${artist} - ${title}`;
-        await db.collection('users').doc(activeUser.id).update({ currentTrack: activeUser.currentTrack });
-        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
-
-        currentAudio.ontimeupdate = () => {
-            if (currentAudio.duration) fill.style.width = `${(currentAudio.currentTime / currentAudio.duration) * 100}%`;
-        };
-        currentAudio.onended = () => { btn.innerText = '▶'; fill.style.width = '0%'; };
-    }
-
-    function formatTime(secs) {
-        const m = Math.floor(secs / 60);
-        const s = Math.floor(secs % 60);
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
+    // Нотатки
     async function saveNewNote() {
         const title = document.getElementById('note-title-input').value.trim();
         const content = document.getElementById('note-content-input').value.trim();
@@ -3932,6 +3661,7 @@ activeUser.soundSetting = newSoundSetting;
         });
     });
 
+    // Думки
     async function submitAnonymousThought() {
         const input = document.getElementById('thought-input');
         const val = input.value.trim();
@@ -3966,6 +3696,7 @@ activeUser.soundSetting = newSoundSetting;
         });
     });
 
+    // Подарунки
     let pickedGiftIcon = '🌹';
     let pickedGiftTitle = 'Троянда';
 
@@ -3989,6 +3720,31 @@ activeUser.soundSetting = newSoundSetting;
         vkAlert('Подарунок', 'Подарунок надіслано!');
     }
 
+    function loadUserGifts(userId) {
+        const giftsGrid = document.getElementById('gifts-grid');
+        const giftsCounter = document.getElementById('gifts-counter');
+        if (!giftsGrid || !giftsCounter) return;
+
+        db.collection('users').doc(userId).collection('gifts').orderBy('timestamp', 'desc').onSnapshot(snap => {
+            giftsCounter.innerText = snap.size;
+            giftsGrid.innerHTML = '';
+            
+            if (snap.empty) {
+                giftsGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
+                return;
+            }
+
+            snap.forEach(doc => {
+                const g = doc.data();
+                giftsGrid.innerHTML += `
+                    <div style="text-align: center; font-size: 20px; cursor: pointer; flex-shrink: 0;" title="${escapeText(g.title)} від ${escapeText(g.sender)}: ${escapeText(g.comment || '')}">
+                        ${g.emoji}
+                    </div>
+                `;
+            });
+        });
+    }
+
     async function commitRatingBoost() {
         if (checkIsAdmin(activeUser.id)) return vkAlert('Адмін', 'У вас вже максимальний адмін-рейтинг (999%)!');
         const val = parseInt(document.getElementById('rating-val-input').value, 10) || 0;
@@ -4010,6 +3766,190 @@ activeUser.soundSetting = newSoundSetting;
         }
     }
 
+    // ==========================================
+    // СИСТЕМА АУДІО ТА YOUTUBE ПЛЕЄРА
+    // ==========================================
+    window.mySavedTracks = window.mySavedTracks || [];
+    let ytPlayer = null;
+    let currentPlayingId = '';
+
+    const masterHits = [
+        { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
+        { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
+        { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
+        { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
+        { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
+        { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
+        { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
+        { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
+        { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
+        { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
+        { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
+        { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
+        { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
+        { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
+        { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
+        { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" },
+        { year: "2015", title: "Adele - Hello", id: "YQHsXMglC9A" }
+    ];
+
+    window.onYouTubeIframeAPIReady = function() {
+        ytPlayer = new YT.Player('youtube-player-iframe', {
+            height: '200',
+            width: '100%',
+            videoId: '',
+            playerVars: { 
+                'playsinline': 1,
+                'origin': window.location.origin
+            },
+            events: {
+                'onError': function(event) {
+                    if (event.data === 101 || event.data === 150) {
+                        const blockedHit = masterHits.find(h => h.id === currentPlayingId);
+                        const trackName = blockedHit ? blockedHit.title : 'музика';
+                        alert("Цей трек захищено авторським правом 😢\nВідкриваємо у YouTube!");
+                        const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(trackName + ' audio');
+                        if (window.Telegram?.WebApp?.openLink) {
+                            window.Telegram.WebApp.openLink(searchUrl);
+                        } else {
+                            window.open(searchUrl, '_blank');
+                        }
+                        window.closeYTPlayer();
+                    } else {
+                        window.open('https://www.youtube.com/watch?v=' + currentPlayingId, '_blank');
+                        window.closeYTPlayer();
+                    }
+                }
+            }
+        });
+    };
+
+    window.playYTTrack = async function(videoId, trackTitle = "") {
+        currentPlayingId = videoId;
+        const playerContainer = document.getElementById('youtube-player-container');
+        if (playerContainer) {
+            playerContainer.style.display = 'block';
+            setTimeout(() => playerContainer.style.opacity = '1', 10);
+        }
+        
+        if (ytPlayer && ytPlayer.loadVideoById) {
+            ytPlayer.loadVideoById(videoId);
+        } else {
+            window.open('https://www.youtube.com/watch?v=' + videoId, '_blank');
+        }
+
+        if (trackTitle) {
+            activeUser.currentTrack = trackTitle;
+            await db.collection('users').doc(activeUser.id).update({ currentTrack: trackTitle }).catch(e => {});
+            if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
+        }
+    };
+
+    window.closeYTPlayer = function() {
+        const playerContainer = document.getElementById('youtube-player-container');
+        if (playerContainer) playerContainer.style.display = 'none';
+        if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+    };
+
+    window.renderMusicTab = function(searchQuery = '') {
+        const musicTab = document.getElementById('tab-music');
+        if (!musicTab) return;
+
+        if (!document.getElementById('music-interface-built')) {
+            musicTab.innerHTML = `
+                <div id="music-interface-built">
+                    <div id="youtube-player-container" style="display:none; text-align: center; margin-bottom: 15px; background: #000; padding: 10px; border-radius: 8px;">
+                        <div id="youtube-player-iframe"></div>
+                        <button onclick="closeYTPlayer()" style="background: #ff3b30; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-weight: bold;">✖ Закрити плеєр</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 6px; margin-bottom: 15px;">
+                        <input type="text" id="music-query" placeholder="Пошук пісень..." value="${searchQuery}" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onkeydown="if(event.key === 'Enter') runDirectSearch()">
+                        <button onclick="runDirectSearch()" class="btn-vk" style="padding: 0 15px;">🔍</button>
+                    </div>
+                    
+                    <div id="music-content-container"></div>
+                </div>
+            `;
+            if (window.YT && window.YT.Player && !ytPlayer) {
+                window.onYouTubeIframeAPIReady();
+            }
+        }
+
+        const contentContainer = document.getElementById('music-content-container');
+        if (!contentContainer) return;
+
+        let htmlContent = '';
+
+        htmlContent += '<div style="font-size: 13px; font-weight: bold; margin: 12px 0 8px 0; color: #2b587a;">🎵 Мої збережені аудіозаписи:</div>';
+        
+        if (window.mySavedTracks.length === 0) {
+            htmlContent += '<div style="padding: 6px; color: #888; font-size: 11px;">У вас ще немає збережених треків. Додайте їх із фонотеки нижче!</div>';
+        } else {
+            window.mySavedTracks.forEach(trackTitle => {
+                const hit = masterHits.find(h => h.title === trackTitle);
+                const playBtnHtml = hit ? `<button onclick="playYTTrack('${hit.id}', '${escapeText(hit.title)}')" class="btn-vk" style="font-size: 10px; padding: 3px 8px;">▶️ Слухати</button>` : '';
+                
+                htmlContent += `
+                    <div style="padding: 6px 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 11px; max-width: 60%; word-break: break-word;">🎵 ${escapeText(trackTitle)}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            ${playBtnHtml}
+                            <span style="color: #4a76a8; font-size: 10px; font-weight: bold;">✔ Додано</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (searchQuery) {
+            const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(searchQuery + ' audio');
+            htmlContent += `
+                <div style="font-size: 12px; color: #888; margin: 15px 0 6px 0;">Результати пошуку: <b>${escapeText(searchQuery)}</b></div>
+                <div style="padding: 8px 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px;">🎵 ${escapeText(searchQuery)}</span>
+                    <a href="${ytUrl}" target="_blank" class="btn-vk" style="text-decoration: none; font-size: 11px; padding: 4px 8px;">▶️ Шукати на YT</a>
+                </div>
+            `;
+        }
+
+        htmlContent += '<div style="font-size: 13px; font-weight: bold; margin: 20px 0 10px 0; color: #2b587a;">🌍 Загальна фонотека хітів 2000-х:</div>';
+        
+        masterHits.forEach((song) => {
+            htmlContent += `
+                <div style="padding: 8px 10px; background: #f0f2f5; margin-top: 6px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; color: #000; max-width: 60%;">🎵 [${song.year}] ${escapeText(song.title)}</span>
+                    <div style="display: flex; gap: 4px;">
+                        <button onclick="playYTTrack('${song.id}', '${escapeText(song.title)}')" class="btn-vk" style="font-size: 10px; padding: 3px 6px;">▶️</button>
+                        <button onclick="addSongToMyPage('${song.title.replace(/'/g, "\\'")}')" class="btn-vk-secondary" style="font-size: 10px; padding: 3px 6px;">➕ Додати</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        contentContainer.innerHTML = htmlContent;
+    };
+
+    window.runDirectSearch = function() {
+        const input = document.getElementById('music-query');
+        const query = input ? input.value.trim() : '';
+        renderMusicTab(query);
+    };
+
+    window.addSongToMyPage = function(title) {
+        if (!window.mySavedTracks.includes(title)) {
+            window.mySavedTracks.push(title);
+            const input = document.getElementById('music-query');
+            renderMusicTab(input ? input.value.trim() : '');
+
+            db.collection('users').doc(activeUser.id).set({
+                savedMusic: window.mySavedTracks
+            }, { merge: true }).catch(error => console.error("Помилка збереження треку:", error));
+            vkAlert('Аудіо', `Трек «${title}» успішно додано до ваших аудіозаписів!`);
+        }
+    };
+
+    // Допоміжні функції інтерфейсу
     function openModal(id) { document.getElementById(id).classList.add('show'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
@@ -4023,271 +3963,12 @@ activeUser.soundSetting = newSoundSetting;
         if (!str) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
-        </script> <!-- Закриваємо попередній скрипт -->
 
-        <!-- Підключаємо офіційний скрипт YouTube -->
-        <script src="https://www.youtube.com/iframe_api"></script>
-
-        <script>
-                        // Глобальні змінні
-            window.mySavedTracks = window.mySavedTracks || [];
-            let ytPlayer;
-            let currentPlayingId = ''; // Додана змінна для відстеження помилок
-
-                        // Оновлена ініціалізація YouTube IFrame API з розумним обходом блокувань
-            function onYouTubeIframeAPIReady() {
-                ytPlayer = new YT.Player('youtube-player-iframe', {
-                    height: '200',
-                    width: '100%',
-                    videoId: '',
-                    playerVars: { 
-                        'playsinline': 1,
-                        'origin': window.location.origin
-                    },
-                    events: {
-                        'onReady': function(event) {
-                            console.log("YouTube плеєр готовий!");
-                        },
-                        'onError': function(event) {
-                            // Якщо відео заблоковане правовласником (коди 101, 150)
-                            if (event.data === 101 || event.data === 150) {
-                                // Знаходимо назву треку в базі за його ID
-                                const blockedHit = masterHits.find(h => h.id === currentPlayingId);
-                                const trackName = blockedHit ? blockedHit.title : 'музика';
-                                
-                                alert("Цей трек захищено авторським правом 😢\nЗараз ми знайдемо його для вас у YouTube!");
-                                
-                                // Формуємо посилання на пошук замість прямого посилання
-                                const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(trackName + ' audio');
-                                
-                                // Спроба відкрити через рідний метод Telegram, якщо він доступний
-                                if (window.Telegram && window.Telegram.WebApp) {
-                                    window.Telegram.WebApp.openLink(searchUrl);
-                                } else {
-                                    window.open(searchUrl, '_blank');
-                                }
-                                
-                                window.closeYTPlayer();
-                            } else {
-                                // Для інших помилок
-                                window.open('https://www.youtube.com/watch?v=' + currentPlayingId, '_blank');
-                                window.closeYTPlayer();
-                            }
-                        }
-                    }
-                });
-            }
-
-
-            // Функція відтворення відео (вбудована)
-            window.playYTTrack = function(videoId) {
-                currentPlayingId = videoId;
-                const playerContainer = document.getElementById('youtube-player-container');
-                if (playerContainer) {
-                    playerContainer.style.display = 'block';
-                    setTimeout(() => playerContainer.style.opacity = '1', 10);
-                }
-                
-                if (ytPlayer && ytPlayer.loadVideoById) {
-                    ytPlayer.loadVideoById(videoId);
-                } else {
-                    window.open('https://www.youtube.com/watch?v=' + videoId, '_blank');
-                }
-            };
-
-            // Функція закриття плеєра
-            window.closeYTPlayer = function() {
-                const playerContainer = document.getElementById('youtube-player-container');
-                if (playerContainer) playerContainer.style.display = 'none';
-                if (ytPlayer && ytPlayer.stopVideo) {
-                    ytPlayer.stopVideo();
-                }
-            };
-
-            // База хітів (один раз для всього коду)
-            const masterHits = [
-                { year: "2002", title: "Eminem - Without Me", id: "YVkUvYTq4gE" },
-                { year: "2002", title: "Avril Lavigne - Complicated", id: "5NPm-8J5Vmg" },
-                { year: "2003", title: "50 Cent - In Da Club", id: "5qm8PHFYlHM" },
-                { year: "2003", title: "Evanescence - Bring Me To Life", id: "3YxaaP1ahXA" },
-                { year: "2004", title: "Britney Spears - Toxic", id: "LOZuxwVk7TU" },
-                { year: "2004", title: "Usher - Yeah!", id: "GxBSyx85Kp8" },
-                { year: "2005", title: "Shakira - Hips Don't Lie", id: "DUT5rEU6pqM" },
-                { year: "2005", title: "James Blunt - You're Beautiful", id: "oofSnsGkops" },
-                { year: "2006", title: "Justin Timberlake - SexyBack", id: "3gTLgVgy1is" },
-                { year: "2006", title: "Nelly Furtado - Maneater", id: "o7gN9h_Y6b0" },
-                { year: "2007", title: "Rihanna - Umbrella", id: "CvBfHwUxHIk" },
-                { year: "2007", title: "Linkin Park - What I've Done", id: "8sgycukafqQ" },
-                { year: "2008", title: "Coldplay - Viva La Vida", id: "dvgZkm1xWPE" },
-                { year: "2008", title: "Katy Perry - I Kissed a Girl", id: "tAGnKpE4NCI" },
-                { year: "2009", title: "Lady Gaga - Bad Romance", id: "qrO4YZeyl0I" },
-                { year: "2009", title: "The Black Eyed Peas - I Gotta Feeling", id: "uSD4vsh1zLs" },
-                { year: "2015", title: "Adele - Hello", id: "YQHsXMglC9A" }
-            ];
-
-            // Головна функція рендеру вкладки "Аудіо"
-            window.renderMusicTab = function(searchQuery = '') {
-                const musicTab = document.getElementById('tab-music');
-                if (!musicTab) return;
-
-                // Якщо структури ще немає, створюємо її
-                if (!document.getElementById('music-interface-built')) {
-                    musicTab.innerHTML = `
-                        <div id="music-interface-built">
-                            <!-- Прихований плеєр -->
-                            <div id="youtube-player-container" style="display:none; text-align: center; margin-bottom: 15px; background: #000; padding: 10px; border-radius: 8px;">
-                                <div id="youtube-player-iframe"></div>
-                                <button onclick="closeYTPlayer()" style="background: #ff3b30; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-weight: bold;">✖ Закрити плеєр</button>
-                            </div>
-                            
-                            <!-- Рядок пошуку -->
-                            <div style="display: flex; gap: 6px; margin-bottom: 15px;">
-                                <input type="text" id="music-query" placeholder="Пошук пісень..." value="${searchQuery}" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onkeydown="if(event.key === 'Enter') runDirectSearch()">
-                                <button onclick="runDirectSearch()" style="background: #4a76a8; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer;">🔍</button>
-                            </div>
-                            
-                            <!-- Контейнер для списків -->
-                            <div id="music-content-container"></div>
-                        </div>
-                    `;
-                }
-
-                const contentContainer = document.getElementById('music-content-container');
-                if (!contentContainer) return;
-
-                let htmlContent = '';
-
-                // 1. Мої збережені аудіозаписи
-                htmlContent += '<div style="font-size: 14px; font-weight: bold; margin: 12px 0 8px 0; color: #2b587a;">🎵 Мої збережені аудіозаписи:</div>';
-                
-                if (window.mySavedTracks.length === 0) {
-                    htmlContent += '<div style="padding: 6px; color: #888; font-size: 13px;">У вас ще немає збережених треків.</div>';
-                } else {
-                    window.mySavedTracks.forEach(trackTitle => {
-                        // Знаходимо трек у базі хітів, щоб дістати його ID для відтворення
-                        const hit = masterHits.find(h => h.title === trackTitle);
-                        const playBtnHtml = hit ? `<button onclick="playYTTrack('${hit.id}')" style="background: #5181b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">▶️ Слухати</button>` : '';
-                        
-                        htmlContent += `
-                            <div style="padding: 8px 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 13px; max-width: 60%; word-wrap: break-word;">🎵 ${trackTitle}</span>
-                                <div style="display: flex; gap: 6px; align-items: center;">
-                                    ${playBtnHtml}
-                                    <span style="color: #4a76a8; font-size: 11px; font-weight: bold;">✔ Додано</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-
-                // 2. Результати пошуку
-                if (searchQuery) {
-                    const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(searchQuery + ' audio');
-                    htmlContent += `
-                        <div style="font-size: 13px; color: #888; margin: 15px 0 6px 0;">Результати пошуку: <b>${searchQuery}</b></div>
-                        <div style="padding: 10px; background: #f0f2f5; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 13px;">🎵 ${searchQuery}</span>
-                            <a href="${ytUrl}" target="_blank" style="background: #5181b8; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">▶️ Шукати на YT</a>
-                        </div>
-                    `;
-                }
-
-                // 3. Загальна фонотека хітів
-                htmlContent += '<div style="font-size: 14px; font-weight: bold; margin: 20px 0 10px 0; color: #2b587a;">🌍 Загальна фонотека хітів:</div>';
-                
-                masterHits.forEach((song) => {
-                    htmlContent += `
-                        <div style="padding: 10px; background: #f0f2f5; margin-top: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 13px; color: #000; max-width: 60%;">🎵 [${song.year}] ${song.title}</span>
-                            <div style="display: flex; gap: 6px;">
-                                <button onclick="playYTTrack('${song.id}')" style="background: #5181b8; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">▶️ Слухати</button>
-                                <button onclick="addSongToMyPage('${song.title.replace(/'/g, "\\'")}')" style="background: #4a76a8; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">➕ Додати</button>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                contentContainer.innerHTML = htmlContent;
-            };
-
-            // Виклик пошуку з інпуту
-            window.runDirectSearch = function() {
-                const input = document.getElementById('music-query');
-                const query = input ? input.value.trim() : '';
-                renderMusicTab(query);
-            };
-
-                        
-// Додавання треку до сторінки та збереження у Firebase (Firestore)
-window.addSongToMyPage = function(title) {
-    if (!window.mySavedTracks.includes(title)) {
-        window.mySavedTracks.push(title);
-        
-        // Миттєво перемальовуємо інтерфейс
-        const input = document.getElementById('music-query');
-        renderMusicTab(input ? input.value.trim() : '');
-
-        // Зберігаємо оновлений список у Firestore
-        const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe 
-                       ? window.Telegram.WebApp.initDataUnsafe.user 
-                       : null;
-        const userId = tgUser ? String(tgUser.id) : activeUser.id;
-
-        if (typeof db !== 'undefined') {
-            db.collection('users').doc(userId).set({
-                savedMusic: window.mySavedTracks
-            }, { merge: true }).catch(error => console.error("Помилка збереження треку:", error));
-        }
-    }
-};
-
-// Завантаження треків при старті додатку
-document.addEventListener("DOMContentLoaded", function() {
-    renderMusicTab();
-
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-        const userId = tgUser ? String(tgUser.id) : (typeof activeUser !== 'undefined' ? activeUser.id : 'test_user');
-
-        if (typeof db !== 'undefined') {
-            // Підтягуємо збережені треки з Firestore у реальному часі
-            db.collection('users').doc(userId).onSnapshot((doc) => {
-                if (doc.exists && doc.data().savedMusic) {
-                    window.mySavedTracks = doc.data().savedMusic;
-                    const input = document.getElementById('music-query');
-                    renderMusicTab(input ? input.value.trim() : '');
-                }
-            });
-        }
-    }
-});
-function loadUserGifts(userId) {
-    const giftsGrid = document.getElementById('gifts-grid');
-    const giftsCounter = document.getElementById('gifts-counter');
-    if (!giftsGrid || !giftsCounter) return;
-
-    db.collection('users').doc(userId).collection('gifts').orderBy('timestamp', 'desc').onSnapshot(snap => {
-        giftsCounter.innerText = snap.size;
-        giftsGrid.innerHTML = '';
-        
-        if (snap.empty) {
-            giftsGrid.innerHTML = '<span style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">Немає</span>';
-            return;
-        }
-
-        snap.forEach(doc => {
-            const g = doc.data();
-            giftsGrid.innerHTML += `
-                <div style="text-align: center; font-size: 20px; cursor: pointer; flex-shrink: 0;" title="${escapeText(g.title)} від ${escapeText(g.sender)}: ${escapeText(g.comment || '')}">
-                    ${g.emoji}
-                </div>
-            `;
-        });
+    // Запуск
+    window.addEventListener('DOMContentLoaded', () => {
+        loadUserData();
     });
-}
+</script>
 
-        </script>
-   
 </body>
 </html>
