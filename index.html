@@ -1343,7 +1343,9 @@
         bonusRating: 0,
         soundSetting: "vk",
         status: "на зв'язку",
-        currentTrack: "",
+        savedMusic: [],
+
+            currentTrack: "",
         coins: 100,
         wheat: 0,
         eggs: 0,
@@ -1795,8 +1797,9 @@ document.addEventListener('visibilitychange', () => {
             renderDialogsList();
         } else if (tabId === 'news') {
             loadGlobalNewsFeed();
-        } else if (tabId === 'music') {
-            renderMusicTab();
+            } else if (tabId === 'music' || tabId === 'audio') {
+        renderMusicTab();
+
         } else if (tabId === 'videos') {
             loadGlobalVideos();
         } else if (tabId === 'store') {
@@ -2230,6 +2233,9 @@ if (checkIsAdmin(activeUser.id)) {
     window.renderMusicTab = function(searchQuery = '') {
         const musicTab = document.getElementById('tab-music');
         if (!musicTab) return;
+        if (activeUser && activeUser.savedMusic) {
+            window.mySavedTracks = activeUser.savedMusic;
+        }
 
         musicTab.innerHTML = `
             <!-- РЕТРО ПЛЕЄР -->
