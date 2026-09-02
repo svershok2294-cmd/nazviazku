@@ -1312,12 +1312,13 @@
         return storedId;
     }
 
-    let activeUser = {
+        let activeUser = {
         id: getStableUserId(),
         first_name: tg?.initDataUnsafe?.user?.first_name || "Користувач",
         last_name: tg?.initDataUnsafe?.user?.last_name || "",
         photo_url: tg?.initDataUnsafe?.user?.photo_url || "https://vk.com/images/camera_200.png",
-        rating: 100,
+        rating: 20,
+        bonusRating: 0,
         soundSetting: "vk",
         status: "на зв'язку",
         currentTrack: "",
@@ -1325,27 +1326,27 @@
         wheat: 0,
         eggs: 0,
         milk: 0,
-        city: "Київ",
+        city: "",
         relationshipType: "",
         partnerId: "",
         partnerName: "",
         partnerStatus: "",
         birthDate: "",
-        phone: "+380 (XX) XXX-XX-XX",
-        icq: "345-982-110",
+        phone: "",
+        icq: "",
         privacyBirthdate: "all",
         privacyFriends: "all",
         privacyWall: "all",
         blacklist: [],
-        politics: "помірні",
-        worldview: "гуманізм",
-        smoking: "нейтральне",
-        alcohol: "компромісне",
-        activity: "розробка додатків, подорожі",
-        music: "Rock, Retro Synthwave, Hip-Hop",
-        movies: "Бійцівський клуб, Матриця",
-        quotes: "«Все що нас не вбиває — робить нас сильнішими»",
-        about: "Завжди на зв'язку!"
+        politics: "",
+        worldview: "",
+        smoking: "",
+        alcohol: "",
+        activity: "",
+        music: "",
+        movies: "",
+        quotes: "",
+        about: ""
     };
 
     const ADMIN_ID = "325300795";
@@ -1453,6 +1454,33 @@ function formatOnlineStatus(lastSeen, isMe) {
     if (diffMin < 2) return '<span style="color: #43a047;">(online)</span>';
     if (diffMin < 60) return `(був ${diffMin} хв тому)`;
     return `(був о ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
+}
+function calculateProfileRating(u) {
+    // Повний захист адміна: рейтинг ніколи не падає нижче 999%
+    if (checkIsAdmin(u.id || activeUser.id)) {
+        return 999;
+    }
+
+    let score = 20; // Базові 20% за реєстрацію
+
+    // Додаємо відсотки за кожне заповнене поле (разом до 100%)
+    if (u.photo_url && !u.photo_url.includes('camera_200.png')) score += 10;
+    if (u.birthDate) score += 5;
+    if (u.city) score += 5;
+    if (u.relationshipType) score += 5;
+    if (u.phone) score += 5;
+    if (u.icq) score += 5;
+    if (u.politics) score += 5;
+    if (u.worldview) score += 5;
+    if (u.smoking) score += 5;
+    if (u.alcohol) score += 5;
+    if (u.activity) score += 5;
+    if (u.music) score += 5;
+    if (u.movies) score += 5;
+    if (u.quotes) score += 5;
+    if (u.about) score += 10;
+
+    return score + (u.bonusRating || 0);
 }
 
     const userFullName = `${activeUser.first_name} ${activeUser.last_name}`.trim();
@@ -1854,8 +1882,14 @@ document.addEventListener('visibilitychange', () => {
         activeUser.movies = document.getElementById('edit-movies').value.trim();
         activeUser.quotes = document.getElementById('edit-quotes').value.trim();
         activeUser.about = document.getElementById('edit-about').value.trim();
+if (checkIsAdmin(activeUser.id)) {
+    activeUser.rating = 999;
+} else {
+    activeUser.rating = calculateProfileRating(activeUser);
+}
 
         await db.collection('users').doc(activeUser.id).update({
+            rating: activeUser.rating,
             soundSetting: activeUser.soundSetting,
             birthDate: activeUser.birthDate,
             city: activeUser.city,
