@@ -248,28 +248,6 @@
         .ttt-cell { background: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; cursor: pointer; user-select: none; }
         .ttt-cell:hover { background: #f0f4f8; }
 
-        /* РЕТРО ФЕРМА */
-        .farm-plot {
-            width: 65px;
-            height: 65px;
-            background: #6d4c41;
-            border: 2px solid #3e2723;
-            transform: rotate(45deg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            font-size: 9px;
-            text-align: center;
-            margin: 10px auto;
-        }
-        .farm-plot span { transform: rotate(-45deg); }
-        .farm-plot.growing { background: #81c784; border-color: #2e7d32; }
-        .farm-plot.ready { background: #fff176; border-color: #fbc02d; }
-        .animal-card { background: #fafafa; border: 1px solid var(--vk-border); padding: 6px 10px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-
         /* ВІДЕО ТА ДОДАТКИ */
         .video-card-item { border: 1px solid var(--vk-border); padding: 4px; background: #ffffff; text-align: center; cursor: pointer; }
         .video-card-thumb { width: 100%; height: 100px; background: #222; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; border-radius: 2px; }
@@ -305,6 +283,337 @@
             transform: scale(0.96);
             opacity: 0.85;
         }
+
+        /* =======================================================
+           КАНОНІЧНА ІЗОМЕТРИЧНА «ЩАСЛИВА ФЕРМА» (RETRO VK 2009)
+           ======================================================= */
+        .retro-farm-wrapper {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(180deg, #7ec850 0%, #5ba832 60%, #468c24 100%);
+            border: 2px solid #2e5917;
+            border-radius: 6px;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            user-select: none;
+            margin-bottom: 15px;
+        }
+
+        .farm-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(46, 89, 23, 0.9) 0%, rgba(27, 56, 12, 0.95) 100%);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-bottom: 2px solid #1b380c;
+            font-size: 11px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .farm-owner-badge {
+            font-weight: bold;
+            font-size: 12px;
+            color: #ffeb3b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .farm-stats-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .farm-stat-chip {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+        }
+
+        .farm-exp-bar-wrap {
+            width: 70px;
+            height: 9px;
+            background: #222;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #777;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 3px;
+        }
+
+        .farm-exp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 10%;
+            transition: width 0.3s;
+        }
+
+        .farm-scene-viewport {
+            position: relative;
+            min-height: 440px;
+            background: #77bc43 url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='%2372b73e' fill-opacity='0.3'/%3E%3Cpath d='M20 20l2-4 2 4h-4zm-10-10l1.5-3 1.5 3h-3z' fill='%2364a532' fill-opacity='0.4'/%3E%3C/svg%3E");
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px 80px 10px;
+        }
+
+        .farm-fence-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 16px;
+            background: repeating-linear-gradient(90deg, #8d5b2d 0, #8d5b2d 6px, transparent 6px, transparent 12px);
+            border-bottom: 3px solid #5c3a1d;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .farm-doghouse-wrap {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #8d5b2d;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10;
+        }
+        .farm-doghouse-wrap:hover { background: #ffffff; }
+
+        .farm-isometric-ground {
+            display: grid;
+            grid-template-columns: repeat(4, 68px);
+            grid-template-rows: repeat(5, 68px);
+            gap: 12px;
+            transform: rotateX(60deg) rotateZ(-45deg);
+            transform-style: preserve-3d;
+            margin-top: -20px;
+        }
+
+        .iso-plot-tile {
+            width: 68px;
+            height: 68px;
+            background: #825329;
+            border: 2px solid #4a2e14;
+            border-radius: 8px;
+            box-shadow: 2px 2px 0px #311c09, 4px 4px 0px rgba(0,0,0,0.3);
+            position: relative;
+            cursor: pointer;
+            transition: filter 0.15s, transform 0.1s;
+        }
+
+        .iso-plot-tile:hover {
+            filter: brightness(1.18);
+        }
+
+        .iso-plot-tile.locked {
+            background: #507e32;
+            border-color: #3b5f23;
+            box-shadow: 1px 1px 0px #243c14;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+
+        .iso-plot-tile.dry {
+            background: #a1784d !important;
+            border-style: dashed;
+        }
+
+        .iso-plot-tile.ready-glow {
+            border-color: #ffd700;
+            box-shadow: 0 0 12px #ffeb3b, 2px 2px 0px #311c09;
+        }
+
+        .iso-crop-entity {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translate(-50%, 0) rotateZ(45deg) rotateX(-60deg);
+            transform-origin: bottom center;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 70px;
+        }
+
+        .crop-icon-large {
+            font-size: 32px;
+            filter: drop-shadow(0 3px 2px rgba(0,0,0,0.4));
+            line-height: 1;
+        }
+
+        .crop-badge-timer {
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 3px;
+            white-space: nowrap;
+            margin-top: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .crop-alert-icon {
+            position: absolute;
+            top: -16px;
+            right: 0;
+            font-size: 14px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .farm-action-toolbar {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            background: linear-gradient(180deg, rgba(245, 245, 245, 0.95) 0%, rgba(220, 225, 230, 0.95) 100%);
+            border: 2px solid #597da3;
+            padding: 5px 8px;
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+            z-index: 20;
+            max-width: 96%;
+            overflow-x: auto;
+        }
+
+        .farm-tool-btn {
+            background: #ffffff;
+            border: 1px solid #9fb6cb;
+            border-radius: 18px;
+            padding: 4px 9px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2b587a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            transition: background 0.15s, transform 0.08s;
+        }
+
+        .farm-tool-btn:hover { background: #e8f1f8; }
+        .farm-tool-btn.active {
+            background: #45688e;
+            color: #ffffff;
+            border-color: #2e4d70;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .farm-friends-strip-wrap {
+            background: #eef2f6;
+            border-top: 2px solid #2e5917;
+            padding: 6px 10px;
+        }
+
+        .farm-friends-strip-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #33597d;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .farm-friends-carousel {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .farm-friend-pill {
+            flex: 0 0 auto;
+            background: #ffffff;
+            border: 1px solid #c3d2e0;
+            border-radius: 4px;
+            padding: 4px;
+            width: 72px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s, border-color 0.15s;
+        }
+
+        .farm-friend-pill:hover {
+            transform: translateY(-2px);
+            border-color: #45688e;
+        }
+
+        .farm-friend-pill img {
+            width: 38px;
+            height: 38px;
+            border-radius: 3px;
+            object-fit: cover;
+            border: 1px solid #dae1e8;
+        }
+
+        .farm-friend-level-tag {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: #ffc107;
+            color: #000;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 0 3px;
+            border-radius: 2px;
+            border: 1px solid #e0a800;
+        }
+
+        .farm-friend-loot-tag {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 12px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+            animation: floatAnim 1s infinite;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+        }
+
+        .shop-item-card {
+            border: 1px solid var(--vk-border);
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            background: #fbfcfd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .shop-item-card:hover { background: #f0f4f8; }
     </style>
 </head>
 <body class="mode-mobile">
@@ -331,7 +640,7 @@
         <button class="tab-btn" id="tab-btn-videos" onclick="switchTab('videos', event)">Відео</button>
         <button class="tab-btn" id="tab-btn-music" onclick="switchTab('music', event)">Аудіо</button>
         <button class="tab-btn" id="tab-btn-groups" onclick="switchTab('groups', event)">Групи</button>
-        <button class="tab-btn" id="tab-btn-store" onclick="switchTab('store', event)">Ігри 🎮</button>
+        <button class="tab-btn" id="tab-btn-store" onclick="switchTab('store', event)">Ферма 🌾</button>
         <button class="tab-btn" id="tab-btn-notes" onclick="switchTab('notes', event)">Нотатки</button>
         <button class="tab-btn" id="tab-btn-thoughts" onclick="switchTab('thoughts', event)">Секрети</button>
     </div>
@@ -347,7 +656,7 @@
             <a href="javascript:void(0)" id="pc-link-videos" onclick="switchTab('videos', event)">Мої Відеозаписи</a>
             <a href="javascript:void(0)" id="pc-link-music" onclick="switchTab('music', event)">Мої Аудіозаписи</a>
             <a href="javascript:void(0)" id="pc-link-groups" onclick="switchTab('groups', event)">Спільноти (Групи)</a>
-            <a href="javascript:void(0)" id="pc-link-store" onclick="switchTab('store', event)">Архів додатків 🎮</a>
+            <a href="javascript:void(0)" id="pc-link-store" onclick="switchTab('store', event)">Щаслива Ферма 🌾</a>
             <a href="javascript:void(0)" id="pc-link-notes" onclick="switchTab('notes', event)">Мої Нотатки</a>
             <a href="javascript:void(0)" id="pc-link-thoughts" onclick="switchTab('thoughts', event)">Думки та Секрети</a>
             <div class="sidebar-divider"></div>
@@ -361,7 +670,6 @@
             <div id="tab-profile" class="tab-content active">
                 <div class="profile-container">
                     
-                    <!-- ЛІВА КОЛОНКА -->
                     <div class="profile-left-col">
                         <div class="avatar-wrap">
                             <img id="profile-avatar" class="avatar" src="https://vk.com/images/camera_200.png" alt="Світлина">
@@ -394,7 +702,6 @@
                             <button class="btn-vk-secondary" style="width: 100%; font-size: 10px;" id="profile-friend-action-btn">+ Додати в друзі</button>
                         </div>
 
-                        <!-- ПРОПОЗИЦІЯ СІМЕЙНОГО СТАНУ -->
                         <div id="relationship-proposal-banner" style="display: none; background: #fffde7; border: 1px solid #fbc02d; padding: 6px; margin-top: 8px; border-radius: 2px; font-size: 10px;">
                             <div id="relationship-proposal-text" style="font-weight: bold; margin-bottom: 4px; color: #f57f17;">Пропозиція сімейного стану</div>
                             <div style="display: flex; gap: 4px;">
@@ -403,7 +710,6 @@
                             </div>
                         </div>
 
-                        <!-- ДОДАТКИ -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Мої Додатки 🎮</span>
@@ -414,7 +720,6 @@
                             </div>
                         </div>
 
-                        <!-- ГОСТІ -->
                         <div class="side-block">
                             <div class="side-block-header"><span>👀 Хто заходив</span></div>
                             <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="profile-visitors-list">
@@ -422,7 +727,6 @@
                             </div>
                         </div>
 
-                        <!-- ДНІ НАРОДЖЕННЯ -->
                         <div class="side-block">
                             <div class="side-block-header"><span>🎂 Дні народження</span></div>
                             <div style="padding: 6px; font-size: 10px; color: var(--vk-subtext);" id="birthdays-widget-content">
@@ -430,7 +734,6 @@
                             </div>
                         </div>
 
-                        <!-- ДРУЗІ 3x2 -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Друзі (<span id="sidebar-friends-count">0</span>) <span style="font-weight: normal; color: #43a047;" id="sidebar-friends-online-wrap">• <span id="sidebar-friends-online">0</span> онлайн</span></span>
@@ -441,7 +744,6 @@
                             </div>
                         </div>
 
-                        <!-- ФОТО СМУЖКА -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Фотографії (<span id="sidebar-photos-count">0</span>)</span>
@@ -452,7 +754,6 @@
                             </div>
                         </div>
 
-                        <!-- ПОДАРУНКИ -->
                         <div class="side-block">
                             <div class="side-block-header">
                                 <span>Подарунки (<span id="gifts-counter">0</span>)</span>
@@ -464,7 +765,6 @@
                         </div>
                     </div>
 
-                    <!-- ПРАВА КОЛОНКА -->
                     <div class="profile-right-col">
                         <div class="profile-name-row">
                             <div>
@@ -508,7 +808,6 @@
                             </table>
                         </div>
 
-                        <!-- СТІНА ТА ПУБЛІКАЦІЯ -->
                         <div style="margin-top: 12px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; font-weight: bold; color: var(--vk-link); display: flex; justify-content: space-between;">
                             <span id="wall-header-title">Стіна</span>
                             <span id="wall-counter" style="color: var(--vk-subtext); font-weight: normal;">0 записів</span>
@@ -528,7 +827,6 @@
                                 </div>
                             </div>
 
-                            <!-- ПОЛОТНО ГРАФІТІ -->
                             <div id="graffiti-palette">
                                 <div style="text-align: center;">
                                     <div id="canvas-wrapper">
@@ -582,7 +880,6 @@
                         <span style="font-size: 10px; font-weight: normal; color: var(--vk-subtext);">Звук: 🔔</span>
                     </div>
 
-                    <!-- СПИСОК ДІАЛОГІВ -->
                     <div id="dialogs-directory-view">
                         <div class="dialog-item" style="background: #f0f4f8; font-weight: bold;" onclick="openChatRoom('public', 'Загальний стіл (чат спільноти)')">
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -603,7 +900,6 @@
                         </div>
                     </div>
 
-                    <!-- ВІКНО ПЕРЕПИСКИ -->
                     <div id="active-chat-view" style="display: none; position: relative;">
                         <div class="chat-stream" id="chat-stream"></div>
                         
@@ -634,7 +930,7 @@
                 </div>
             </div>
 
-            <!-- 4. ДРУЗІ ТА ПОШУК (З ПОШУКОМ ЗА КРАЇНОЮ ТА МІСТОМ) -->
+            <!-- 4. ДРУЗІ ТА ПОШУК -->
             <div id="tab-friends" class="tab-content">
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
                     Мої Друзі (<span id="friends-total-counter">0</span>)
@@ -651,7 +947,6 @@
                     </div>
                 </div>
 
-                <!-- Оновлені поля фільтрації -->
                 <div style="margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
                     <input type="text" id="friend-search-input" class="input-vk" style="flex: 2; min-width: 120px;" placeholder="Ім'я або ID..." oninput="filterUsersList()">
                     <input type="text" id="country-filter-input" class="input-vk" style="flex: 1; min-width: 85px;" placeholder="Країна..." oninput="filterUsersList()">
@@ -705,9 +1000,7 @@
             </div>
 
             <!-- 7. АУДІОЗАПИСИ -->
-            <div id="tab-music" class="tab-content">
-                <!-- Інтерфейс стабільно монтується один раз функцією renderMusicTab() -->
-            </div>
+            <div id="tab-music" class="tab-content"></div>
 
             <!-- 8. СПІЛЬНОТИ -->
             <div id="tab-groups" class="tab-content">
@@ -718,15 +1011,74 @@
                 <div id="groups-list-container" class="user-directory-list"></div>
             </div>
 
-            <!-- 9. КАТАЛОГ ДОДАТКІВ ТА ІГОР -->
+            <!-- 9. КАТАЛОГ ДОДАТКІВ ТА «ЩАСЛИВА ФЕРМА» -->
             <div id="tab-store" class="tab-content">
-                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>Каталог додатків та ігор 🎮</span>
-                    <button id="admin-upload-app-btn" class="btn-vk" style="display: none; font-size: 10px;" onclick="openModal('modal-add-app')">+ Завантажити гру (Адмін)</button>
+                
+                <!-- 🏡 КАНОНІЧНА «ЩАСЛИВА ФЕРМА» -->
+                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 8px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>🏡 Сільське господарство («Щаслива ферма»)</span>
+                    <span id="farm-mode-indicator" style="font-size: 10px; color: #43a047; font-weight: bold;">● Ваша ділянка</span>
                 </div>
-                <div style="color: var(--vk-subtext); margin-bottom: 10px;">Додавайте улюблені ретро-ігри та флеш-додатки на свою сторінку!</div>
-                <div id="global-apps-catalog-list">
-                    <div style="color: var(--vk-subtext); padding: 10px;">Завантаження бібліотеки ігор...</div>
+
+                <div class="retro-farm-wrapper">
+                    <!-- Верхній бар інформації -->
+                    <div class="farm-header-bar">
+                        <div class="farm-owner-badge">
+                            <span id="farm-owner-title">Моя ферма</span>
+                            <button id="btn-farm-home" class="btn-vk-secondary" style="display:none; font-size: 9px; padding: 1px 6px; background:#fff;" onclick="returnToMyFarm()">🏡 Додому</button>
+                        </div>
+                        <div class="farm-stats-group">
+                            <div class="farm-stat-chip" title="Рівень фермера">
+                                <span>⭐ Рівень: <b id="farm-lvl">1</b></span>
+                                <div class="farm-exp-bar-wrap" title="Досвід"><div class="farm-exp-fill" id="farm-exp-bar"></div></div>
+                            </div>
+                            <div class="farm-stat-chip" style="color: #ffeb3b;">
+                                <span>🪙 <b id="farm-coins">100</b></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ізометричне подвір'я -->
+                    <div class="farm-scene-viewport">
+                        <div class="farm-fence-top"></div>
+
+                        <!-- Сторожова будка собаки -->
+                        <div class="farm-doghouse-wrap" onclick="openFarmDogModal()" title="Натисніть для догляду за собакою">
+                            <span style="font-size: 20px;">🐶</span>
+                            <div>
+                                <div><b id="farm-dog-status-title">Сторож</b></div>
+                                <div style="font-size: 8px; color: #666;" id="farm-dog-timer">Спить (голодний)</div>
+                            </div>
+                        </div>
+
+                        <!-- 20 ізометричних грядок (4 стовпці x 5 рядків) -->
+                        <div class="farm-isometric-ground" id="farm-iso-grid">
+                            <!-- Генерується динамічно -->
+                        </div>
+
+                        <!-- Нижні кнопки інструментів -->
+                        <div class="farm-action-toolbar">
+                            <button class="farm-tool-btn active" data-tool="hand" onclick="selectFarmTool('hand')">✋ Рука</button>
+                            <button class="farm-tool-btn" data-tool="seeds" onclick="openSeedSelectorModal()">🌱 Насіння</button>
+                            <button class="farm-tool-btn" data-tool="water" onclick="selectFarmTool('water')">💧 Лійка</button>
+                            <button class="farm-tool-btn" data-tool="cure" onclick="selectFarmTool('cure')">🐛 Оприскувач</button>
+                            <button class="farm-tool-btn" data-tool="fert" onclick="selectFarmTool('fert')">🧪 Добриво</button>
+                            <button class="farm-tool-btn" data-tool="plow" onclick="selectFarmTool('plow')">⛏️ Тяпка</button>
+                            <button class="farm-tool-btn" style="background:#e8f5e9; color:#2e7d32;" onclick="openFarmShopModal()">🏪 Крамниця</button>
+                            <button class="farm-tool-btn" style="background:#fffde7; color:#f57f17;" onclick="openFarmBarnModal()">📦 Комора (<span id="barn-items-count">0</span>)</button>
+                        </div>
+                    </div>
+
+                    <!-- Нижня стрічка сусідів для походів у гості -->
+                    <div class="farm-friends-strip-wrap">
+                        <div class="farm-friends-strip-title">
+                            <span>Сусіди та друзі (натисніть на аватар, щоб піти на його ферму):</span>
+                            <span style="color: var(--vk-subtext);">Допомагайте або запозичуйте врожай!</span>
+                        </div>
+                        <div class="farm-friends-carousel" id="farm-friends-carousel">
+                            <span style="font-size: 10px; color: var(--vk-subtext); padding: 4px;">Завантаження сусідів...</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 🏆 ТОП ФЕРМЕРІВ -->
@@ -737,38 +1089,14 @@
                     <div style="color: var(--vk-subtext); padding: 4px;">Завантаження рейтингу...</div>
                 </div>
 
-                <!-- 🏡 РЕТРО ФЕРМА -->
-                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin: 15px 0 10px 0; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
-                    🏡 Ретро-Ферма («Щаслива ферма»)
+                <!-- КАТАЛОГ ІГОР -->
+                <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin: 15px 0 10px 0; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Каталог додатків та ігор 🎮</span>
+                    <button id="admin-upload-app-btn" class="btn-vk" style="display: none; font-size: 10px;" onclick="openModal('modal-add-app')">+ Завантажити гру (Адмін)</button>
                 </div>
-
-                <div style="background: linear-gradient(180deg, #6bb55b 0%, #4a8c3f 100%); border: 3px solid #2d5a27; border-radius: 6px; padding: 12px; margin-bottom: 10px; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.3);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.4); padding: 5px 10px; border-radius: 4px; color: #fff; margin-bottom: 10px; font-size: 11px;">
-                        <span>🏠 Хата • Склад: 🌾 <b id="storage-wheat">0</b> | 🥚 <b id="storage-eggs">0</b> | 🥛 <b id="storage-milk">0</b></span>
-                        <span>🪙 <b id="storage-coins">100</b> монет</span>
-                    </div>
-
-                    <div style="background: #3e7a35; border: 2px inset #2d5a27; height: 190px; border-radius: 6px; position: relative; display: flex; justify-content: center; align-items: center; perspective: 600px; margin-bottom: 10px;">
-                        <div id="farm-plots-container" style="display: grid; grid-template-columns: repeat(2, 65px); gap: 14px; transform: rotateX(35deg) rotateZ(-15deg);"></div>
-                    </div>
-
-                    <div style="background: rgba(255, 255, 255, 0.9); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; font-size: 10px; display: flex; justify-content: space-between; align-items: center;">
-                        <div id="farm-animals-container" style="flex: 1; overflow-x: auto;">
-                            <span style="color: var(--vk-subtext);">Тварин немає.</span>
-                        </div>
-                        <div style="display: flex; gap: 4px; flex-shrink: 0;">
-                            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('chicken')">+ Курка (30 🪙)</button>
-                            <button class="btn-vk" style="font-size: 9px; padding: 2px 5px;" onclick="buyAnimal('cow')">+ Корова (70 🪙)</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.5); padding: 6px; border-radius: 6px;">
-                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лопата">🌱</button>
-                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Насіння">🌾</button>
-                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Лійка">💧</button>
-                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Добриво">🧪</button>
-                        <button class="btn-vk-secondary" style="background: #fff; font-size: 12px; padding: 4px 8px;" title="Зібрати врожай">✋</button>
-                    </div>
+                <div style="color: var(--vk-subtext); margin-bottom: 10px;">Додавайте улюблені ретро-ігри та флеш-додатки на свою сторінку!</div>
+                <div id="global-apps-catalog-list">
+                    <div style="color: var(--vk-subtext); padding: 10px;">Завантаження бібліотеки ігор...</div>
                 </div>
             </div>
 
@@ -842,7 +1170,6 @@
     </div>
 </div>
 
-<!-- РЕДАГУВАННЯ ПРОФІЛЮ (З КРАЇНОЮ ТА МІСТОМ) -->
 <div class="vk-modal" id="modal-edit-profile">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -854,7 +1181,7 @@
             <label style="font-size: 10px; color: var(--vk-subtext);">Дата народження:</label>
             <input type="date" id="edit-birthdate" class="input-vk modal-input">
             <input type="text" id="edit-country" class="input-vk modal-input" placeholder="Країна (напр. Україна, Молдова)">
-            <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто (напр. Київ, Кишинів)">
+            <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто (напр. Київ, Одеса)">
             
             <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Сімейний стан:</div>
             <select id="edit-relationship-type" class="input-vk modal-input">
@@ -1181,7 +1508,93 @@
             </div>
         </div>
     </div>
-</div><!-- ЄДИНИЙ ГОЛОВНИЙ СКРИПТ -->
+</div>
+
+<!-- ============================================== -->
+<!-- МОДАЛЬНІ ВІКНА ЩАСЛИВОЇ ФЕРМИ -->
+<!-- ============================================== -->
+<div class="vk-modal" id="modal-farm-shop">
+    <div class="vk-modal-box" style="max-width: 480px;">
+        <div class="vk-modal-header">
+            <span>🏪 Сільськогосподарська крамниця</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-farm-shop')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <div style="font-weight: bold; margin-bottom: 6px; color: var(--vk-link);">Насіння культур:</div>
+            <div class="shop-grid" id="farm-shop-seeds-grid"></div>
+
+            <div style="font-weight: bold; margin-top: 12px; margin-bottom: 6px; color: var(--vk-link);">Товари для ферми:</div>
+            <div class="shop-grid">
+                <div class="shop-item-card">
+                    <div style="font-size: 26px;">🧪</div>
+                    <b>Мінеральне добриво</b>
+                    <div style="font-size: 9px; color: #555;">Прискорює ріст на 25%</div>
+                    <div style="margin: 4px 0; font-weight: bold; color: #f57f17;">20 🪙</div>
+                    <button class="btn-vk" style="font-size: 9px;" onclick="buyFertilizerItem()">Купити</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="font-size: 26px;">🍖</div>
+                    <b>Смачна кістка для пса</b>
+                    <div style="font-size: 9px; color: #555;">Пес вартує ферму 24 год</div>
+                    <div style="margin: 4px 0; font-weight: bold; color: #f57f17;">30 🪙</div>
+                    <button class="btn-vk" style="font-size: 9px;" onclick="buyDogFoodItem()">Нагодувати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="vk-modal" id="modal-farm-barn">
+    <div class="vk-modal-box" style="max-width: 420px;">
+        <div class="vk-modal-header">
+            <span>📦 Сільська комора (Склад плодів)</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-farm-barn')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <p style="font-size: 11px; color: var(--vk-subtext); margin-bottom: 8px;">Тут зберігаються зібрані або запозичені у сусідів плоди. Продайте їх, щоб отримати монети!</p>
+            <div id="farm-barn-items-list" style="margin-bottom: 12px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--vk-border); padding-top: 8px;">
+                <b id="farm-barn-total-value">Загальна вартість: 0 🪙</b>
+                <button class="btn-vk" style="background:#43a047;" onclick="sellAllBarnCrops()">Продати все на ринку</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="vk-modal" id="modal-farm-seeds">
+    <div class="vk-modal-box" style="max-width: 380px;">
+        <div class="vk-modal-header">
+            <span>🌱 Оберіть культуру для посіву</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-farm-seeds')">✕</span>
+        </div>
+        <div class="vk-modal-body">
+            <div class="shop-grid" id="farm-seed-selector-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="vk-modal" id="modal-farm-dog">
+    <div class="vk-modal-box" style="max-width: 320px;">
+        <div class="vk-modal-header">
+            <span>🐶 Сторожовий пес Барбос</span>
+            <span style="cursor: pointer;" onclick="closeModal('modal-farm-dog')">✕</span>
+        </div>
+        <div class="vk-modal-body" style="text-align: center;">
+            <div style="font-size: 40px; margin: 5px 0;">🐕</div>
+            <p id="modal-dog-desc" style="font-size: 11px; color: var(--vk-subtext); margin-bottom: 10px;">
+                Пес стереже ваші грядки від злодіїв. Коли пес ситий, він хапає сусідів-крадіїв за штани і змушує платити штраф!
+            </p>
+            <div style="background: #f7f7f7; padding: 6px; border: 1px solid var(--vk-border); border-radius: 4px; margin-bottom: 10px;">
+                Статус: <b id="modal-dog-status-text">Голодний (не вартує)</b>
+            </div>
+            <button class="btn-vk" style="background: #43a047; width: 100%;" onclick="buyDogFoodItem()">🍖 Купити кістку та нагодувати (30 🪙)</button>
+        </div>
+    </div>
+</div>
+<!-- ============================================== -->
+<!-- КІНЕЦЬ ЕТАПУ 1 (ДАЛІ ЙДЕ ТЕГ <script>) -->
+<!-- ============================================== -->
+<!-- ЄДИНИЙ ГОЛОВНИЙ СКРИПТ: ЛОГІКА МЕРЕЖІ ТА ДВИГУН «ЩАСЛИВОЇ ФЕРМИ» -->
 <script>
     const BREAKPOINT = 768;
     let userPreference = localStorage.getItem('nz_display_pref') || 'auto';
@@ -1212,7 +1625,7 @@
     window.addEventListener('resize', () => { if (userPreference === 'auto') syncLayout(); });
     syncLayout();
 
-    // Firebase
+    // Firebase конфігурація
     const firebaseConfig = {
         apiKey: "AIzaSyC5Ox_25cWYi12M3dMlCpCXKfT-oZub8ts",
         authDomain: "nazviazku.firebaseapp.com",
@@ -1255,7 +1668,7 @@
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
 
-    // Звуковий генератор Web Audio API
+    // Звуки Web Audio API
     let retroAudioCtx = null;
     function getAudioContext() {
         if (!retroAudioCtx) retroAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1362,9 +1775,6 @@
         savedMusic: [],
         currentTrack: "",
         coins: 100,
-        wheat: 0,
-        eggs: 0,
-        milk: 0,
         country: "",
         city: "",
         relationshipType: "",
@@ -1401,6 +1811,775 @@
     let userFriendsMap = new Map();
     let cachedUsers = [];
 
+    // =======================================================
+    // 🌾 ДВИГУН «ЩАСЛИВОЇ ФЕРМИ» (RETRO VK ENGINE)
+    // =======================================================
+    
+    // Множник часу росту:
+    // 1 = оригінальний реальний час (10-32 години).
+    // Для тестування можна поставити 0.005 (10 годин перетворяться на 3 хвилини).
+    const FARM_TIME_SCALE = 1;
+
+    const FARM_CROPS = {
+        radish: {
+            id: "radish",
+            name: "Редис",
+            levelReq: 1,
+            cost: 125,
+            sell: 250,
+            exp: 15,
+            totalTime: 10 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.10, 0.30, 0.65, 1.0],
+            icons: ["🌱", "🌿", "🪴", "🌱"],
+            finalIcon: "🪴",
+            baseYield: 20
+        },
+        carrot: {
+            id: "carrot",
+            name: "Морква",
+            levelReq: 2,
+            cost: 195,
+            sell: 380,
+            exp: 20,
+            totalTime: 13 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.11, 0.32, 0.65, 1.0],
+            icons: ["🌱", "🌿", "🥕", "🥕"],
+            finalIcon: "🥕",
+            baseYield: 22
+        },
+        cucumber: {
+            id: "cucumber",
+            name: "Огірок",
+            levelReq: 3,
+            cost: 290,
+            sell: 560,
+            exp: 26,
+            totalTime: 16 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.12, 0.35, 0.70, 1.0],
+            icons: ["🌱", "🌿", "🥒", "🥒"],
+            finalIcon: "🥒",
+            baseYield: 24
+        },
+        tomato: {
+            id: "tomato",
+            name: "Помідор",
+            levelReq: 5,
+            cost: 450,
+            sell: 850,
+            exp: 35,
+            totalTime: 20 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.12, 0.35, 0.70, 1.0],
+            icons: ["🌱", "🌿", "🍅", "🍅"],
+            finalIcon: "🍅",
+            baseYield: 26
+        },
+        strawberry: {
+            id: "strawberry",
+            name: "Полуниця",
+            levelReq: 7,
+            cost: 680,
+            sell: 1300,
+            exp: 48,
+            totalTime: 24 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.15, 0.40, 0.75, 1.0],
+            icons: ["🌱", "🌿", "🍓", "🍓"],
+            finalIcon: "🍓",
+            baseYield: 28
+        },
+        corn: {
+            id: "corn",
+            name: "Кукурудза",
+            levelReq: 10,
+            cost: 1050,
+            sell: 2050,
+            exp: 65,
+            totalTime: 32 * 3600 * 1000 * FARM_TIME_SCALE,
+            phases: [0.15, 0.40, 0.75, 1.0],
+            icons: ["🌱", "🌿", "🌽", "🌽"],
+            finalIcon: "🌽",
+            baseYield: 30
+        }
+    };
+
+    let activeFarmTool = 'hand';
+    let selectedSeedForPlanting = 'radish';
+    let currentFarmViewingId = null;
+    let currentFarmViewingName = "Моя ферма";
+    let loadedFarmData = null;
+    let farmDocUnsubscribe = null;
+    let farmTickerInterval = null;
+
+    function createInitialFarmState(userId, userName) {
+        const plots = [];
+        for (let i = 0; i < 20; i++) {
+            plots.push({
+                id: i,
+                unlocked: (i < 6), // Перші 6 грядок відкриті безкоштовно
+                cropId: null,
+                plantedAt: 0,
+                watered: true,
+                hasPests: false,
+                yieldLeft: 0,
+                stolenBy: []
+            });
+        }
+        return {
+            ownerId: userId,
+            ownerName: userName,
+            farmExp: 0,
+            farmLevel: 1,
+            dog: {
+                fedUntil: 0
+            },
+            barn: {}
+        };
+    }
+
+    function calculateFarmLevel(exp) {
+        return Math.floor(Math.sqrt((exp || 0) / 30)) + 1;
+    }
+
+    function selectFarmTool(toolName) {
+        activeFarmTool = toolName;
+        document.querySelectorAll('.farm-tool-btn').forEach(b => {
+            if (b.dataset.tool === toolName) b.classList.add('active');
+            else b.classList.remove('active');
+        });
+    }
+
+    function openSeedSelectorModal() {
+        selectFarmTool('seeds');
+        renderSeedSelectorGrid();
+        openModal('modal-farm-seeds');
+    }
+
+    function renderSeedSelectorGrid() {
+        const grid = document.getElementById('farm-seed-selector-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        
+        const myLevel = loadedFarmData?.farmLevel || 1;
+        for (let cropKey in FARM_CROPS) {
+            const c = FARM_CROPS[cropKey];
+            const isLocked = myLevel < c.levelReq;
+            grid.innerHTML += `
+                <div class="shop-item-card" style="${isLocked ? 'opacity: 0.5;' : ''}">
+                    <div style="font-size: 28px;">${c.finalIcon}</div>
+                    <b>${c.name}</b>
+                    <div style="font-size: 9px; color: #555;">Рівень: ${c.levelReq}</div>
+                    <div style="font-size: 9px; color: #f57f17; font-weight: bold;">Ціна: ${c.cost} 🪙</div>
+                    <button class="btn-vk" style="margin-top: 5px; font-size: 9px;" ${isLocked ? 'disabled' : ''} onclick="chooseSeedForPlanting('${c.id}')">
+                        ${isLocked ? '🔒 З ' + c.levelReq + ' ур.' : (selectedSeedForPlanting === c.id ? '✓ Обрано' : 'Сіяти')}
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    function chooseSeedForPlanting(cropId) {
+        selectedSeedForPlanting = cropId;
+        closeModal('modal-farm-seeds');
+        vkAlert('Посів', `Обрано культуру: ${FARM_CROPS[cropId].name}. Тепер клікайте по порожніх грядках!`);
+    }
+
+    function openFarmShopModal() {
+        const grid = document.getElementById('farm-shop-seeds-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const myLevel = loadedFarmData?.farmLevel || 1;
+        for (let cropKey in FARM_CROPS) {
+            const c = FARM_CROPS[cropKey];
+            const isLocked = myLevel < c.levelReq;
+            const hours = (c.totalTime / (3600 * 1000)).toFixed(1);
+            grid.innerHTML += `
+                <div class="shop-item-card" style="${isLocked ? 'opacity: 0.55;' : ''}">
+                    <div style="font-size: 26px;">${c.finalIcon}</div>
+                    <b>${c.name}</b>
+                    <div style="font-size: 8px; color: #555;">Ріст: ~${hours} год | +${c.exp} XP</div>
+                    <div style="font-size: 9px; color: #d32f2f; font-weight: bold;">Купівля: ${c.cost} 🪙</div>
+                    <div style="font-size: 9px; color: #2e7d32; font-weight: bold;">Урожай: ${c.sell} 🪙</div>
+                    <button class="btn-vk" style="margin-top: 4px; font-size: 9px;" ${isLocked ? 'disabled' : ''} onclick="chooseSeedForPlanting('${c.id}')">
+                        ${isLocked ? '🔒 Рівень ' + c.levelReq : 'Вибрати для сівби'}
+                    </button>
+                </div>
+            `;
+        }
+        openModal('modal-farm-shop');
+    }
+
+    function openFarmBarnModal() {
+        const list = document.getElementById('farm-barn-items-list');
+        const totalValEl = document.getElementById('farm-barn-total-value');
+        if (!list || !totalValEl) return;
+
+        const barn = loadedFarmData?.barn || {};
+        list.innerHTML = '';
+        let totalCoins = 0;
+        let hasItems = false;
+
+        for (let cropId in barn) {
+            const count = barn[cropId] || 0;
+            if (count > 0 && FARM_CROPS[cropId]) {
+                hasItems = true;
+                const crop = FARM_CROPS[cropId];
+                const onePrice = Math.round(crop.sell / crop.baseYield);
+                const totalItemPrice = onePrice * count;
+                totalCoins += totalItemPrice;
+
+                list.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-bottom: 1px solid var(--vk-border-subtle);">
+                        <div>
+                            <span style="font-size: 16px;">${crop.finalIcon}</span>
+                            <b>${crop.name}</b>: ${count} шт.
+                        </div>
+                        <div>
+                            <span style="color: #43a047; font-weight: bold; margin-right: 8px;">+${totalItemPrice} 🪙</span>
+                            <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="sellBarnCrop('${cropId}')">Продати</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        if (!hasItems) {
+            list.innerHTML = '<div style="color: var(--vk-subtext); text-align: center; padding: 10px;">Комора порожня. Збирайте свій врожай або позичайте у друзів!</div>';
+        }
+
+        totalValEl.innerText = `Загальна вартість: ${totalCoins} 🪙`;
+        openModal('modal-farm-barn');
+    }
+
+    async function sellBarnCrop(cropId) {
+        if (!loadedFarmData || currentFarmViewingId !== activeUser.id) return;
+        const count = loadedFarmData.barn?.[cropId] || 0;
+        if (count <= 0) return;
+
+        const crop = FARM_CROPS[cropId];
+        const gain = Math.round(crop.sell / crop.baseYield) * count;
+
+        loadedFarmData.barn[cropId] = 0;
+        activeUser.coins = (activeUser.coins || 0) + gain;
+
+        await db.collection('farms').doc(activeUser.id).set({ barn: loadedFarmData.barn }, { merge: true });
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+
+        updateFarmHUD();
+        openFarmBarnModal();
+        vkAlert('Ринок', `Ви успішно продали ${crop.name} (${count} шт.) за ${gain} 🪙!`);
+    }
+
+    async function sellAllBarnCrops() {
+        if (!loadedFarmData || currentFarmViewingId !== activeUser.id) return;
+        const barn = loadedFarmData.barn || {};
+        let totalGain = 0;
+
+        for (let cId in barn) {
+            const count = barn[cId] || 0;
+            if (count > 0 && FARM_CROPS[cId]) {
+                totalGain += Math.round(FARM_CROPS[cId].sell / FARM_CROPS[cId].baseYield) * count;
+                barn[cId] = 0;
+            }
+        }
+
+        if (totalGain === 0) return vkAlert('Комора', 'У коморі немає плодів для продажу!');
+
+        activeUser.coins = (activeUser.coins || 0) + totalGain;
+        await db.collection('farms').doc(activeUser.id).set({ barn }, { merge: true });
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+
+        updateFarmHUD();
+        closeModal('modal-farm-barn');
+        vkAlert('Ярмарок!', `Ввесь склад успішно реалізовано на базарі за ${totalGain} 🪙!`);
+    }
+
+    function openFarmDogModal() {
+        const isMe = (currentFarmViewingId === activeUser.id);
+        const statusEl = document.getElementById('modal-dog-status-text');
+        const descEl = document.getElementById('modal-dog-desc');
+        const dog = loadedFarmData?.dog;
+        const isFed = dog && dog.fedUntil && (dog.fedUntil > Date.now());
+
+        if (isFed) {
+            const remainingHours = Math.ceil((dog.fedUntil - Date.now()) / (3600 * 1000));
+            statusEl.innerHTML = `<span style="color:#2e7d32;">🍖 Ситий і вартує! (ще ~${remainingHours} год)</span>`;
+        } else {
+            statusEl.innerHTML = `<span style="color:#d32f2f;">Голодний (спить у будці)</span>`;
+        }
+
+        if (!isMe) {
+            descEl.innerText = `Це сторожовий пес фермера ${currentFarmViewingName}. Якщо спробувати вкрасти плід, поки він ситий — він захистить грядку!`;
+        } else {
+            descEl.innerText = `Пес стереже ваші грядки від злодіїв. Коли пес ситий, він хапає сусідів-крадіїв за штани і змушує платити штраф!`;
+        }
+
+        openModal('modal-farm-dog');
+    }
+
+    async function buyDogFoodItem() {
+        if ((activeUser.coins || 0) < 30) {
+            return vkAlert('Крамниця', 'Недостатньо монет для кістки (потрібно 30 🪙)!');
+        }
+
+        activeUser.coins -= 30;
+        const fedUntil = Date.now() + (24 * 3600 * 1000); // 24 години захисту
+
+        await db.collection('farms').doc(activeUser.id).set({
+            dog: { fedUntil: fedUntil }
+        }, { merge: true });
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+
+        updateFarmHUD();
+        closeModal('modal-farm-dog');
+        closeModal('modal-farm-shop');
+        vkAlert('Сторож', '🐶 Барбос смачно попоїв та почав вартувати ферму на 24 години!');
+    }
+
+    async function buyFertilizerItem() {
+        if ((activeUser.coins || 0) < 20) {
+            return vkAlert('Крамниця', 'Недостатньо монет для добрива (потрібно 20 🪙)!');
+        }
+        activeUser.coins -= 20;
+        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+        selectFarmTool('fert');
+        closeModal('modal-farm-shop');
+        updateFarmHUD();
+        vkAlert('Добриво', '🧪 Ви придбали мінеральне добриво! Тепер клікніть по зростаючій культурі, щоб прискорити ріст на 25%.');
+    }
+
+    // Завантаження та перемикання ферми (своя / друга)
+    async function loadFarmData(targetUserId = null, targetUserName = null) {
+        const isMyFarm = !targetUserId || targetUserId === activeUser.id;
+        currentFarmViewingId = isMyFarm ? activeUser.id : targetUserId;
+        currentFarmViewingName = isMyFarm ? userFullName : (targetUserName || "Друга");
+
+        document.getElementById('farm-owner-title').innerText = isMyFarm ? "Моя ферма" : `Ферма: ${escapeText(currentFarmViewingName)}`;
+        document.getElementById('btn-farm-home').style.display = isMyFarm ? "none" : "inline-block";
+        document.getElementById('farm-mode-indicator').innerText = isMyFarm ? "● Ваша ділянка" : `● В гостях у ${escapeText(currentFarmViewingName)}`;
+        document.getElementById('farm-mode-indicator').style.color = isMyFarm ? "#43a047" : "#1976d2";
+
+        if (farmDocUnsubscribe) {
+            farmDocUnsubscribe();
+            farmDocUnsubscribe = null;
+        }
+
+        const farmDocRef = db.collection('farms').doc(currentFarmViewingId);
+        farmDocUnsubscribe = farmDocRef.onSnapshot(async snap => {
+            if (!snap.exists) {
+                const initialData = createInitialFarmState(currentFarmViewingId, currentFarmViewingName);
+                await farmDocRef.set(initialData);
+                loadedFarmData = initialData;
+            } else {
+                loadedFarmData = snap.data();
+            }
+
+            // Перевірка та ініціалізація структури грядок, якщо відсутня
+            if (!loadedFarmData.plots || loadedFarmData.plots.length < 20) {
+                const initPlots = createInitialFarmState(currentFarmViewingId, currentFarmViewingName).plots;
+                await farmDocRef.set({ plots: initPlots }, { merge: true });
+                loadedFarmData.plots = initPlots;
+            }
+
+            updateFarmHUD();
+            renderFarmGrid();
+        });
+
+        renderFarmFriendsStrip();
+
+        if (!farmTickerInterval) {
+            farmTickerInterval = setInterval(() => {
+                if (document.getElementById('tab-store')?.classList.contains('active')) {
+                    renderFarmGrid(true); // М'яке оновлення таймерів без перебудови DOM
+                }
+            }, 1000);
+        }
+    }
+
+    function returnToMyFarm() {
+        loadFarmData(activeUser.id, userFullName);
+    }
+
+    function updateFarmHUD() {
+        const lvl = calculateFarmLevel(loadedFarmData?.farmExp || 0);
+        document.getElementById('farm-lvl').innerText = lvl;
+        document.getElementById('farm-coins').innerText = activeUser.coins || 0;
+
+        const currentExp = loadedFarmData?.farmExp || 0;
+        const currentLvlBaseExp = Math.pow(lvl - 1, 2) * 30;
+        const nextLvlExp = Math.pow(lvl, 2) * 30;
+        const progress = Math.min(100, Math.max(5, ((currentExp - currentLvlBaseExp) / (nextLvlExp - currentLvlBaseExp || 1)) * 100));
+        document.getElementById('farm-exp-bar').style.width = `${progress}%`;
+
+        // Лічильник товарів у коморі
+        let totalBarnItems = 0;
+        if (loadedFarmData?.barn) {
+            for (let k in loadedFarmData.barn) totalBarnItems += (loadedFarmData.barn[k] || 0);
+        }
+        document.getElementById('barn-items-count').innerText = totalBarnItems;
+
+        // Стан сторожового собаки
+        const dog = loadedFarmData?.dog;
+        const isDogGuarding = dog && dog.fedUntil && (dog.fedUntil > Date.now());
+        const dogTitle = document.getElementById('farm-dog-status-title');
+        const dogTimer = document.getElementById('farm-dog-timer');
+
+        if (isDogGuarding) {
+            dogTitle.innerText = "Вартує 🐶";
+            dogTitle.style.color = "#2e7d32";
+            const remMin = Math.ceil((dog.fedUntil - Date.now()) / 60000);
+            dogTimer.innerText = remMin > 60 ? `Ще ${Math.floor(remMin/60)} год` : `Ще ${remMin} хв`;
+        } else {
+            dogTitle.innerText = "Сторож";
+            dogTitle.style.color = "#333";
+            dogTimer.innerText = "Спить (голодний)";
+        }
+    }
+
+    // Візуалізація ізометричного поля
+    function renderFarmGrid(timerOnly = false) {
+        const grid = document.getElementById('farm-iso-grid');
+        if (!grid || !loadedFarmData?.plots) return;
+
+        const plots = loadedFarmData.plots;
+        const now = Date.now();
+        const isMe = (currentFarmViewingId === activeUser.id);
+
+        if (!timerOnly) grid.innerHTML = '';
+
+        plots.forEach((p, idx) => {
+            let tile = timerOnly ? document.getElementById(`plot-tile-${idx}`) : null;
+            if (!tile && timerOnly) return;
+
+            let cropInfo = null;
+            let percent = 0;
+            let stageIndex = 0;
+            let isReady = false;
+            let timerStr = "";
+
+            if (p.cropId && FARM_CROPS[p.cropId]) {
+                const c = FARM_CROPS[p.cropId];
+                const elapsed = now - p.plantedAt;
+                percent = Math.min(100, Math.floor((elapsed / c.totalTime) * 100));
+
+                if (elapsed >= c.totalTime) {
+                    isReady = true;
+                    stageIndex = 3;
+                    timerStr = "Дозріло!";
+                } else {
+                    for (let s = 0; s < c.phases.length; s++) {
+                        if (elapsed < c.totalTime * c.phases[s]) {
+                            stageIndex = s;
+                            break;
+                        }
+                    }
+                    const remSec = Math.max(0, Math.floor((c.totalTime - elapsed) / 1000));
+                    const m = Math.floor(remSec / 60);
+                    const s = remSec % 60;
+                    timerStr = `${m}:${s < 10 ? '0' : ''}${s}`;
+                }
+                cropInfo = c;
+            }
+
+            if (!timerOnly) {
+                tile = document.createElement('div');
+                tile.id = `plot-tile-${idx}`;
+                tile.className = 'iso-plot-tile';
+                tile.onclick = () => handleFarmPlotClick(idx);
+                grid.appendChild(tile);
+            }
+
+            // Оновлення класів тайла
+            tile.className = 'iso-plot-tile';
+            if (!p.unlocked) {
+                tile.classList.add('locked');
+                tile.innerHTML = `<span>🔒</span>`;
+                return;
+            }
+
+            if (!p.watered) tile.classList.add('dry');
+            if (isReady) tile.classList.add('ready-glow');
+
+            // Вміст рослини
+            if (cropInfo) {
+                const currentIcon = isReady ? cropInfo.finalIcon : cropInfo.icons[stageIndex];
+                let alertsHtml = '';
+                if (!p.watered) alertsHtml += '<span class="crop-alert-icon" title="Потрібен полив!">💧</span>';
+                if (p.hasPests) alertsHtml += '<span class="crop-alert-icon" style="right: 18px;" title="Шкідники!">🐛</span>';
+
+                tile.innerHTML = `
+                    <div class="iso-crop-entity">
+                        ${alertsHtml}
+                        <span class="crop-icon-large ${isReady ? 'ready-anim' : ''}">${currentIcon}</span>
+                        <span class="crop-badge-timer">${timerStr}</span>
+                    </div>
+                `;
+            } else {
+                tile.innerHTML = '';
+            }
+        });
+    }
+
+    // Алгоритми кліків по грядці: Сівба, Догляд, Збір, Крадіжка
+    async function handleFarmPlotClick(plotIdx) {
+        if (!loadedFarmData || !loadedFarmData.plots) return;
+        const plot = loadedFarmData.plots[plotIdx];
+        const isMe = (currentFarmViewingId === activeUser.id);
+        const now = Date.now();
+
+        // 1. Розблокування нової грядки
+        if (!plot.unlocked) {
+            if (!isMe) return;
+            const unlockPrice = 150 * (plotIdx - 5);
+            if ((activeUser.coins || 0) < unlockPrice) {
+                return vkAlert('Ділянка', `Для відкриття цієї грядки потрібно ${unlockPrice} 🪙!`);
+            }
+            if (!confirm(`Відкрити додаткову грядку за ${unlockPrice} 🪙?`)) return;
+
+            activeUser.coins -= unlockPrice;
+            plot.unlocked = true;
+            await db.collection('farms').doc(activeUser.id).update({ plots: loadedFarmData.plots });
+            await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+            updateFarmHUD();
+            return;
+        }
+
+        // ==========================================
+        // ДІЇ НА ВЛАСНІЙ ФЕРМІ
+        // ==========================================
+        if (isMe) {
+            // Порожня грядка -> Посів
+            if (!plot.cropId) {
+                if (activeFarmTool !== 'seeds') {
+                    selectFarmTool('seeds');
+                }
+                const crop = FARM_CROPS[selectedSeedForPlanting];
+                if (!crop) return;
+
+                if ((activeUser.coins || 0) < crop.cost) {
+                    return vkAlert('Крамниця', `Недостатньо монет для насіння (${crop.cost} 🪙)!`);
+                }
+
+                // Шанс що земля одразу потребуватиме поливу або з'являться бур'яни
+                activeUser.coins -= crop.cost;
+                plot.cropId = crop.id;
+                plot.plantedAt = now;
+                plot.watered = Math.random() > 0.25; // 75% що волога
+                plot.hasPests = Math.random() < 0.15; // 15% ризик шкідників
+                plot.yieldLeft = crop.baseYield;
+                plot.stolenBy = [];
+
+                await db.collection('farms').doc(activeUser.id).update({ plots: loadedFarmData.plots });
+                await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+                updateFarmHUD();
+                renderFarmGrid();
+                return;
+            }
+
+            // Рослина вже росте:
+            const crop = FARM_CROPS[plot.cropId];
+            const isReady = (now - plot.plantedAt) >= crop.totalTime;
+
+            // Полив
+            if (!plot.watered && activeFarmTool === 'water') {
+                plot.watered = true;
+                loadedFarmData.farmExp = (loadedFarmData.farmExp || 0) + 2;
+                await db.collection('farms').doc(activeUser.id).update({ 
+                    plots: loadedFarmData.plots,
+                    farmExp: loadedFarmData.farmExp
+                });
+                updateFarmHUD();
+                renderFarmGrid();
+                return;
+            }
+
+            // Знищення шкідників оприскувачем
+            if (plot.hasPests && activeFarmTool === 'cure') {
+                plot.hasPests = false;
+                loadedFarmData.farmExp = (loadedFarmData.farmExp || 0) + 2;
+                await db.collection('farms').doc(activeUser.id).update({ 
+                    plots: loadedFarmData.plots,
+                    farmExp: loadedFarmData.farmExp
+                });
+                updateFarmHUD();
+                renderFarmGrid();
+                return;
+            }
+
+            // Добриво
+            if (activeFarmTool === 'fert' && !isReady) {
+                const speedUpMs = crop.totalTime * 0.25;
+                plot.plantedAt -= speedUpMs;
+                await db.collection('farms').doc(activeUser.id).update({ plots: loadedFarmData.plots });
+                renderFarmGrid();
+                vkAlert('Добриво', '🧪 Ріст прискорено на 25%!');
+                return;
+            }
+
+            // Очищення тяпкою якщо потрібно перекопати
+            if (activeFarmTool === 'plow' && !isReady) {
+                if (!confirm("Видалити цю культуру з грядки?")) return;
+                plot.cropId = null;
+                plot.plantedAt = 0;
+                await db.collection('farms').doc(activeUser.id).update({ plots: loadedFarmData.plots });
+                renderFarmGrid();
+                return;
+            }
+
+            // Збір дозрілого врожаю рукою
+            if (isReady && activeFarmTool === 'hand') {
+                const harvestAmount = plot.yieldLeft || 10;
+                loadedFarmData.barn = loadedFarmData.barn || {};
+                loadedFarmData.barn[plot.cropId] = (loadedFarmData.barn[plot.cropId] || 0) + harvestAmount;
+                loadedFarmData.farmExp = (loadedFarmData.farmExp || 0) + crop.exp;
+
+                plot.cropId = null;
+                plot.plantedAt = 0;
+                plot.yieldLeft = 0;
+                plot.stolenBy = [];
+
+                await db.collection('farms').doc(activeUser.id).update({ 
+                    plots: loadedFarmData.plots,
+                    barn: loadedFarmData.barn,
+                    farmExp: loadedFarmData.farmExp
+                });
+
+                updateFarmHUD();
+                renderFarmGrid();
+                vkAlert('Урожай зібрано!', `🌾 Ви зібрали ${harvestAmount} шт. плодів (${crop.name}) у комору! (+${crop.exp} XP)`);
+                return;
+            }
+
+            if (!isReady) {
+                vkAlert('Ферма', `⏳ ${crop.name} ще дозріває. Доглядайте за ним або скористайтесь добривом!`);
+            }
+        } 
+        
+        // ==========================================
+        // ДІЇ В ГОСТЯХ У ДРУГА
+        // ==========================================
+        else {
+            if (!plot.cropId) {
+                return vkAlert('В гостях', 'Грядка сусіда порожня.');
+            }
+
+            const crop = FARM_CROPS[plot.cropId];
+            const isReady = (now - plot.plantedAt) >= crop.totalTime;
+
+            // 1. Благородна допомога: полити або вилікувати
+            if (!plot.watered && activeFarmTool === 'water') {
+                plot.watered = true;
+                await db.collection('farms').doc(currentFarmViewingId).update({ plots: loadedFarmData.plots });
+                await addFarmExpToMe(3);
+                renderFarmGrid();
+                return vkAlert('Допомога', `💧 Ви полили грядку сусіда! За добрий вчинок отримано +3 XP.`);
+            }
+
+            if (plot.hasPests && activeFarmTool === 'cure') {
+                plot.hasPests = false;
+                await db.collection('farms').doc(currentFarmViewingId).update({ plots: loadedFarmData.plots });
+                await addFarmExpToMe(3);
+                renderFarmGrid();
+                return vkAlert('Допомога', `🐛 Ви врятували врожай сусіда від гусені! Отримано +3 XP.`);
+            }
+
+            // 2. Крадіжка врожаю (Канонічна фішка Счастливого Фермера)
+            if (isReady && activeFarmTool === 'hand') {
+                // Перевірка 1: Чи вже крав цей користувач з цієї конкретної грядки
+                plot.stolenBy = plot.stolenBy || [];
+                if (plot.stolenBy.includes(activeUser.id)) {
+                    return vkAlert('Увага', 'Ви вже зривали плід із цієї грядки сусіда!');
+                }
+
+                // Перевірка 2: Не можна вкрасти більше 50% первинного врожаю
+                const minAllowedRemaining = Math.floor(crop.baseYield * 0.5);
+                if (plot.yieldLeft <= minAllowedRemaining) {
+                    return vkAlert('Совість', 'Хоч щось має залишитись господарю! Більше красти з цієї грядки не можна.');
+                }
+
+                // Перевірка 3: Сторожовий пес друга
+                const dog = loadedFarmData.dog;
+                const isDogAlert = dog && dog.fedUntil && (dog.fedUntil > Date.now());
+
+                if (isDogAlert && Math.random() < 0.50) {
+                    // Пес упіймав злодія!
+                    const penalty = 25;
+                    activeUser.coins = Math.max(0, (activeUser.coins || 0) - penalty);
+                    await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+                    updateFarmHUD();
+                    return vkAlert('ГАВ-ГАВ! 🐕', `Вас схопив за штани сторожовий пес Барбос! Ви втратили ${penalty} 🪙 відкупу!`);
+                }
+
+                // Успішна крадіжка 1 плоду
+                plot.yieldLeft -= 1;
+                plot.stolenBy.push(activeUser.id);
+
+                // Оновлюємо ферму друга
+                await db.collection('farms').doc(currentFarmViewingId).update({ plots: loadedFarmData.plots });
+
+                // Додаємо вкрадений плід собі в комору
+                const myFarmDoc = await db.collection('farms').doc(activeUser.id).get();
+                let myBarn = myFarmDoc.exists ? (myFarmDoc.data().barn || {}) : {};
+                myBarn[crop.id] = (myBarn[crop.id] || 0) + 1;
+                await db.collection('farms').doc(activeUser.id).set({ barn: myBarn }, { merge: true });
+
+                await addFarmExpToMe(1);
+                renderFarmGrid();
+                vkAlert('Хитрість!', `🤫 Ви зірвали 1 шт. (${crop.name}) та поклали собі в комору! (+1 XP)`);
+                return;
+            }
+
+            if (!isReady) {
+                vkAlert('В гостях', 'Ця культура у друга ще росте. Завітайте пізніше!');
+            }
+        }
+    }
+
+    async function addFarmExpToMe(amount) {
+        const myFarmRef = db.collection('farms').doc(activeUser.id);
+        const snap = await myFarmRef.get();
+        if (snap.exists) {
+            const exp = (snap.data().farmExp || 0) + amount;
+            await myFarmRef.update({ farmExp: exp });
+        }
+    }
+
+    // Стрічка друзів для рейдів по фермах
+    function renderFarmFriendsStrip() {
+        const carousel = document.getElementById('farm-friends-carousel');
+        if (!carousel) return;
+        carousel.innerHTML = '';
+
+        // Перша плашка: Я сам
+        const myPill = document.createElement('div');
+        myPill.className = 'farm-friend-pill';
+        myPill.innerHTML = `
+            <img src="${activeUser.photo_url || 'https://vk.com/images/camera_200.png'}">
+            <span class="farm-friend-level-tag">Я</span>
+            <div style="font-size:9px; font-weight:bold; overflow:hidden; white-space:nowrap;">Моя ферма</div>
+        `;
+        myPill.onclick = () => returnToMyFarm();
+        carousel.appendChild(myPill);
+
+        // Список зареєстрованих сусідів
+        cachedUsers.forEach(u => {
+            const pill = document.createElement('div');
+            pill.className = 'farm-friend-pill';
+            pill.innerHTML = `
+                <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}">
+                <span class="farm-friend-level-tag">ур. ${calculateFarmLevel(u.rating || 0)}</span>
+                <span class="farm-friend-loot-tag">🌾</span>
+                <div style="font-size:9px; font-weight:bold; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                    ${escapeText(u.name ? u.name.split(' ')[0] : 'Сусід')}
+                </div>
+            `;
+            pill.onclick = () => loadFarmData(u.id, u.name);
+            carousel.appendChild(pill);
+        });
+    }
+
+    // =======================================================
+    // ЗАВАНТАЖЕННЯ ДАНИХ КОРИСТУВАЧА ТА ІНІЦІАЛІЗАЦІЯ
+    // =======================================================
     function loadProfileFriends(userId) {
         if (friendsUnsubscribe) {
             friendsUnsubscribe();
@@ -1498,7 +2677,6 @@
 
     function calculateProfileRating(u) {
         if (checkIsAdmin(u.id || activeUser.id)) return 999;
-
         let score = 20;
         if (u.photo_url && !u.photo_url.includes('camera_200.png')) score += 10;
         if (u.birthDate) score += 5;
@@ -1515,7 +2693,6 @@
         if (u.movies) score += 5;
         if (u.quotes) score += 5;
         if (u.about) score += 10;
-
         return score + (u.bonusRating || 0);
     }
 
@@ -1562,11 +2739,8 @@
             };
 
             setInterval(sendHeartbeat, 45000);
-
             document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    sendHeartbeat();
-                }
+                if (document.visibilityState === 'visible') sendHeartbeat();
             });
 
             goHome();
@@ -1579,7 +2753,7 @@
             loadGlobalVideos();
             loadGlobalAppsCatalog();
             loadMyInstalledApps();
-            loadFarmData();
+            loadFarmData(); // Запуск двигуна щасливої ферми
         } catch (e) {
             console.error("Firestore init error:", e);
         }
@@ -1653,9 +2827,7 @@
         const birthDate = new Date(dateString);
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
         return isNaN(age) ? null : age;
     }
 
@@ -1715,20 +2887,15 @@
             bDayDisplay.innerText = 'не вказано';
         }
 
-        // Відображення країни та міста
         const geoArr = [u.country, u.city].filter(Boolean);
         document.getElementById('profile-city').innerText = geoArr.length > 0 ? geoArr.join(', ') : 'не вказано';
 
         let relText = u.relationshipType || 'не вказано';
         if (u.relationshipType && u.partnerId) {
             const partnerLink = `<a href="javascript:void(0)" onclick="openUserProfile('${u.partnerId}')" style="color:var(--vk-link); font-weight:bold; text-decoration:underline;">${escapeText(u.partnerName || 'партнер')}</a>`;
-            if (u.partnerStatus === 'accepted') {
-                relText = `${u.relationshipType} ${partnerLink}`;
-            } else if (u.partnerStatus === 'pending') {
-                relText = `${u.relationshipType} ${partnerLink} (очікує підтвердження)`;
-            } else {
-                relText = `${u.relationshipType} ${partnerLink}`;
-            }
+            if (u.partnerStatus === 'accepted') relText = `${u.relationshipType} ${partnerLink}`;
+            else if (u.partnerStatus === 'pending') relText = `${u.relationshipType} ${partnerLink} (очікує підтвердження)`;
+            else relText = `${u.relationshipType} ${partnerLink}`;
         }
         document.getElementById('profile-relationship').innerHTML = relText;
 
@@ -1758,11 +2925,8 @@
         document.getElementById('sidebar-photos-add-link').style.display = isMe ? 'inline' : 'none';
         
         const taskBtnWrap = document.getElementById('profile-task-btn-wrap');
-        if (isMe && !userIsAdmin) {
-            taskBtnWrap.style.display = 'block';
-        } else {
-            taskBtnWrap.style.display = 'none';
-        }
+        if (isMe && !userIsAdmin) taskBtnWrap.style.display = 'block';
+        else taskBtnWrap.style.display = 'none';
 
         const groupManageWrap = document.getElementById('group-manage-btn-wrap');
         if (viewingGroupId && (currentGroupCreatorId === activeUser.id || checkIsAdmin(activeUser.id))) {
@@ -1815,7 +2979,7 @@
             loadGlobalVideos();
         } else if (tabId === 'store') {
             loadGlobalAppsCatalog();
-            loadFarmData();
+            loadFarmData(); // Синхронізація при переході
         }
     }
 
@@ -2010,7 +3174,7 @@
         vkAlert('Відхилено', 'Пропозицію сімейного стану відхилено.');
     }
 
-    // Каталог ігор
+    // Каталог загальних ігор
     async function commitAddAppToLibrary() {
         const title = document.getElementById('app-title-input').value.trim();
         const url = document.getElementById('app-url-input').value.trim();
@@ -2036,9 +3200,7 @@
         const adminBtn = document.getElementById('admin-upload-app-btn');
         if (!catalogList) return;
 
-        if (checkIsAdmin(activeUser.id)) {
-            adminBtn.style.display = 'inline-block';
-        }
+        if (checkIsAdmin(activeUser.id)) adminBtn.style.display = 'inline-block';
 
         db.collection('global_apps').orderBy('timestamp', 'desc').onSnapshot(snap => {
             catalogList.innerHTML = '';
@@ -2124,7 +3286,7 @@
     }
 
     // ==========================================
-    // АВТОНОМНА ФОНОТЕКА (ВИПРАВЛЕНА БЕЗ ВТРАТИ ФОКУСУ)
+    // АВТОНОМНА ФОНОТЕКА (CLOUDINARY)
     // ==========================================
     const CLOUDINARY_CLOUD_NAME = "xqjsl2xi";
     const CLOUDINARY_UPLOAD_PRESET = "a1icqnqy";
@@ -2186,9 +3348,7 @@
             statusText.innerText = 'Обробка запису...';
 
             const data = await response.json();
-            if (!data.secure_url) {
-                throw new Error(data.error?.message || 'Помилка завантаження файлу');
-            }
+            if (!data.secure_url) throw new Error(data.error?.message || 'Помилка завантаження файлу');
 
             progressBar.style.width = '100%';
             const downloadUrl = data.secure_url;
@@ -2213,7 +3373,6 @@
 
             vkAlert('Фонотека', `Трек «${artist} — ${title}» успішно опубліковано!`);
             loadAndRenderGlobalMusic();
-
         } catch (err) {
             console.error(err);
             submitBtn.disabled = false;
@@ -2438,152 +3597,7 @@
         });
     };
 
-    // Ретро-Ферма
-    function loadFarmData() {
-        const farmContainer = document.getElementById('farm-plots-container');
-        const animalsContainer = document.getElementById('farm-animals-container');
-        if (!farmContainer || !animalsContainer) return;
-
-        document.getElementById('storage-wheat').innerText = activeUser.wheat || 0;
-        document.getElementById('storage-eggs').innerText = activeUser.eggs || 0;
-        document.getElementById('storage-milk').innerText = activeUser.milk || 0;
-        document.getElementById('storage-coins').innerText = activeUser.coins || 100;
-
-        db.collection('users').doc(activeUser.id).collection('farm_plots').orderBy('plotIndex').onSnapshot(snap => {
-            let plots = {};
-            snap.forEach(doc => { plots[doc.data().plotIndex] = { id: doc.id, ...doc.data() }; });
-
-            farmContainer.innerHTML = '';
-            for (let i = 0; i < 4; i++) {
-                let plot = plots[i];
-                let content = '🟫 <b>Порожня грядка</b><br><span style="color:#d7ccc8">Натисніть, щоб посадити</span>';
-                let plotClass = 'farm-plot';
-
-                if (plot) {
-                    const now = new Date().getTime();
-                    const plantedTime = plot.plantedAt?.toMillis() || now;
-                    const growTime = 10000;
-                    const elapsed = now - plantedTime;
-
-                    if (elapsed >= growTime) {
-                        content = '🌾 <b style="color:#fff">Пшениця дозріла!</b><br><span style="color:#ffee58; font-weight:bold;">Зібрати врожай</span>';
-                        plotClass = 'farm-plot ready ready-anim';
-                    } else {
-                        content = '🌱 <b style="color:#fff">Пшениця росте...</b><br><span style="color:#c8e6c9">Дозріває</span>';
-                        plotClass = 'farm-plot growing plot-anim';
-                    }
-                }
-
-                farmContainer.innerHTML += `
-                    <div class="${plotClass}" onclick="handlePlotClick(${i}, ${plot ? (new Date().getTime() - (plot.plantedAt?.toMillis()||0) >= 10000 ? 2 : 1) : 0}, '${plot ? plot.id : ''}')">
-                        ${content}
-                    </div>
-                `;
-            }
-        });
-
-        db.collection('users').doc(activeUser.id).collection('farm_animals').onSnapshot(snap => {
-            if (snap.empty) {
-                animalsContainer.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px; font-size: 10px;">У вас поки немає тварин. Купіть курку чи корову!</div>';
-                return;
-            }
-            animalsContainer.innerHTML = '';
-            snap.forEach(doc => {
-                const a = doc.data();
-                const aId = doc.id;
-                const icon = a.type === 'chicken' ? '🐔 Курка' : '🐄 Корова';
-                const product = a.type === 'chicken' ? '🥚 Яйце' : '🥛 Молоко';
-                const costToFeed = a.type === 'chicken' ? 2 : 4;
-                const sellPrice = a.type === 'chicken' ? 12 : 30;
-
-                const now = new Date().getTime();
-                const fedTime = a.fedAt?.toMillis() || 0;
-                const readyTime = 12000;
-                const isReady = fedTime && (now - fedTime >= readyTime);
-
-                let statusHtml = '';
-                if (!fedTime) {
-                    statusHtml = `<button class="btn-vk" style="font-size:9px;" onclick="feedAnimal('${aId}', ${costToFeed})">Годувати (${costToFeed} 🌾)</button>`;
-                } else if (!isReady) {
-                    statusHtml = `<span style="color:#666; font-size:9px;">Дає продукцію...</span>`;
-                } else {
-                    statusHtml = `<button class="btn-vk ready-anim" style="font-size:9px; background:#43a047;" onclick="collectAnimal('${aId}', '${sellPrice}')">Зібрати ${product} (+${sellPrice} 🪙)</button>`;
-                }
-
-                animalsContainer.innerHTML += `
-                    <div class="animal-card">
-                        <div><b>${icon}</b></div>
-                        <div>${statusHtml}</div>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    async function handlePlotClick(index, state, docId) {
-        const plotsRef = db.collection('users').doc(activeUser.id).collection('farm_plots');
-        if (state === 0) {
-            await plotsRef.add({
-                plotIndex: index,
-                crop: 'Пшениця',
-                plantedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            vkAlert('Ферма', '🌱 Ви посадили пшеницю на грядці!');
-        } else if (state === 2) {
-            await plotsRef.doc(docId).delete();
-            activeUser.wheat = (activeUser.wheat || 0) + 3;
-            await db.collection('users').doc(activeUser.id).update({ wheat: activeUser.wheat });
-            document.getElementById('storage-wheat').innerText = activeUser.wheat;
-            vkAlert('Врожай!', '🌾 Ви зібрали 3 мішки пшениці у склад хати!');
-        } else {
-            vkAlert('Ферма', '⏳ Пшениця ще росте! Зачекайте хвилинку.');
-        }
-    }
-
-    async function buyAnimal(type) {
-        const cost = type === 'chicken' ? 30 : 70;
-        if ((activeUser.coins || 100) < cost) {
-            return vkAlert('Ферма', '❌ Недостатньо золотих монет на рахунку!');
-        }
-        activeUser.coins -= cost;
-        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
-        document.getElementById('storage-coins').innerText = activeUser.coins;
-
-        await db.collection('users').doc(activeUser.id).collection('farm_animals').add({
-            type: type,
-            fedAt: null,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        vkAlert('Ферма', `🎉 Ви успішно прихистили нову тварину на подвір'ї!`);
-    }
-
-    async function feedAnimal(animalId, cost) {
-        if ((activeUser.wheat || 0) < cost) {
-            return vkAlert('Ферма', `❌ Недостатньо пшениці у складі хати! Потрібно ${cost} 🌾.`);
-        }
-        activeUser.wheat -= cost;
-        await db.collection('users').doc(activeUser.id).update({ wheat: activeUser.wheat });
-        document.getElementById('storage-wheat').innerText = activeUser.wheat;
-
-        await db.collection('users').doc(activeUser.id).collection('farm_animals').doc(animalId).update({
-            fedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        vkAlert('Ферма', '🌾 Ви погодували тварину! Вона почала виробляти продукцію.');
-    }
-
-    async function collectAnimal(animalId, priceStr) {
-        const price = parseInt(priceStr, 10);
-        activeUser.coins = (activeUser.coins || 100) + price;
-        await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
-        document.getElementById('storage-coins').innerText = activeUser.coins;
-
-        await db.collection('users').doc(activeUser.id).collection('farm_animals').doc(animalId).update({
-            fedAt: null
-        });
-        vkAlert('Прибуток!', `🪙 Продукцію успішно продано за ${price} золотих монет!`);
-        loadGlobalLeaderboard();
-    }
-
+    // Підвищення рейтингу через завдання
     async function doRatingTask() {
         if (checkIsAdmin(activeUser.id)) return;
         activeUser.rating = (activeUser.rating || 100) + 10;
@@ -2771,12 +3785,12 @@
             renderUsersDirectory(cachedUsers);
             renderDialogsList();
             loadGlobalLeaderboard();
+            renderFarmFriendsStrip(); // Оновлення сусідів на фермі
         } catch (e) {
             console.error(e);
         }
     }
 
-    // Оновлений пошук за ім'ям, ID, країною та містом
     function filterUsersList() {
         const nameQuery = (document.getElementById('friend-search-input')?.value || '').toLowerCase().trim();
         const countryQuery = (document.getElementById('country-filter-input')?.value || '').toLowerCase().trim();
@@ -3242,6 +4256,7 @@
         goHome();
     }
 
+    // ЧАТИ ТА ДІАЛОГИ
     let currentChatMode = null; 
     let activeChatTargetId = null;
     let chatUnsubscribe = null;
@@ -3345,9 +4360,7 @@
 
     function updateTotalUnreadBadge() {
         let total = 0;
-        for (let k in unreadMap) {
-            total += unreadMap[k];
-        }
+        for (let k in unreadMap) total += unreadMap[k];
         const badge = document.getElementById('msg-badge');
         const pcBadge = document.getElementById('pc-msg-badge');
         
@@ -3454,7 +4467,7 @@
         }
     }
 
-    // Чат: Графіті
+    // Чат графіті
     const chatCanvas = document.getElementById('chat-graffiti-canvas');
     const chatCtx = chatCanvas.getContext('2d');
     let isChatDrawing = false;
@@ -3566,10 +4579,7 @@
                 `;
             });
             stream.scrollTop = stream.scrollHeight;
-            
-            if (currentChatMode) {
-                markMessagesAsRead(currentChatMode, activeChatTargetId);
-            }
+            if (currentChatMode) markMessagesAsRead(currentChatMode, activeChatTargetId);
         });
     }
 
@@ -3614,7 +4624,6 @@
         await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
     }
 
-    // Хрестики-нулики з валідацією черги гравців
     async function makeTicTacToeMove(msgId, index) {
         if (currentChatMode !== 'direct') return;
         const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
@@ -3698,7 +4707,7 @@
         }
     }
 
-    // Фотографії
+    // Фотоальбоми
     let selectedPhotoId = null;
     let selectedPhotoData = null;
 
@@ -3818,7 +4827,7 @@
         input.value = '';
     }
 
-    // Стіна: Графіті
+    // Стіна та графіті
     const canvas = document.getElementById('graffiti-canvas');
     const ctx = canvas.getContext('2d');
     let isDrawing = false;
@@ -3914,7 +4923,6 @@
         input.value = '';
     }
 
-    // Виправлене завантаження стіни без помилкового звернення до users при відкритій групі
     function loadWallPosts(targetId) {
         const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
@@ -4197,7 +5205,7 @@
         }
     }
 
-    // Допоміжні функції інтерфейсу
+    // Модальні допоміжні вікна
     function openModal(id) { document.getElementById(id).classList.add('show'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
@@ -4212,7 +5220,7 @@
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
-    // Запуск
+    // Точка входу
     window.addEventListener('DOMContentLoaded', () => {
         loadUserData();
     });
@@ -4220,4 +5228,3 @@
 
 </body>
 </html>
-
