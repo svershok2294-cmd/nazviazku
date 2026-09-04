@@ -1017,7 +1017,10 @@
                 <!-- 🏡 КАНОНІЧНА «ЩАСЛИВА ФЕРМА» -->
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 8px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
                     <span>🏡 Сільське господарство («Щаслива ферма»)</span>
-                    <span id="farm-mode-indicator" style="font-size: 10px; color: #43a047; font-weight: bold;">● Ваша ділянка</span>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button class="btn-vk-secondary" id="farm-speed-toggle-btn" style="font-size: 9px; padding: 2px 6px;" onclick="toggleFarmSpeedMode()" title="Перемкнути швидкість для тесту">⚡ Режим: Тест (2 хв)</button>
+                        <span id="farm-mode-indicator" style="font-size: 10px; color: #43a047; font-weight: bold;">● Ваша ділянка</span>
+                    </div>
                 </div>
 
                 <div class="retro-farm-wrapper">
@@ -1040,11 +1043,15 @@
 
                     <!-- Ізометричне подвір'я -->
                     <div class="farm-scene-viewport">
+                        <!-- Декорації річки та паркану як на скріншоті -->
+                        <div style="position: absolute; top: 0; left: 0; width: 110px; height: 75px; background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%); border-bottom-right-radius: 60px; border-right: 3px solid #81c784; border-bottom: 3px solid #81c784; opacity: 0.85; pointer-events: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);">
+                            <span style="position: absolute; top: 10px; left: 15px; font-size: 16px;">🌊</span>
+                        </div>
                         <div class="farm-fence-top"></div>
 
                         <!-- Сторожова будка собаки -->
                         <div class="farm-doghouse-wrap" onclick="openFarmDogModal()" title="Натисніть для догляду за собакою">
-                            <span style="font-size: 20px;">🐶</span>
+                            <span style="font-size: 22px;">🐶</span>
                             <div>
                                 <div><b id="farm-dog-status-title">Сторож</b></div>
                                 <div style="font-size: 8px; color: #666;" id="farm-dog-timer">Спить (голодний)</div>
@@ -1052,9 +1059,7 @@
                         </div>
 
                         <!-- 20 ізометричних грядок (4 стовпці x 5 рядків) -->
-                        <div class="farm-isometric-ground" id="farm-iso-grid">
-                            <!-- Генерується динамічно -->
-                        </div>
+                        <div class="farm-isometric-ground" id="farm-iso-grid"></div>
 
                         <!-- Нижні кнопки інструментів -->
                         <div class="farm-action-toolbar">
@@ -1072,8 +1077,8 @@
                     <!-- Нижня стрічка сусідів для походів у гості -->
                     <div class="farm-friends-strip-wrap">
                         <div class="farm-friends-strip-title">
-                            <span>Сусіди та друзі (натисніть на аватар, щоб піти на його ферму):</span>
-                            <span style="color: var(--vk-subtext);">Допомагайте або запозичуйте врожай!</span>
+                            <span>Сусіди та друзі (натисніть на аватар, щоб піти на ферму):</span>
+                            <span style="color: var(--vk-subtext);">✋ — можна зірвати врожай!</span>
                         </div>
                         <div class="farm-friends-carousel" id="farm-friends-carousel">
                             <span style="font-size: 10px; color: var(--vk-subtext); padding: 4px;">Завантаження сусідів...</span>
@@ -1812,94 +1817,110 @@
     let cachedUsers = [];
 
     // =======================================================
-    // 🌾 ДВИГУН «ЩАСЛИВОЇ ФЕРМИ» (RETRO VK ENGINE)
+    // 🌾 ДВИГУН «ЩАСЛИВОЇ ФЕРМИ» (RETRO VK ENGINE 1-В-1)
     // =======================================================
     
-    // Множник часу росту:
-    // 1 = оригінальний реальний час (10-32 години).
-    // Для тестування можна поставити 0.005 (10 годин перетворяться на 3 хвилини).
-    const FARM_TIME_SCALE = 1;
+    // Множник швидкості росту (за замовчуванням швидкий тест)
+    let FARM_TIME_SCALE = 0.0033; 
 
-    const FARM_CROPS = {
-        radish: {
-            id: "radish",
-            name: "Редис",
-            levelReq: 1,
-            cost: 125,
-            sell: 250,
-            exp: 15,
-            totalTime: 10 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.10, 0.30, 0.65, 1.0],
-            icons: ["🌱", "🌿", "🪴", "🌱"],
-            finalIcon: "🪴",
-            baseYield: 20
-        },
-        carrot: {
-            id: "carrot",
-            name: "Морква",
-            levelReq: 2,
-            cost: 195,
-            sell: 380,
-            exp: 20,
-            totalTime: 13 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.11, 0.32, 0.65, 1.0],
-            icons: ["🌱", "🌿", "🥕", "🥕"],
-            finalIcon: "🥕",
-            baseYield: 22
-        },
-        cucumber: {
-            id: "cucumber",
-            name: "Огірок",
-            levelReq: 3,
-            cost: 290,
-            sell: 560,
-            exp: 26,
-            totalTime: 16 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.12, 0.35, 0.70, 1.0],
-            icons: ["🌱", "🌿", "🥒", "🥒"],
-            finalIcon: "🥒",
-            baseYield: 24
-        },
-        tomato: {
-            id: "tomato",
-            name: "Помідор",
-            levelReq: 5,
-            cost: 450,
-            sell: 850,
-            exp: 35,
-            totalTime: 20 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.12, 0.35, 0.70, 1.0],
-            icons: ["🌱", "🌿", "🍅", "🍅"],
-            finalIcon: "🍅",
-            baseYield: 26
-        },
-        strawberry: {
-            id: "strawberry",
-            name: "Полуниця",
-            levelReq: 7,
-            cost: 680,
-            sell: 1300,
-            exp: 48,
-            totalTime: 24 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.15, 0.40, 0.75, 1.0],
-            icons: ["🌱", "🌿", "🍓", "🍓"],
-            finalIcon: "🍓",
-            baseYield: 28
-        },
-        corn: {
-            id: "corn",
-            name: "Кукурудза",
-            levelReq: 10,
-            cost: 1050,
-            sell: 2050,
-            exp: 65,
-            totalTime: 32 * 3600 * 1000 * FARM_TIME_SCALE,
-            phases: [0.15, 0.40, 0.75, 1.0],
-            icons: ["🌱", "🌿", "🌽", "🌽"],
-            finalIcon: "🌽",
-            baseYield: 30
+    function toggleFarmSpeedMode() {
+        if (FARM_TIME_SCALE === 1) {
+            FARM_TIME_SCALE = 0.0033;
+            document.getElementById('farm-speed-toggle-btn').innerText = "⚡ Режим: Тест (2 хв)";
+            vkAlert('Швидкість', 'Увімкнено швидкий тест! Рослини дозрівають за 1-3 хвилини.');
+        } else {
+            FARM_TIME_SCALE = 1;
+            document.getElementById('farm-speed-toggle-btn').innerText = "⏱️ Режим: Реал (10 год)";
+            vkAlert('Швидкість', 'Увімкнено оригінальний час! Ріст займає 10–32 години як у ВК 2009 року.');
         }
-    };
+        recalculateCropsTimes();
+        renderFarmGrid();
+    }
+
+    let FARM_CROPS = {};
+    function recalculateCropsTimes() {
+        FARM_CROPS = {
+            radish: {
+                id: "radish",
+                name: "Редис",
+                levelReq: 1,
+                cost: 125,
+                sell: 250,
+                exp: 15,
+                totalTime: 10 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.10, 0.30, 0.65, 1.0],
+                icons: ["🌱", "🌿", "🪴", "🌱"],
+                finalIcon: "🪴",
+                baseYield: 20
+            },
+            carrot: {
+                id: "carrot",
+                name: "Морква",
+                levelReq: 2,
+                cost: 195,
+                sell: 380,
+                exp: 20,
+                totalTime: 13 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.11, 0.32, 0.65, 1.0],
+                icons: ["🌱", "🌿", "🥕", "🥕"],
+                finalIcon: "🥕",
+                baseYield: 22
+            },
+            cucumber: {
+                id: "cucumber",
+                name: "Огірок",
+                levelReq: 3,
+                cost: 290,
+                sell: 560,
+                exp: 26,
+                totalTime: 16 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.12, 0.35, 0.70, 1.0],
+                icons: ["🌱", "🌿", "🥒", "🥒"],
+                finalIcon: "🥒",
+                baseYield: 24
+            },
+            tomato: {
+                id: "tomato",
+                name: "Помідор",
+                levelReq: 5,
+                cost: 450,
+                sell: 850,
+                exp: 35,
+                totalTime: 20 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.12, 0.35, 0.70, 1.0],
+                icons: ["🌱", "🌿", "🍅", "🍅"],
+                finalIcon: "🍅",
+                baseYield: 26
+            },
+            strawberry: {
+                id: "strawberry",
+                name: "Полуниця",
+                levelReq: 7,
+                cost: 680,
+                sell: 1300,
+                exp: 48,
+                totalTime: 24 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.15, 0.40, 0.75, 1.0],
+                icons: ["🌱", "🌿", "🍓", "🍓"],
+                finalIcon: "🍓",
+                baseYield: 28
+            },
+            corn: {
+                id: "corn",
+                name: "Кукурудза",
+                levelReq: 10,
+                cost: 1050,
+                sell: 2050,
+                exp: 65,
+                totalTime: 32 * 3600 * 1000 * FARM_TIME_SCALE,
+                phases: [0.15, 0.40, 0.75, 1.0],
+                icons: ["🌱", "🌿", "🌽", "🌽"],
+                finalIcon: "🌽",
+                baseYield: 30
+            }
+        };
+    }
+    recalculateCropsTimes();
 
     let activeFarmTool = 'hand';
     let selectedSeedForPlanting = 'radish';
@@ -1909,12 +1930,13 @@
     let farmDocUnsubscribe = null;
     let farmTickerInterval = null;
 
+    // Створення початкового стану ферми з гарантованими 20 грядками
     function createInitialFarmState(userId, userName) {
         const plots = [];
         for (let i = 0; i < 20; i++) {
             plots.push({
                 id: i,
-                unlocked: (i < 6), // Перші 6 грядок відкриті безкоштовно
+                unlocked: (i < 6), // 6 грядок відкриті зі старту
                 cropId: null,
                 plantedAt: 0,
                 watered: true,
@@ -1931,7 +1953,8 @@
             dog: {
                 fedUntil: 0
             },
-            barn: {}
+            barn: {},
+            plots: plots
         };
     }
 
@@ -1991,12 +2014,12 @@
         for (let cropKey in FARM_CROPS) {
             const c = FARM_CROPS[cropKey];
             const isLocked = myLevel < c.levelReq;
-            const hours = (c.totalTime / (3600 * 1000)).toFixed(1);
+            const minutes = Math.round(c.totalTime / 60000);
             grid.innerHTML += `
                 <div class="shop-item-card" style="${isLocked ? 'opacity: 0.55;' : ''}">
                     <div style="font-size: 26px;">${c.finalIcon}</div>
                     <b>${c.name}</b>
-                    <div style="font-size: 8px; color: #555;">Ріст: ~${hours} год | +${c.exp} XP</div>
+                    <div style="font-size: 8px; color: #555;">Ріст: ~${minutes} хв | +${c.exp} XP</div>
                     <div style="font-size: 9px; color: #d32f2f; font-weight: bold;">Купівля: ${c.cost} 🪙</div>
                     <div style="font-size: 9px; color: #2e7d32; font-weight: bold;">Урожай: ${c.sell} 🪙</div>
                     <button class="btn-vk" style="margin-top: 4px; font-size: 9px;" ${isLocked ? 'disabled' : ''} onclick="chooseSeedForPlanting('${c.id}')">
@@ -2108,9 +2131,9 @@
         }
 
         if (!isMe) {
-            descEl.innerText = `Це сторожовий пес фермера ${currentFarmViewingName}. Якщо спробувати вкрасти плід, поки він ситий — він захистить грядку!`;
+            descEl.innerText = `Це пес фермера ${currentFarmViewingName}. Якщо спробувати вкрасти плід, поки він ситий — він захистить грядку!`;
         } else {
-            descEl.innerText = `Пес стереже ваші грядки від злодіїв. Коли пес ситий, він хапає сусідів-крадіїв за штани і змушує платити штраф!`;
+            descEl.innerText = `Пес стереже ваші грядки від злодіїв. Коли пес ситий, він хапає сусідів-крадіїв за штани і змушує платити штраф вам у кишеню!`;
         }
 
         openModal('modal-farm-dog');
@@ -2122,7 +2145,7 @@
         }
 
         activeUser.coins -= 30;
-        const fedUntil = Date.now() + (24 * 3600 * 1000); // 24 години захисту
+        const fedUntil = Date.now() + (24 * 3600 * 1000); // 24 години сторожування
 
         await db.collection('farms').doc(activeUser.id).set({
             dog: { fedUntil: fedUntil }
@@ -2132,7 +2155,7 @@
         updateFarmHUD();
         closeModal('modal-farm-dog');
         closeModal('modal-farm-shop');
-        vkAlert('Сторож', '🐶 Барбос смачно попоїв та почав вартувати ферму на 24 години!');
+        vkAlert('Сторож', '🐶 Барбос смачно попоїв та вартує ферму на 24 години!');
     }
 
     async function buyFertilizerItem() {
@@ -2144,10 +2167,10 @@
         selectFarmTool('fert');
         closeModal('modal-farm-shop');
         updateFarmHUD();
-        vkAlert('Добриво', '🧪 Ви придбали мінеральне добриво! Тепер клікніть по зростаючій культурі, щоб прискорити ріст на 25%.');
+        vkAlert('Добриво', '🧪 Ви придбали добриво! Клікніть по зростаючій культурі, щоб прискорити ріст на 25%.');
     }
 
-    // Завантаження та перемикання ферми (своя / друга)
+    // Завантаження та перемикання ферми
     async function loadFarmData(targetUserId = null, targetUserName = null) {
         const isMyFarm = !targetUserId || targetUserId === activeUser.id;
         currentFarmViewingId = isMyFarm ? activeUser.id : targetUserId;
@@ -2173,7 +2196,6 @@
                 loadedFarmData = snap.data();
             }
 
-            // Перевірка та ініціалізація структури грядок, якщо відсутня
             if (!loadedFarmData.plots || loadedFarmData.plots.length < 20) {
                 const initPlots = createInitialFarmState(currentFarmViewingId, currentFarmViewingName).plots;
                 await farmDocRef.set({ plots: initPlots }, { merge: true });
@@ -2189,7 +2211,7 @@
         if (!farmTickerInterval) {
             farmTickerInterval = setInterval(() => {
                 if (document.getElementById('tab-store')?.classList.contains('active')) {
-                    renderFarmGrid(true); // М'яке оновлення таймерів без перебудови DOM
+                    renderFarmGrid(true);
                 }
             }, 1000);
         }
@@ -2210,14 +2232,12 @@
         const progress = Math.min(100, Math.max(5, ((currentExp - currentLvlBaseExp) / (nextLvlExp - currentLvlBaseExp || 1)) * 100));
         document.getElementById('farm-exp-bar').style.width = `${progress}%`;
 
-        // Лічильник товарів у коморі
         let totalBarnItems = 0;
         if (loadedFarmData?.barn) {
             for (let k in loadedFarmData.barn) totalBarnItems += (loadedFarmData.barn[k] || 0);
         }
         document.getElementById('barn-items-count').innerText = totalBarnItems;
 
-        // Стан сторожового собаки
         const dog = loadedFarmData?.dog;
         const isDogGuarding = dog && dog.fedUntil && (dog.fedUntil > Date.now());
         const dogTitle = document.getElementById('farm-dog-status-title');
@@ -2235,14 +2255,12 @@
         }
     }
 
-    // Візуалізація ізометричного поля
     function renderFarmGrid(timerOnly = false) {
         const grid = document.getElementById('farm-iso-grid');
         if (!grid || !loadedFarmData?.plots) return;
 
         const plots = loadedFarmData.plots;
         const now = Date.now();
-        const isMe = (currentFarmViewingId === activeUser.id);
 
         if (!timerOnly) grid.innerHTML = '';
 
@@ -2288,7 +2306,6 @@
                 grid.appendChild(tile);
             }
 
-            // Оновлення класів тайла
             tile.className = 'iso-plot-tile';
             if (!p.unlocked) {
                 tile.classList.add('locked');
@@ -2299,7 +2316,6 @@
             if (!p.watered) tile.classList.add('dry');
             if (isReady) tile.classList.add('ready-glow');
 
-            // Вміст рослини
             if (cropInfo) {
                 const currentIcon = isReady ? cropInfo.finalIcon : cropInfo.icons[stageIndex];
                 let alertsHtml = '';
@@ -2319,14 +2335,13 @@
         });
     }
 
-    // Алгоритми кліків по грядці: Сівба, Догляд, Збір, Крадіжка
     async function handleFarmPlotClick(plotIdx) {
         if (!loadedFarmData || !loadedFarmData.plots) return;
         const plot = loadedFarmData.plots[plotIdx];
         const isMe = (currentFarmViewingId === activeUser.id);
         const now = Date.now();
 
-        // 1. Розблокування нової грядки
+        // Розблокування нової грядки
         if (!plot.unlocked) {
             if (!isMe) return;
             const unlockPrice = 150 * (plotIdx - 5);
@@ -2343,11 +2358,8 @@
             return;
         }
 
-        // ==========================================
         // ДІЇ НА ВЛАСНІЙ ФЕРМІ
-        // ==========================================
         if (isMe) {
-            // Порожня грядка -> Посів
             if (!plot.cropId) {
                 if (activeFarmTool !== 'seeds') {
                     selectFarmTool('seeds');
@@ -2359,12 +2371,11 @@
                     return vkAlert('Крамниця', `Недостатньо монет для насіння (${crop.cost} 🪙)!`);
                 }
 
-                // Шанс що земля одразу потребуватиме поливу або з'являться бур'яни
                 activeUser.coins -= crop.cost;
                 plot.cropId = crop.id;
                 plot.plantedAt = now;
-                plot.watered = Math.random() > 0.25; // 75% що волога
-                plot.hasPests = Math.random() < 0.15; // 15% ризик шкідників
+                plot.watered = Math.random() > 0.25;
+                plot.hasPests = Math.random() < 0.15;
                 plot.yieldLeft = crop.baseYield;
                 plot.stolenBy = [];
 
@@ -2375,11 +2386,9 @@
                 return;
             }
 
-            // Рослина вже росте:
             const crop = FARM_CROPS[plot.cropId];
             const isReady = (now - plot.plantedAt) >= crop.totalTime;
 
-            // Полив
             if (!plot.watered && activeFarmTool === 'water') {
                 plot.watered = true;
                 loadedFarmData.farmExp = (loadedFarmData.farmExp || 0) + 2;
@@ -2392,7 +2401,6 @@
                 return;
             }
 
-            // Знищення шкідників оприскувачем
             if (plot.hasPests && activeFarmTool === 'cure') {
                 plot.hasPests = false;
                 loadedFarmData.farmExp = (loadedFarmData.farmExp || 0) + 2;
@@ -2405,7 +2413,6 @@
                 return;
             }
 
-            // Добриво
             if (activeFarmTool === 'fert' && !isReady) {
                 const speedUpMs = crop.totalTime * 0.25;
                 plot.plantedAt -= speedUpMs;
@@ -2415,7 +2422,6 @@
                 return;
             }
 
-            // Очищення тяпкою якщо потрібно перекопати
             if (activeFarmTool === 'plow' && !isReady) {
                 if (!confirm("Видалити цю культуру з грядки?")) return;
                 plot.cropId = null;
@@ -2425,7 +2431,6 @@
                 return;
             }
 
-            // Збір дозрілого врожаю рукою
             if (isReady && activeFarmTool === 'hand') {
                 const harvestAmount = plot.yieldLeft || 10;
                 loadedFarmData.barn = loadedFarmData.barn || {};
@@ -2450,13 +2455,10 @@
             }
 
             if (!isReady) {
-                vkAlert('Ферма', `⏳ ${crop.name} ще дозріває. Доглядайте за ним або скористайтесь добривом!`);
+                vkAlert('Ферма', `⏳ ${crop.name} ще дозріває. Доглядайте або скористайтесь добривом!`);
             }
         } 
-        
-        // ==========================================
         // ДІЇ В ГОСТЯХ У ДРУГА
-        // ==========================================
         else {
             if (!plot.cropId) {
                 return vkAlert('В гостях', 'Грядка сусіда порожня.');
@@ -2465,7 +2467,6 @@
             const crop = FARM_CROPS[plot.cropId];
             const isReady = (now - plot.plantedAt) >= crop.totalTime;
 
-            // 1. Благородна допомога: полити або вилікувати
             if (!plot.watered && activeFarmTool === 'water') {
                 plot.watered = true;
                 await db.collection('farms').doc(currentFarmViewingId).update({ plots: loadedFarmData.plots });
@@ -2482,41 +2483,38 @@
                 return vkAlert('Допомога', `🐛 Ви врятували врожай сусіда від гусені! Отримано +3 XP.`);
             }
 
-            // 2. Крадіжка врожаю (Канонічна фішка Счастливого Фермера)
             if (isReady && activeFarmTool === 'hand') {
-                // Перевірка 1: Чи вже крав цей користувач з цієї конкретної грядки
                 plot.stolenBy = plot.stolenBy || [];
                 if (plot.stolenBy.includes(activeUser.id)) {
                     return vkAlert('Увага', 'Ви вже зривали плід із цієї грядки сусіда!');
                 }
 
-                // Перевірка 2: Не можна вкрасти більше 50% первинного врожаю
                 const minAllowedRemaining = Math.floor(crop.baseYield * 0.5);
                 if (plot.yieldLeft <= minAllowedRemaining) {
                     return vkAlert('Совість', 'Хоч щось має залишитись господарю! Більше красти з цієї грядки не можна.');
                 }
 
-                // Перевірка 3: Сторожовий пес друга
                 const dog = loadedFarmData.dog;
                 const isDogAlert = dog && dog.fedUntil && (dog.fedUntil > Date.now());
 
                 if (isDogAlert && Math.random() < 0.50) {
-                    // Пес упіймав злодія!
                     const penalty = 25;
                     activeUser.coins = Math.max(0, (activeUser.coins || 0) - penalty);
                     await db.collection('users').doc(activeUser.id).update({ coins: activeUser.coins });
+
+                    await db.collection('users').doc(currentFarmViewingId).update({ 
+                        coins: firebase.firestore.FieldValue.increment(penalty) 
+                    }).catch(()=>{});
+
                     updateFarmHUD();
-                    return vkAlert('ГАВ-ГАВ! 🐕', `Вас схопив за штани сторожовий пес Барбос! Ви втратили ${penalty} 🪙 відкупу!`);
+                    return vkAlert('ГАВ-ГАВ! 🐕', `Вас схопив за штани сторожовий пес Барбос! Ви заплатили ${penalty} 🪙 штрафу на користь господаря!`);
                 }
 
-                // Успішна крадіжка 1 плоду
                 plot.yieldLeft -= 1;
                 plot.stolenBy.push(activeUser.id);
 
-                // Оновлюємо ферму друга
                 await db.collection('farms').doc(currentFarmViewingId).update({ plots: loadedFarmData.plots });
 
-                // Додаємо вкрадений плід собі в комору
                 const myFarmDoc = await db.collection('farms').doc(activeUser.id).get();
                 let myBarn = myFarmDoc.exists ? (myFarmDoc.data().barn || {}) : {};
                 myBarn[crop.id] = (myBarn[crop.id] || 0) + 1;
@@ -2543,13 +2541,11 @@
         }
     }
 
-    // Стрічка друзів для рейдів по фермах
     function renderFarmFriendsStrip() {
         const carousel = document.getElementById('farm-friends-carousel');
         if (!carousel) return;
         carousel.innerHTML = '';
 
-        // Перша плашка: Я сам
         const myPill = document.createElement('div');
         myPill.className = 'farm-friend-pill';
         myPill.innerHTML = `
@@ -2560,14 +2556,13 @@
         myPill.onclick = () => returnToMyFarm();
         carousel.appendChild(myPill);
 
-        // Список зареєстрованих сусідів
         cachedUsers.forEach(u => {
             const pill = document.createElement('div');
             pill.className = 'farm-friend-pill';
             pill.innerHTML = `
                 <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}">
                 <span class="farm-friend-level-tag">ур. ${calculateFarmLevel(u.rating || 0)}</span>
-                <span class="farm-friend-loot-tag">🌾</span>
+                <span class="farm-friend-loot-tag" title="Можна навідатися!">🌾</span>
                 <div style="font-size:9px; font-weight:bold; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
                     ${escapeText(u.name ? u.name.split(' ')[0] : 'Сусід')}
                 </div>
@@ -2753,7 +2748,7 @@
             loadGlobalVideos();
             loadGlobalAppsCatalog();
             loadMyInstalledApps();
-            loadFarmData(); // Запуск двигуна щасливої ферми
+            loadFarmData();
         } catch (e) {
             console.error("Firestore init error:", e);
         }
@@ -2979,7 +2974,7 @@
             loadGlobalVideos();
         } else if (tabId === 'store') {
             loadGlobalAppsCatalog();
-            loadFarmData(); // Синхронізація при переході
+            loadFarmData();
         }
     }
 
@@ -3785,7 +3780,7 @@
             renderUsersDirectory(cachedUsers);
             renderDialogsList();
             loadGlobalLeaderboard();
-            renderFarmFriendsStrip(); // Оновлення сусідів на фермі
+            renderFarmFriendsStrip();
         } catch (e) {
             console.error(e);
         }
@@ -4467,7 +4462,7 @@
         }
     }
 
-    // Чат графіті
+    // Чат: Графіті
     const chatCanvas = document.getElementById('chat-graffiti-canvas');
     const chatCtx = chatCanvas.getContext('2d');
     let isChatDrawing = false;
