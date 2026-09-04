@@ -480,7 +480,7 @@
 
                         <table class="info-table">
                             <tr><td class="info-label">День народження:</td><td class="info-value" id="profile-birthday-display">не вказано</td></tr>
-                            <tr><td class="info-label">Місто:</td><td class="info-value" id="profile-city">не вказано</td></tr>
+                            <tr><td class="info-label">Місто, країна:</td><td class="info-value" id="profile-city">не вказано</td></tr>
                             <tr><td class="info-label">Сімейний стан:</td><td class="info-value" id="profile-relationship">не вказано</td></tr>
                             <tr><td class="info-label">Мобільний телефон:</td><td class="info-value" id="profile-phone">не вказано</td></tr>
                             <tr><td class="info-label">ICQ UIN:</td><td class="info-value" id="profile-icq">не вказано</td></tr>
@@ -634,7 +634,7 @@
                 </div>
             </div>
 
-            <!-- 4. ДРУЗІ ТА ПОШУК -->
+            <!-- 4. ДРУЗІ ТА ПОШУК (З ПОШУКОМ ЗА КРАЇНОЮ ТА МІСТОМ) -->
             <div id="tab-friends" class="tab-content">
                 <div style="font-size: 13px; font-weight: bold; color: var(--vk-link); margin-bottom: 10px; border-bottom: 1px solid var(--vk-border); padding-bottom: 4px;">
                     Мої Друзі (<span id="friends-total-counter">0</span>)
@@ -651,9 +651,11 @@
                     </div>
                 </div>
 
+                <!-- Оновлені поля фільтрації -->
                 <div style="margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
-                    <input type="text" id="friend-search-input" class="input-vk" style="flex: 2; min-width: 140px;" placeholder="Пошук за ім'ям або ID..." oninput="filterUsersList()">
-                    <input type="text" id="city-filter-input" class="input-vk" style="flex: 1; min-width: 100px;" placeholder="Фільтр за містом..." oninput="filterUsersList()">
+                    <input type="text" id="friend-search-input" class="input-vk" style="flex: 2; min-width: 120px;" placeholder="Ім'я або ID..." oninput="filterUsersList()">
+                    <input type="text" id="country-filter-input" class="input-vk" style="flex: 1; min-width: 85px;" placeholder="Країна..." oninput="filterUsersList()">
+                    <input type="text" id="city-filter-input" class="input-vk" style="flex: 1; min-width: 85px;" placeholder="Місто..." oninput="filterUsersList()">
                     <button class="btn-vk" onclick="findUserByIdPrompt()">Знайти за ID</button>
                 </div>
 
@@ -704,7 +706,7 @@
 
             <!-- 7. АУДІОЗАПИСИ -->
             <div id="tab-music" class="tab-content">
-                <!-- Інтерфейс створюється динамічно функцією renderMusicTab() -->
+                <!-- Інтерфейс стабільно монтується один раз функцією renderMusicTab() -->
             </div>
 
             <!-- 8. СПІЛЬНОТИ -->
@@ -840,6 +842,7 @@
     </div>
 </div>
 
+<!-- РЕДАГУВАННЯ ПРОФІЛЮ (З КРАЇНОЮ ТА МІСТОМ) -->
 <div class="vk-modal" id="modal-edit-profile">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -850,7 +853,8 @@
             <div style="font-weight: bold; margin-bottom: 4px; color: var(--vk-link);">Основні дані:</div>
             <label style="font-size: 10px; color: var(--vk-subtext);">Дата народження:</label>
             <input type="date" id="edit-birthdate" class="input-vk modal-input">
-            <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто">
+            <input type="text" id="edit-country" class="input-vk modal-input" placeholder="Країна (напр. Україна, Молдова)">
+            <input type="text" id="edit-city" class="input-vk modal-input" placeholder="Місто (напр. Київ, Кишинів)">
             
             <div style="font-weight: bold; margin-top: 6px; margin-bottom: 4px; color: var(--vk-link);">Сімейний стан:</div>
             <select id="edit-relationship-type" class="input-vk modal-input">
@@ -1147,7 +1151,6 @@
     </div>
 </div>
 
-<!-- ОНОВЛЕНЕ МОДАЛЬНЕ ВІКНО ДОДАВАННЯ MP3 -->
 <div class="vk-modal" id="modal-add-audio">
     <div class="vk-modal-box">
         <div class="vk-modal-header">
@@ -1161,7 +1164,6 @@
             <input type="text" id="audio-artist-input" class="input-vk modal-input" placeholder="Виконавець (напр. Linkin Park)">
             <input type="text" id="audio-title-input" class="input-vk modal-input" placeholder="Назва треку (напр. Numb)">
 
-            <!-- Індикатор завантаження -->
             <div id="audio-upload-progress-box" style="display: none; margin: 8px 0;">
                 <div id="audio-upload-status-text" style="font-size: 10px; color: var(--vk-link); margin-bottom: 2px;">Завантаження...</div>
                 <div style="background: #eef2f5; border: 1px solid var(--vk-border); height: 12px; border-radius: 2px; overflow: hidden;">
@@ -1179,9 +1181,7 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- ЄДИНИЙ ГОЛОВНИЙ СКРИПТ -->
+</div><!-- ЄДИНИЙ ГОЛОВНИЙ СКРИПТ -->
 <script>
     const BREAKPOINT = 768;
     let userPreference = localStorage.getItem('nz_display_pref') || 'auto';
@@ -1340,7 +1340,6 @@
         playNotificationSound(soundKey);
     }
 
-    // Генерація постійного ID для тестів у звичайному браузері
     function getStableUserId() {
         if (tg?.initDataUnsafe?.user?.id) return String(tg.initDataUnsafe.user.id);
         let storedId = localStorage.getItem('nz_stable_user_id');
@@ -1366,6 +1365,7 @@
         wheat: 0,
         eggs: 0,
         milk: 0,
+        country: "",
         city: "",
         relationshipType: "",
         partnerId: "",
@@ -1391,7 +1391,7 @@
 
     const ADMIN_ID = "325300795";
     function checkIsAdmin(userId) {
-        return userId === ADMIN_ID;
+        return String(userId) === ADMIN_ID;
     }
 
     let viewingProfileId = null; 
@@ -1401,7 +1401,6 @@
     let userFriendsMap = new Map();
     let cachedUsers = [];
 
-    // Єдине керування списком друзів профілю
     function loadProfileFriends(userId) {
         if (friendsUnsubscribe) {
             friendsUnsubscribe();
@@ -1503,7 +1502,7 @@
         let score = 20;
         if (u.photo_url && !u.photo_url.includes('camera_200.png')) score += 10;
         if (u.birthDate) score += 5;
-        if (u.city) score += 5;
+        if (u.country || u.city) score += 5;
         if (u.relationshipType) score += 5;
         if (u.phone) score += 5;
         if (u.icq) score += 5;
@@ -1548,12 +1547,11 @@
                 }
             }
 
-            // Слухач оновлень власних збережених аудіозаписів
             db.collection('users').doc(activeUser.id).onSnapshot(d => {
                 if (d.exists && d.data().savedMusic) {
                     window.mySavedTracks = d.data().savedMusic;
                     const el = document.getElementById('tab-music');
-                    if (el && el.classList.contains('active')) renderMusicTab();
+                    if (el && el.classList.contains('active')) renderMyAudioList();
                 }
             });
 
@@ -1717,7 +1715,9 @@
             bDayDisplay.innerText = 'не вказано';
         }
 
-        document.getElementById('profile-city').innerText = u.city || 'не вказано';
+        // Відображення країни та міста
+        const geoArr = [u.country, u.city].filter(Boolean);
+        document.getElementById('profile-city').innerText = geoArr.length > 0 ? geoArr.join(', ') : 'не вказано';
 
         let relText = u.relationshipType || 'не вказано';
         if (u.relationshipType && u.partnerId) {
@@ -1836,6 +1836,7 @@
             return vkAlert('Помилка', 'Ви можете редагувати лише власну сторінку!');
         }
         document.getElementById('edit-birthdate').value = activeUser.birthDate || '';
+        document.getElementById('edit-country').value = activeUser.country || '';
         document.getElementById('edit-city').value = activeUser.city || '';
         document.getElementById('edit-relationship-type').value = activeUser.relationshipType || '';
         document.getElementById('edit-phone').value = activeUser.phone || '';
@@ -1898,6 +1899,7 @@
         }
 
         activeUser.birthDate = newBirthDate;
+        activeUser.country = document.getElementById('edit-country').value.trim();
         activeUser.city = document.getElementById('edit-city').value.trim();
         activeUser.relationshipType = newRelType;
         activeUser.partnerId = newPartnerId;
@@ -1929,6 +1931,7 @@
             rating: activeUser.rating,
             soundSetting: activeUser.soundSetting,
             birthDate: activeUser.birthDate,
+            country: activeUser.country,
             city: activeUser.city,
             relationshipType: activeUser.relationshipType,
             partnerId: activeUser.partnerId,
@@ -2121,326 +2124,320 @@
     }
 
     // ==========================================
-// АВТОНОМНА ФОНОТЕКА «НА ЗВ'ЯЗКУ» (ВИПРАВЛЕНА)
-// ==========================================
-const CLOUDINARY_CLOUD_NAME = "xqjsl2xi";
-const CLOUDINARY_UPLOAD_PRESET = "a1icqnqy";
+    // АВТОНОМНА ФОНОТЕКА (ВИПРАВЛЕНА БЕЗ ВТРАТИ ФОКУСУ)
+    // ==========================================
+    const CLOUDINARY_CLOUD_NAME = "xqjsl2xi";
+    const CLOUDINARY_UPLOAD_PRESET = "a1icqnqy";
 
-const retroAudio = new Audio();
-let isTrackPlaying = false;
-window.mySavedTracks = window.mySavedTracks || [];
-let cachedGlobalTracks = []; // Локальний кеш для швидкого пошуку без втрати фокусу
+    const retroAudio = new Audio();
+    let isTrackPlaying = false;
+    window.mySavedTracks = window.mySavedTracks || [];
+    let cachedGlobalTracks = [];
 
-function autoFillAudioDetails(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+    function autoFillAudioDetails(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    let fileName = file.name.replace(/\.[^/.]+$/, "");
-    const artistInput = document.getElementById('audio-artist-input');
-    const titleInput = document.getElementById('audio-title-input');
+        let fileName = file.name.replace(/\.[^/.]+$/, "");
+        const artistInput = document.getElementById('audio-artist-input');
+        const titleInput = document.getElementById('audio-title-input');
 
-    if (fileName.includes(' - ')) {
-        const parts = fileName.split(' - ');
-        artistInput.value = parts[0].trim();
-        titleInput.value = parts.slice(1).join(' - ').trim();
-    } else {
-        artistInput.value = "Невідомий";
-        titleInput.value = fileName.trim();
+        if (fileName.includes(' - ')) {
+            const parts = fileName.split(' - ');
+            artistInput.value = parts[0].trim();
+            titleInput.value = parts.slice(1).join(' - ').trim();
+        } else {
+            artistInput.value = "Невідомий";
+            titleInput.value = fileName.trim();
+        }
     }
-}
 
-async function commitUploadAudioFile() {
-    const fileInput = document.getElementById('audio-file-input');
-    const artist = document.getElementById('audio-artist-input').value.trim();
-    const title = document.getElementById('audio-title-input').value.trim();
-    const file = fileInput.files[0];
+    async function commitUploadAudioFile() {
+        const fileInput = document.getElementById('audio-file-input');
+        const artist = document.getElementById('audio-artist-input').value.trim();
+        const title = document.getElementById('audio-title-input').value.trim();
+        const file = fileInput.files[0];
 
-    if (!file) return vkAlert('Помилка', 'Виберіть файл MP3 з пристрою!');
-    if (!artist || !title) return vkAlert('Помилка', 'Вкажіть виконавця та назву треку.');
+        if (!file) return vkAlert('Помилка', 'Виберіть файл MP3 з пристрою!');
+        if (!artist || !title) return vkAlert('Помилка', 'Вкажіть виконавця та назву треку.');
 
-    const progressBox = document.getElementById('audio-upload-progress-box');
-    const progressBar = document.getElementById('audio-upload-bar-fill');
-    const statusText = document.getElementById('audio-upload-status-text');
-    const submitBtn = document.getElementById('audio-submit-btn');
+        const progressBox = document.getElementById('audio-upload-progress-box');
+        const progressBar = document.getElementById('audio-upload-bar-fill');
+        const statusText = document.getElementById('audio-upload-status-text');
+        const submitBtn = document.getElementById('audio-submit-btn');
 
-    progressBox.style.display = 'block';
-    progressBar.style.width = '30%';
-    statusText.innerText = 'Відправка на сервер...';
-    submitBtn.disabled = true;
+        progressBox.style.display = 'block';
+        progressBar.style.width = '30%';
+        statusText.innerText = 'Відправка на сервер...';
+        submitBtn.disabled = true;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('resource_type', 'auto');
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('resource_type', 'auto');
 
-    try {
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
-            method: 'POST',
-            body: formData
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            progressBar.style.width = '80%';
+            statusText.innerText = 'Обробка запису...';
+
+            const data = await response.json();
+            if (!data.secure_url) {
+                throw new Error(data.error?.message || 'Помилка завантаження файлу');
+            }
+
+            progressBar.style.width = '100%';
+            const downloadUrl = data.secure_url;
+
+            const trackDoc = {
+                artist: artist,
+                title: title,
+                url: downloadUrl,
+                uploaderId: activeUser.id,
+                uploaderName: userFullName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const docRef = await db.collection('global_music').add(trackDoc);
+            await addTrackToMyCollection({ id: docRef.id, ...trackDoc });
+
+            submitBtn.disabled = false;
+            progressBox.style.display = 'none';
+            progressBar.style.width = '0%';
+            fileInput.value = '';
+            closeModal('modal-add-audio');
+
+            vkAlert('Фонотека', `Трек «${artist} — ${title}» успішно опубліковано!`);
+            loadAndRenderGlobalMusic();
+
+        } catch (err) {
+            console.error(err);
+            submitBtn.disabled = false;
+            progressBox.style.display = 'none';
+            vkAlert('Помилка', 'Не вдалося завантажити трек. Перевірте з’єднання.');
+        }
+    }
+
+    retroAudio.ontimeupdate = () => {
+        const bar = document.getElementById('retro-player-progress');
+        const timeEl = document.getElementById('retro-player-time');
+        if (!bar || !timeEl || isNaN(retroAudio.duration)) return;
+
+        bar.value = (retroAudio.currentTime / retroAudio.duration) * 100 || 0;
+        const format = s => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
+        timeEl.innerText = `${format(retroAudio.currentTime)} / ${format(retroAudio.duration)}`;
+    };
+
+    retroAudio.onended = () => {
+        isTrackPlaying = false;
+        updateRetroPlayerUI();
+    };
+
+    window.togglePlayPause = function() {
+        if (!retroAudio.src) return;
+        if (retroAudio.paused) {
+            retroAudio.play();
+            isTrackPlaying = true;
+        } else {
+            retroAudio.pause();
+            isTrackPlaying = false;
+        }
+        updateRetroPlayerUI();
+    };
+
+    window.seekRetroTrack = function(percentage) {
+        if (!retroAudio.duration) return;
+        retroAudio.currentTime = (percentage / 100) * retroAudio.duration;
+    };
+
+    window.setRetroVolume = function(vol) {
+        retroAudio.volume = vol / 100;
+    };
+
+    function updateRetroPlayerUI() {
+        const btn = document.getElementById('retro-play-btn');
+        if (btn) btn.innerText = isTrackPlaying ? '❚❚ Пауза' : '▶ Грати';
+    }
+
+    window.playCustomTrack = async function(title, artist, url) {
+        const fullTitle = `${artist} — ${title}`;
+        retroAudio.src = url;
+
+        retroAudio.play().then(() => {
+            isTrackPlaying = true;
+            updateRetroPlayerUI();
+        }).catch(e => {
+            console.error(e);
+            vkAlert("Помилка", "Не вдалося відтворити файл.");
         });
 
-        progressBar.style.width = '80%';
-        statusText.innerText = 'Обробка запису...';
+        const trackTitleEl = document.getElementById('retro-player-title');
+        if (trackTitleEl) trackTitleEl.innerText = fullTitle;
 
-        const data = await response.json();
-        if (!data.secure_url) {
-            throw new Error(data.error?.message || 'Помилка завантаження файлу');
+        activeUser.currentTrack = fullTitle;
+        await db.collection('users').doc(activeUser.id).update({ currentTrack: fullTitle }).catch(() => {});
+        if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
+    };
+
+    window.addTrackToMyCollection = async function(track) {
+        const exists = window.mySavedTracks.some(t => t.url === track.url);
+        if (!exists) {
+            window.mySavedTracks.push(track);
+            await db.collection('users').doc(activeUser.id).set({ savedMusic: window.mySavedTracks }, { merge: true });
+            renderMyAudioList();
+            const currentQuery = document.getElementById('music-query')?.value || '';
+            filterGlobalMusic(currentQuery);
         }
+    };
 
-        progressBar.style.width = '100%';
-        const downloadUrl = data.secure_url;
-
-        const trackDoc = {
-            artist: artist,
-            title: title,
-            url: downloadUrl,
-            uploaderId: activeUser.id,
-            uploaderName: userFullName,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        const docRef = await db.collection('global_music').add(trackDoc);
-        await addTrackToMyCollection({ id: docRef.id, ...trackDoc });
-
-        submitBtn.disabled = false;
-        progressBox.style.display = 'none';
-        progressBar.style.width = '0%';
-        fileInput.value = '';
-        closeModal('modal-add-audio');
-
-        vkAlert('Фонотека', `Трек «${artist} — ${title}» успішно опубліковано!`);
-        loadAndRenderGlobalMusic();
-
-    } catch (err) {
-        console.error(err);
-        submitBtn.disabled = false;
-        progressBox.style.display = 'none';
-        vkAlert('Помилка', 'Не вдалося завантажити трек. Перевірте з’єднання.');
-    }
-}
-
-retroAudio.ontimeupdate = () => {
-    const bar = document.getElementById('retro-player-progress');
-    const timeEl = document.getElementById('retro-player-time');
-    if (!bar || !timeEl || isNaN(retroAudio.duration)) return;
-
-    bar.value = (retroAudio.currentTime / retroAudio.duration) * 100 || 0;
-    const format = s => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
-    timeEl.innerText = `${format(retroAudio.currentTime)} / ${format(retroAudio.duration)}`;
-};
-
-retroAudio.onended = () => {
-    isTrackPlaying = false;
-    updateRetroPlayerUI();
-};
-
-window.togglePlayPause = function() {
-    if (!retroAudio.src) return;
-    if (retroAudio.paused) {
-        retroAudio.play();
-        isTrackPlaying = true;
-    } else {
-        retroAudio.pause();
-        isTrackPlaying = false;
-    }
-    updateRetroPlayerUI();
-};
-
-window.seekRetroTrack = function(percentage) {
-    if (!retroAudio.duration) return;
-    retroAudio.currentTime = (percentage / 100) * retroAudio.duration;
-};
-
-window.setRetroVolume = function(vol) {
-    retroAudio.volume = vol / 100;
-};
-
-function updateRetroPlayerUI() {
-    const btn = document.getElementById('retro-play-btn');
-    if (btn) btn.innerText = isTrackPlaying ? '❚❚ Пауза' : '▶ Грати';
-}
-
-window.playCustomTrack = async function(title, artist, url) {
-    const fullTitle = `${artist} — ${title}`;
-    retroAudio.src = url;
-
-    retroAudio.play().then(() => {
-        isTrackPlaying = true;
-        updateRetroPlayerUI();
-    }).catch(e => {
-        console.error(e);
-        vkAlert("Помилка", "Не вдалося відтворити файл.");
-    });
-
-    const trackTitleEl = document.getElementById('retro-player-title');
-    if (trackTitleEl) trackTitleEl.innerText = fullTitle;
-
-    activeUser.currentTrack = fullTitle;
-    await db.collection('users').doc(activeUser.id).update({ currentTrack: fullTitle }).catch(() => {});
-    if (!viewingProfileId) renderProfileInfo(activeUser, userFullName, true, activeUser.id);
-};
-
-window.addTrackToMyCollection = async function(track) {
-    const exists = window.mySavedTracks.some(t => t.url === track.url);
-    if (!exists) {
-        window.mySavedTracks.push(track);
+    window.removeTrackFromMyCollection = async function(url) {
+        window.mySavedTracks = window.mySavedTracks.filter(t => t.url !== url);
         await db.collection('users').doc(activeUser.id).set({ savedMusic: window.mySavedTracks }, { merge: true });
         renderMyAudioList();
         const currentQuery = document.getElementById('music-query')?.value || '';
         filterGlobalMusic(currentQuery);
-    }
-};
+    };
 
-window.removeTrackFromMyCollection = async function(url) {
-    window.mySavedTracks = window.mySavedTracks.filter(t => t.url !== url);
-    await db.collection('users').doc(activeUser.id).set({ savedMusic: window.mySavedTracks }, { merge: true });
-    renderMyAudioList();
-    const currentQuery = document.getElementById('music-query')?.value || '';
-    filterGlobalMusic(currentQuery);
-};
+    window.deleteTrackGlobally = async function(trackId, url) {
+        if (!confirm("Ви дійсно хочете видалити цей трек із загальної бази мережі?")) return;
+        await db.collection('global_music').doc(trackId).delete();
+        cachedGlobalTracks = cachedGlobalTracks.filter(t => t.id !== trackId);
+        window.removeTrackFromMyCollection(url);
+        vkAlert('Видалено', 'Трек видалено з фонотеки.');
+        const currentQuery = document.getElementById('music-query')?.value || '';
+        filterGlobalMusic(currentQuery);
+    };
 
-window.deleteTrackGlobally = async function(trackId, url) {
-    if (!confirm("Ви дійсно хочете видалити цей трек із загальної бази мережі?")) return;
-    await db.collection('global_music').doc(trackId).delete();
-    cachedGlobalTracks = cachedGlobalTracks.filter(t => t.id !== trackId);
-    window.removeTrackFromMyCollection(url);
-    vkAlert('Видалено', 'Трек видалено з фонотеки.');
-};
+    window.renderMusicTab = function() {
+        const musicTab = document.getElementById('tab-music');
+        if (!musicTab) return;
 
-// 1. Головний рендер вкладки: монтує статичні елементи лише один раз
-window.renderMusicTab = function() {
-    const musicTab = document.getElementById('tab-music');
-    if (!musicTab) return;
-
-    // Якщо каркас ще не створений у DOM — створюємо його
-    if (!document.getElementById('music-query')) {
-        musicTab.innerHTML = `
-            <div style="background: #eef2f5; border: 1px solid var(--vk-border); padding: 8px 10px; border-radius: 2px; margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <b id="retro-player-title" style="color: var(--vk-link); font-size: 11px;">${activeUser.currentTrack ? escapeText(activeUser.currentTrack) : 'Трек не обрано'}</b>
-                    <span id="retro-player-time" style="font-size: 10px; color: var(--vk-subtext);">0:00 / 0:00</span>
-                </div>
-                <input type="range" id="retro-player-progress" value="0" min="0" max="100" style="width: 100%; height: 4px; margin-bottom: 6px; cursor: pointer;" oninput="seekRetroTrack(this.value)">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn-vk" id="retro-play-btn" onclick="togglePlayPause()" style="font-size: 10px; padding: 2px 8px;">${isTrackPlaying ? '❚❚ Пауза' : '▶ Грати'}</button>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="font-size: 10px; color: var(--vk-subtext);">Гучність:</span>
-                        <input type="range" min="0" max="100" value="100" style="width: 50px; height: 3px;" oninput="setRetroVolume(this.value)">
+        if (!document.getElementById('music-query')) {
+            musicTab.innerHTML = `
+                <div style="background: #eef2f5; border: 1px solid var(--vk-border); padding: 8px 10px; border-radius: 2px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <b id="retro-player-title" style="color: var(--vk-link); font-size: 11px;">${activeUser.currentTrack ? escapeText(activeUser.currentTrack) : 'Трек не обрано'}</b>
+                        <span id="retro-player-time" style="font-size: 10px; color: var(--vk-subtext);">0:00 / 0:00</span>
+                    </div>
+                    <input type="range" id="retro-player-progress" value="0" min="0" max="100" style="width: 100%; height: 4px; margin-bottom: 6px; cursor: pointer;" oninput="seekRetroTrack(this.value)">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <button class="btn-vk" id="retro-play-btn" onclick="togglePlayPause()" style="font-size: 10px; padding: 2px 8px;">${isTrackPlaying ? '❚❚ Пауза' : '▶ Грати'}</button>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="font-size: 10px; color: var(--vk-subtext);">Гучність:</span>
+                            <input type="range" min="0" max="100" value="100" style="width: 50px; height: 3px;" oninput="setRetroVolume(this.value)">
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div style="display: flex; gap: 6px; margin-bottom: 12px;">
-                <input type="text" id="music-query" class="input-vk" placeholder="Пошук у фонотеці..." style="flex: 1;" oninput="filterGlobalMusic(this.value)">
-                <button class="btn-vk" onclick="openModal('modal-add-audio')">📤 Завантажити MP3</button>
-            </div>
-
-            <div style="font-size: 12px; font-weight: bold; color: var(--vk-link); margin-bottom: 4px; border-bottom: 1px solid var(--vk-border); padding-bottom: 3px;">
-                Мої Аудіозаписи (<span id="my-audio-counter">0</span>)
-            </div>
-            <div id="my-audio-list" style="margin-bottom: 15px;"></div>
-
-            <div style="font-size: 12px; font-weight: bold; color: var(--vk-link); margin-bottom: 4px; border-bottom: 1px solid var(--vk-border); padding-bottom: 3px;">
-                Загальна фонотека користувачів
-            </div>
-            <div id="global-audio-list">
-                <div style="color: var(--vk-subtext); padding: 4px;">Завантаження списку...</div>
-            </div>
-        `;
-    }
-
-    renderMyAudioList();
-    loadAndRenderGlobalMusic();
-};
-
-// 2. Рендер списку збережених пісень користувача
-window.renderMyAudioList = function() {
-    const myCont = document.getElementById('my-audio-list');
-    const counter = document.getElementById('my-audio-counter');
-    if (!myCont) return;
-
-    if (counter) counter.innerText = window.mySavedTracks.length;
-
-    if (window.mySavedTracks.length === 0) {
-        myCont.innerHTML = '<div style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">У вас ще немає доданих треків. Завантажте свій або додайте з бази нижче!</div>';
-        return;
-    }
-
-    myCont.innerHTML = '';
-    window.mySavedTracks.forEach(t => {
-        myCont.innerHTML += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; border-bottom: 1px solid var(--vk-border-subtle);">
-                <span style="font-size: 11px;">🎵 <b>${escapeText(t.artist)}</b> — ${escapeText(t.title)}</span>
-                <div style="display: flex; gap: 4px;">
-                    <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="playCustomTrack('${escapeText(t.title)}', '${escapeText(t.artist)}', '${t.url}')">▶</button>
-                    <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px; color: #c62828;" onclick="removeTrackFromMyCollection('${t.url}')" title="Видалити зі своєї сторінки">✕</button>
+                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                    <input type="text" id="music-query" class="input-vk" placeholder="Пошук у фонотеці..." style="flex: 1;" oninput="filterGlobalMusic(this.value)">
+                    <button class="btn-vk" onclick="openModal('modal-add-audio')">📤 Завантажити MP3</button>
                 </div>
-            </div>
-        `;
-    });
-};
 
-// 3. Завантаження треків із Firestore у пам'ять
-window.loadAndRenderGlobalMusic = function() {
-    db.collection('global_music').orderBy('timestamp', 'desc').limit(50).get().then(snap => {
-        cachedGlobalTracks = [];
-        snap.forEach(doc => {
-            cachedGlobalTracks.push({ id: doc.id, ...doc.data() });
+                <div style="font-size: 12px; font-weight: bold; color: var(--vk-link); margin-bottom: 4px; border-bottom: 1px solid var(--vk-border); padding-bottom: 3px;">
+                    Мої Аудіозаписи (<span id="my-audio-counter">0</span>)
+                </div>
+                <div id="my-audio-list" style="margin-bottom: 15px;"></div>
+
+                <div style="font-size: 12px; font-weight: bold; color: var(--vk-link); margin-bottom: 4px; border-bottom: 1px solid var(--vk-border); padding-bottom: 3px;">
+                    Загальна фонотека користувачів
+                </div>
+                <div id="global-audio-list">
+                    <div style="color: var(--vk-subtext); padding: 4px;">Завантаження списку...</div>
+                </div>
+            `;
+        }
+
+        renderMyAudioList();
+        loadAndRenderGlobalMusic();
+    };
+
+    window.renderMyAudioList = function() {
+        const myCont = document.getElementById('my-audio-list');
+        const counter = document.getElementById('my-audio-counter');
+        if (!myCont) return;
+
+        if (counter) counter.innerText = window.mySavedTracks.length;
+
+        if (window.mySavedTracks.length === 0) {
+            myCont.innerHTML = '<div style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">У вас ще немає доданих треків. Завантажте свій або додайте з бази нижче!</div>';
+            return;
+        }
+
+        myCont.innerHTML = '';
+        window.mySavedTracks.forEach(t => {
+            myCont.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; border-bottom: 1px solid var(--vk-border-subtle);">
+                    <span style="font-size: 11px;">🎵 <b>${escapeText(t.artist)}</b> — ${escapeText(t.title)}</span>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="playCustomTrack('${escapeText(t.title)}', '${escapeText(t.artist)}', '${t.url}')">▶</button>
+                        <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px; color: #c62828;" onclick="removeTrackFromMyCollection('${t.url}')" title="Видалити зі своєї сторінки">✕</button>
+                    </div>
+                </div>
+            `;
         });
-        const currentVal = document.getElementById('music-query')?.value || '';
-        filterGlobalMusic(currentVal);
-    }).catch(err => {
-        console.error("Помилка фонотеки:", err);
+    };
+
+    window.loadAndRenderGlobalMusic = function() {
+        db.collection('global_music').orderBy('timestamp', 'desc').limit(50).get().then(snap => {
+            cachedGlobalTracks = [];
+            snap.forEach(doc => {
+                cachedGlobalTracks.push({ id: doc.id, ...doc.data() });
+            });
+            const currentVal = document.getElementById('music-query')?.value || '';
+            filterGlobalMusic(currentVal);
+        }).catch(err => {
+            console.error("Помилка фонотеки:", err);
+            const globalCont = document.getElementById('global-audio-list');
+            if (globalCont) globalCont.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Не вдалося завантажити фонотеку.</div>';
+        });
+    };
+
+    window.filterGlobalMusic = function(searchQuery = '') {
         const globalCont = document.getElementById('global-audio-list');
-        if (globalCont) globalCont.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Не вдалося завантажити фонотеку.</div>';
-    });
-};
+        if (!globalCont) return;
 
-// 4. Миттєва фільтрація: оновлює ТІЛЬКИ контейнер списку, не чіпаючи поле вводу
-window.filterGlobalMusic = function(searchQuery = '') {
-    const globalCont = document.getElementById('global-audio-list');
-    if (!globalCont) return;
+        const q = (searchQuery || '').toLowerCase().trim();
+        const filtered = cachedGlobalTracks.filter(track => {
+            if (!q) return true;
+            const artist = (track.artist || '').toLowerCase();
+            const title = (track.title || '').toLowerCase();
+            return artist.includes(q) || title.includes(q);
+        });
 
-    const q = (searchQuery || '').toLowerCase().trim();
-    const filtered = cachedGlobalTracks.filter(track => {
-        if (!q) return true;
-        const artist = (track.artist || '').toLowerCase();
-        const title = (track.title || '').toLowerCase();
-        return artist.includes(q) || title.includes(q);
-    });
+        if (filtered.length === 0) {
+            globalCont.innerHTML = `<div style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">${q ? 'Нічого не знайдено за запитом.' : 'Фонотека порожня. Завантажте перший трек!'}</div>`;
+            return;
+        }
 
-    if (filtered.length === 0) {
-        globalCont.innerHTML = `<div style="color: var(--vk-subtext); font-size: 10px; padding: 4px;">${q ? 'Нічого не знайдено за запитом.' : 'Фонотека порожня. Завантажте перший трек!'}</div>`;
-        return;
-    }
+        globalCont.innerHTML = '';
+        filtered.forEach(track => {
+            const isAdded = window.mySavedTracks.some(t => t.url === track.url);
+            const canDelete = (track.uploaderId === activeUser.id) || checkIsAdmin(activeUser.id);
 
-    globalCont.innerHTML = '';
-    filtered.forEach(track => {
-        const isAdded = window.mySavedTracks.some(t => t.url === track.url);
-        const canDelete = (track.uploaderId === activeUser.id) || checkIsAdmin(activeUser.id);
-
-        globalCont.innerHTML += `
-            <div class="user-row-card" style="margin-bottom: 3px;">
-                <div>
-                    <span style="font-size: 11px;">🎵 <b>${escapeText(track.artist)}</b> — ${escapeText(track.title)}</span>
-                    <div style="font-size: 9px; color: var(--vk-subtext);">Додав: ${escapeText(track.uploaderName || 'Користувач')}</div>
+            globalCont.innerHTML += `
+                <div class="user-row-card" style="margin-bottom: 3px;">
+                    <div>
+                        <span style="font-size: 11px;">🎵 <b>${escapeText(track.artist)}</b> — ${escapeText(track.title)}</span>
+                        <div style="font-size: 9px; color: var(--vk-subtext);">Додав: ${escapeText(track.uploaderName || 'Користувач')}</div>
+                    </div>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="playCustomTrack('${escapeText(track.title)}', '${escapeText(track.artist)}', '${track.url}')">▶</button>
+                        ${isAdded 
+                            ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; padding: 0 4px;">✔</span>' 
+                            : `<button class="btn-vk" style="font-size: 9px; padding: 2px 6px;" onclick='addTrackToMyCollection(${JSON.stringify(track)})'>+ Додати</button>`
+                        }
+                        ${canDelete ? `<button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 5px; color: #c62828;" onclick="deleteTrackGlobally('${track.id}', '${track.url}')" title="Видалити трек">🗑</button>` : ''}
+                    </div>
                 </div>
-                <div style="display: flex; gap: 4px; align-items: center;">
-                    <button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 6px;" onclick="playCustomTrack('${escapeText(track.title)}', '${escapeText(track.artist)}', '${track.url}')">▶</button>
-                    ${isAdded 
-                        ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; padding: 0 4px;">✔</span>' 
-                        : `<button class="btn-vk" style="font-size: 9px; padding: 2px 6px;" onclick='addTrackToMyCollection(${JSON.stringify(track)})'>+ Додати</button>`
-                    }
-                    ${canDelete ? `<button class="btn-vk-secondary" style="font-size: 9px; padding: 2px 5px; color: #c62828;" onclick="deleteTrackGlobally('${track.id}', '${track.url}')" title="Видалити трек">🗑</button>` : ''}
-                </div>
-            </div>
-        `;
-    });
-};
+            `;
+        });
+    };
 
-
-            
-            
     // Ретро-Ферма
     function loadFarmData() {
         const farmContainer = document.getElementById('farm-plots-container');
@@ -2779,49 +2776,54 @@ window.filterGlobalMusic = function(searchQuery = '') {
         }
     }
 
+    // Оновлений пошук за ім'ям, ID, країною та містом
+    function filterUsersList() {
+        const nameQuery = (document.getElementById('friend-search-input')?.value || '').toLowerCase().trim();
+        const countryQuery = (document.getElementById('country-filter-input')?.value || '').toLowerCase().trim();
+        const cityQuery = (document.getElementById('city-filter-input')?.value || '').toLowerCase().trim();
+        
+        const filtered = cachedUsers.filter(u => {
+            const matchesName = (u.name || '').toLowerCase().includes(nameQuery) || String(u.id).toLowerCase().includes(nameQuery);
+            const matchesCountry = countryQuery === '' || (u.country || '').toLowerCase().includes(countryQuery);
+            const matchesCity = cityQuery === '' || (u.city || '').toLowerCase().includes(cityQuery);
+            return matchesName && matchesCountry && matchesCity;
+        });
+        renderUsersDirectory(filtered);
+    }
+
     function renderUsersDirectory(users) {
         const container = document.getElementById('all-users-list');
         if (!container) return;
         container.innerHTML = '';
 
         if (users.length === 0) {
-            container.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Інших користувачів не знайдено.</div>';
+            container.innerHTML = '<div style="color: var(--vk-subtext); padding: 4px;">Користувачів за такими даними не знайдено.</div>';
             return;
         }
 
         users.forEach(u => {
             const isFriend = userFriendsMap.has(u.id);
+            const geoInfo = [u.country, u.city].filter(Boolean).join(', ');
+
             container.innerHTML += `
                 <div class="user-row-card">
                     <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openUserProfile('${u.id}')">
                         <img src="${u.photo_url || 'https://vk.com/images/camera_200.png'}" style="width: 32px; height: 32px; border: 1px solid var(--vk-border); object-fit: cover;">
                         <div>
                             <div style="font-weight: bold; color: var(--vk-link);">${escapeText(u.name || 'Користувач')}</div>
-                            <div style="font-size: 10px; color: var(--vk-subtext);">${escapeText(u.city || '')} (ID: ${u.id})</div>
+                            <div style="font-size: 10px; color: var(--vk-subtext);">${geoInfo ? escapeText(geoInfo) + ' • ' : ''}ID: ${u.id}</div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 4px;">
                         <button class="btn-vk-secondary" style="font-size: 10px;" onclick="openDirectMessage('${u.id}', '${escapeText(u.name || 'Користувач')}')">ЛС</button>
                         ${isFriend 
-                            ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; line-height: 24px;">✓</span>' 
+                            ? '<span style="color: #43a047; font-size: 10px; font-weight: bold; line-height: 24px; padding: 0 4px;">✓</span>' 
                             : `<button class="btn-vk" style="font-size: 10px;" onclick="addFriend('${u.id}', '${escapeText(u.name || 'Користувач')}', '${u.photo_url || ''}')">+ Додати</button>`
                         }
                     </div>
                 </div>
             `;
         });
-    }
-
-    function filterUsersList() {
-        const nameQuery = document.getElementById('friend-search-input').value.toLowerCase().trim();
-        const cityQuery = document.getElementById('city-filter-input').value.toLowerCase().trim();
-        
-        const filtered = cachedUsers.filter(u => {
-            const matchesName = (u.name || '').toLowerCase().includes(nameQuery) || String(u.id).toLowerCase().includes(nameQuery);
-            const matchesCity = cityQuery === '' || (u.city || '').toLowerCase().includes(cityQuery);
-            return matchesName && matchesCity;
-        });
-        renderUsersDirectory(filtered);
     }
 
     async function findUserByIdPrompt() {
@@ -3183,6 +3185,7 @@ window.filterGlobalMusic = function(searchQuery = '') {
             photo_url: "https://vk.com/images/community_200.png",
             status: "офіційна спільнота",
             city: "Інтернет",
+            country: "",
             relationship: "відкрита група",
             phone: "—",
             icq: "—",
@@ -3548,7 +3551,7 @@ window.filterGlobalMusic = function(searchQuery = '') {
                         boardHtml += `<div class="ttt-cell" onclick="makeTicTacToeMove('${msgId}', ${i})">${val}</div>`;
                     }
                     boardHtml += '</div>';
-                    let statusText = m.winner ? (m.winner === 'draw' ? 'Нічия!' : `Переможець: ${m.winner}`) : `Грають у хрестики-нулики`;
+                    let statusText = m.winner ? (m.winner === 'draw' ? 'Нічия!' : `Переможець: ${m.winner}`) : `Зараз черга: ${m.turn}`;
                     content = `<div><b>🎮 Хрестики-нулики</b><br>${boardHtml}<span style="font-size:10px; color:#555;">${statusText}</span></div>`;
                 } else {
                     content = `<div>${escapeText(m.text)}</div>`;
@@ -3611,6 +3614,7 @@ window.filterGlobalMusic = function(searchQuery = '') {
         await db.collection('direct_chats').doc(chatId).collection('messages').add(payload);
     }
 
+    // Хрестики-нулики з валідацією черги гравців
     async function makeTicTacToeMove(msgId, index) {
         if (currentChatMode !== 'direct') return;
         const chatId = getDirectChatId(activeUser.id, activeChatTargetId);
@@ -3620,9 +3624,12 @@ window.filterGlobalMusic = function(searchQuery = '') {
         const data = doc.data();
         if (data.winner || data.board[index] !== '') return;
 
+        const isPlayerX = activeUser.id === data.senderId;
+        if (data.turn === 'X' && !isPlayerX) return vkAlert('Черга', 'Зараз хід суперника (Х)!');
+        if (data.turn === 'O' && isPlayerX) return vkAlert('Черга', 'Зараз хід суперника (О)!');
+
         let board = [...data.board];
-        let turn = data.turn;
-        board[index] = turn;
+        board[index] = data.turn;
 
         const wins = [
             [0,1,2],[3,4,5],[6,7,8],
@@ -3637,8 +3644,11 @@ window.filterGlobalMusic = function(searchQuery = '') {
         }
         if (!winner && board.every(cell => cell !== '')) winner = 'draw';
 
-        let nextTurn = turn === 'X' ? 'O' : 'X';
-        await msgRef.update({ board, turn: nextTurn, winner });
+        await msgRef.update({ 
+            board, 
+            turn: data.turn === 'X' ? 'O' : 'X', 
+            winner 
+        });
     }
 
     let voiceRecorder = null;
@@ -3904,26 +3914,11 @@ window.filterGlobalMusic = function(searchQuery = '') {
         input.value = '';
     }
 
+    // Виправлене завантаження стіни без помилкового звернення до users при відкритій групі
     function loadWallPosts(targetId) {
         const targetCollection = viewingGroupId ? db.collection('groups').doc(viewingGroupId).collection('wall') : db.collection('users').doc(targetId).collection('wall');
 
-        db.collection('users').doc(targetId).get().then(userDoc => {
-            if (userDoc.exists && !viewingGroupId) {
-                const uData = userDoc.data();
-                const isMe = (targetId === activeUser.id);
-                const isFriend = userFriendsMap.has(targetId);
-                const canSeeWall = isMe || checkIsAdmin(activeUser.id) || uData.privacyWall === 'all' || (uData.privacyWall === 'friends' && isFriend) || (uData.privacyWall === 'nobody' && isMe);
-
-                const cont = document.getElementById('wall-posts-list');
-                if (!cont) return;
-
-                if (!canSeeWall) {
-                    cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">Користувач обмежив доступ до своєї стіни.</div>';
-                    document.getElementById('wall-counter').innerText = '0 записів';
-                    return;
-                }
-            }
-
+        const executeWallListen = () => {
             targetCollection.orderBy('timestamp', 'desc').onSnapshot(snap => {
                 const cont = document.getElementById('wall-posts-list');
                 if (!cont) return;
@@ -3972,7 +3967,28 @@ window.filterGlobalMusic = function(searchQuery = '') {
                     `;
                 });
             });
-        });
+        };
+
+        if (!viewingGroupId) {
+            db.collection('users').doc(targetId).get().then(userDoc => {
+                if (userDoc.exists) {
+                    const uData = userDoc.data();
+                    const isMe = (targetId === activeUser.id);
+                    const isFriend = userFriendsMap.has(targetId);
+                    const canSeeWall = isMe || checkIsAdmin(activeUser.id) || uData.privacyWall === 'all' || (uData.privacyWall === 'friends' && isFriend) || (uData.privacyWall === 'nobody' && isMe);
+
+                    const cont = document.getElementById('wall-posts-list');
+                    if (!canSeeWall && cont) {
+                        cont.innerHTML = '<div style="color: var(--vk-subtext); padding: 6px;">Користувач обмежив доступ до своєї стіни.</div>';
+                        document.getElementById('wall-counter').innerText = '0 записів';
+                        return;
+                    }
+                }
+                executeWallListen();
+            });
+        } else {
+            executeWallListen();
+        }
     }
 
     async function deleteWallPost(postId) {
@@ -4204,3 +4220,4 @@ window.filterGlobalMusic = function(searchQuery = '') {
 
 </body>
 </html>
+
